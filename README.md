@@ -1,3 +1,3 @@
-# portfolio-humanoids-khtrsh
+## Deploy
 
-[Edit on StackBlitz ⚡️](https://stackblitz.com/edit/portfolio-humanoids-khtrsh)
+Op Vercel[https://vercel.com/]
