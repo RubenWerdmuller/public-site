@@ -1,0 +1,254 @@
+[
+  {
+    "id": "sailing-1",
+    "file": "/photos/sailing-1.webp",
+    "theme": "sailing",
+    "caption": "Blue-and-White Sailboat on Calm Sea"
+  },
+  {
+    "id": "sailing-2",
+    "file": "/photos/sailing-2.webp",
+    "theme": "sailing",
+    "caption": "Serene Sailboat on Open Water"
+  },
+  {
+    "id": "sailing-3",
+    "file": "/photos/sailing-3.webp",
+    "theme": "sailing",
+    "caption": "White Sailboat on Calm Sea"
+  },
+  {
+    "id": "sailing-4",
+    "file": "/photos/sailing-4.webp",
+    "theme": "sailing",
+    "caption": "Evening Sail at Sunset"
+  },
+  {
+    "id": "yoga-1",
+    "file": "/photos/yoga-1.webp",
+    "theme": "yoga",
+    "caption": "Lotus Pose Meditation"
+  },
+  {
+    "id": "yoga-2",
+    "file": "/photos/yoga-2.webp",
+    "theme": "yoga",
+    "caption": "River Meditation Retreat"
+  },
+  {
+    "id": "camper-1",
+    "file": "/photos/camper-1.webp",
+    "theme": "camper",
+    "caption": "Camper Van Journey Near Mount Cook"
+  },
+  {
+    "id": "camper-2",
+    "file": "/photos/camper-2.webp",
+    "theme": "camper",
+    "caption": "Van Journey Through Mountainous Terrain"
+  },
+  {
+    "id": "garden-1",
+    "file": "/photos/garden-1.webp",
+    "theme": "garden",
+    "caption": "Home Garden Vegetable Beds"
+  },
+  {
+    "id": "garden-2",
+    "file": "/photos/garden-2.webp",
+    "theme": "garden",
+    "caption": "Garden Rows of Leafy Greens"
+  },
+  {
+    "id": "garden-3",
+    "file": "/photos/garden-3.webp",
+    "theme": "garden",
+    "caption": "Walled Farm Vegetable Garden"
+  },
+  {
+    "id": "pottery-1",
+    "file": "/photos/pottery-1.webp",
+    "theme": "pottery",
+    "caption": "Potter at the Wheel"
+  },
+  {
+    "id": "pottery-2",
+    "file": "/photos/pottery-2.webp",
+    "theme": "pottery",
+    "caption": "Potter’s Craft in Motion"
+  },
+  {
+    "id": "pottery-3",
+    "file": "/photos/pottery-3.webp",
+    "theme": "pottery",
+    "caption": "Pottery Wheel Craft"
+  },
+  {
+    "id": "pottery-4",
+    "file": "/photos/pottery-4.webp",
+    "theme": "pottery",
+    "caption": "Pottery Wheel Craft"
+  },
+  {
+    "id": "alpaca-1",
+    "file": "/photos/alpaca-1.webp",
+    "theme": "alpaca",
+    "caption": "Brown Alpacas in a Green Pasture"
+  },
+  {
+    "id": "alpaca-2",
+    "file": "/photos/alpaca-2.webp",
+    "theme": "alpaca",
+    "caption": "Highland Alpaca in Ayacucho"
+  },
+  {
+    "id": "alpaca-3",
+    "file": "/photos/alpaca-3.webp",
+    "theme": "alpaca",
+    "caption": "Gray Alpaca in Pasture"
+  },
+  {
+    "id": "surf-1",
+    "file": "/photos/surf-1.webp",
+    "theme": "surf",
+    "caption": "Surfer Carving Through a Turquoise Wave"
+  },
+  {
+    "id": "surf-2",
+    "file": "/photos/surf-2.webp",
+    "theme": "surf",
+    "caption": "Teal Surfboard in Shallow Waves"
+  },
+  {
+    "id": "surf-3",
+    "file": "/photos/surf-3.webp",
+    "theme": "surf",
+    "caption": "Surfer in Turquoise Waters"
+  },
+  {
+    "id": "surf-4",
+    "file": "/photos/surf-4.webp",
+    "theme": "surf",
+    "caption": "Surfboard Beside a Breaking Wave"
+  },
+  {
+    "id": "campfire-1",
+    "file": "/photos/campfire-1.webp",
+    "theme": "campfire",
+    "caption": "Nighttime Campfire"
+  },
+  {
+    "id": "campfire-2",
+    "file": "/photos/campfire-2.webp",
+    "theme": "campfire",
+    "caption": "Campfire at Night"
+  },
+  {
+    "id": "campfire-3",
+    "file": "/photos/campfire-3.webp",
+    "theme": "campfire",
+    "caption": "Nighttime Campfire"
+  },
+  {
+    "id": "campfire-4",
+    "file": "/photos/campfire-4.webp",
+    "theme": "campfire",
+    "caption": "Nighttime Campfire"
+  },
+  {
+    "id": "market-1",
+    "file": "/photos/market-1.webp",
+    "theme": "market",
+    "caption": "Vibrant Outdoor Market"
+  },
+  {
+    "id": "market-2",
+    "file": "/photos/market-2.webp",
+    "theme": "market",
+    "caption": "Bustling Colorful Market"
+  },
+  {
+    "id": "market-3",
+    "file": "/photos/market-3.webp",
+    "theme": "market",
+    "caption": "Overhead Farmers Market Scene"
+  },
+  {
+    "id": "market-4",
+    "file": "/photos/market-4.webp",
+    "theme": "market",
+    "caption": "Vibrant Outdoor Fruit Market"
+  },
+  {
+    "id": "hiking-1",
+    "file": "/photos/hiking-1.webp",
+    "theme": "hiking",
+    "caption": "Mountain Ridge Hike"
+  },
+  {
+    "id": "hiking-2",
+    "file": "/photos/hiking-2.webp",
+    "theme": "hiking",
+    "caption": "Alpine Trekking in Italy"
+  },
+  {
+    "id": "hiking-3",
+    "file": "/photos/hiking-3.webp",
+    "theme": "hiking",
+    "caption": "Mountain Trail Hike"
+  },
+  {
+    "id": "hiking-4",
+    "file": "/photos/hiking-4.webp",
+    "theme": "hiking",
+    "caption": "Mountain Trail Hike"
+  },
+  {
+    "id": "dance-1",
+    "file": "/photos/dance-1.webp",
+    "theme": "dance",
+    "caption": "Dynamic Dance in an Industrial Space"
+  },
+  {
+    "id": "dance-2",
+    "file": "/photos/dance-2.webp",
+    "theme": "dance",
+    "caption": "Graceful Studio Leap"
+  },
+  {
+    "id": "dance-3",
+    "file": "/photos/dance-3.webp",
+    "theme": "dance",
+    "caption": "Dancing in Yellow"
+  },
+  {
+    "id": "dance-4",
+    "file": "/photos/dance-4.webp",
+    "theme": "dance",
+    "caption": "Dynamic Stage Dance"
+  },
+  {
+    "id": "coffee-1",
+    "file": "/photos/coffee-1.webp",
+    "theme": "coffee",
+    "caption": "Coffee and Beans Composition"
+  },
+  {
+    "id": "coffee-2",
+    "file": "/photos/coffee-2.webp",
+    "theme": "coffee",
+    "caption": "Coffee Beans on Teal Background"
+  },
+  {
+    "id": "coffee-3",
+    "file": "/photos/coffee-3.webp",
+    "theme": "coffee",
+    "caption": "A Cup of Black Coffee"
+  },
+  {
+    "id": "coffee-4",
+    "file": "/photos/coffee-4.webp",
+    "theme": "coffee",
+    "caption": "Coffee and Beans Composition"
+  }
+]

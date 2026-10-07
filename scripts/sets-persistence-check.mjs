@@ -1,0 +1,14 @@
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+const fixture=JSON.parse(await readFile('test-results/sets-persistence.json','utf8'));
+const base='http://localhost:3100';
+const login=await fetch(`${base}/api/app`,{method:'POST',headers:{Origin:base,'Content-Type':'application/json'},body:JSON.stringify({action:'login',email:fixture.email,password:'set-test-only-123'})});
+assert.equal(login.status,200);
+const cookie=login.headers.get('set-cookie').split(';')[0];
+const data=await (await fetch(`${base}/api/app`,{headers:{Cookie:cookie}})).json();
+assert.deepEqual(data.setTotals.map(p=>p.completed),[2,1]);
+assert.equal(data.set.ordinal,3);
+assert.equal(data.preferences.find(p=>p.key===fixture.preferenceId).kind,'hard_constraint');
+assert.deepEqual(data.preferences.find(p=>p.key===fixture.preferenceId).boundary.hard,[20,30]);
+assert.equal(data.setArchive.length,3);
+console.log('PASS: individual totals, set cursor, archived sets and edited boundaries survive a cold server restart; seed does not overwrite edits.');

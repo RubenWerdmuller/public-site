@@ -1,6 +1,6 @@
 # Samen op reis
 
-Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 60 dilemma’s en een rustige getekende notitieboekstijl.
+Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 124 dilemma’s (64 nieuwe voor de langere autoreis) en een rustige getekende notitieboekstijl.
 
 ## Lokaal starten
 
@@ -34,7 +34,7 @@ Er worden geen API-aanvragen voor appdata gedaan, geen notificatiepermissies gev
 
 `lib/characters.ts` is de enige portretregistratie voor de avatarpicker, database-avatarseed, testpersonen en SVG-renderer. Oelie is blond; Roebie heeft een kale en een petvariant. `Travelers` toont dezelfde reisgenoten op home, bij vragen en reveals, in inzichten en in het rapport. De echte app blijft de gekozen gebruikersavatars gebruiken.
 
-Voor ingelogde gebruikers opent de app standaard bij de eerste resterende dagvraag. Pushlinks openen rechtstreeks hun betreffende vraag. Na een antwoord volgt een reveal; doorgaan of bewaren leidt naar de volgende vraag en na de laatste naar de afronding. Een login vanuit een vraaglink keert terug naar die vraag.
+Voor ingelogde gebruikers opent de app standaard bij de eerste resterende dagvraag. Pushlinks openen rechtstreeks hun betreffende vraag. Na een antwoord of bewaren volgt direct de volgende vraag. Na vier vragen kun je Nog een set kiezen. Alle sets blijven bereikbaar; persoonlijke totalen tellen alleen volledig beantwoorde sets. Reveals zijn via de geschiedenis en het setarchief te bekijken. Een login vanuit een vraaglink keert terug naar die vraag.
 
 Windows: `powershell -ExecutionPolicy Bypass -File scripts/start-local.ps1` start de app op de achtergrond en opent je browser. Opnieuw uitvoeren opent de bestaande app. Logs staan lokaal in `data/`.
 
@@ -46,9 +46,9 @@ Kleine SQL-adapter met parameterized queries in plaats van een ORM. Users, avata
 
 Wachtwoorden: salted scrypt. Sessies: willekeurige tokens, alleen hashes opgeslagen, HttpOnly/SameSite cookies, 30 dagen geldig. Loginpogingen worden beperkt. Mutaties vereisen een passende Origin. Uitnodigingen zijn eenmalig, verlopen na 7 dagen. Een duo verlaten/wisselen na antwoorden is bewust geen MVP-functie.
 
-`questionSelector` is de vervangbare domeingrens: vermijdt herhaling, wisselt vraagtypes af en geeft minder onderzochte thema’s voorrang. De 60 vragen zijn geen AI-generatie. Schattingen zijn eenvoudige directional evidence; geen causaliteit of gevalideerd adaptive conjoint model. Interactieanalyse en feedbackgestuurde selectie zijn uitbreidingen. Rapporten gebruiken uitsluitend samen beantwoorde vragen, zijn vaste wekelijkse momentopnames, en tonen voorlopige tekst bij weinig gegevens. Rapportfeedback wordt opgeslagen voor een later model.
+`selectTravelSet` is de vervangbare domeingrens: vermijdt herhaling, wisselt vraagtypes af en geeft minder onderzochte thema’s voorrang. De 124 vragen zijn geen AI-generatie. Nieuwe sets gebruiken de 64 autoreisvragen met expliciete context, grensvragen en eigen dromen. Schattingen zijn eenvoudige directional evidence; geen causaliteit of gevalideerd adaptive conjoint model. Interactieanalyse en feedbackgestuurde selectie zijn uitbreidingen. Rapporten gebruiken uitsluitend samen beantwoorde vragen, zijn vaste wekelijkse momentopnames, en tonen voorlopige tekst bij weinig gegevens. Rapportfeedback wordt opgeslagen voor een later model.
 
-Rough.js button rendering volgt het SketchUI-componentpatroon: https://sketchui.sanjoydev.com/docs/components/button. SVG-landschappen en 12 getekende avatars zijn lokaal; geen emoji-avatar of externe beeldbron. Fonts hebben lokale browserfallbacks. Offline wordt een privédata-vrije app-shell getoond; antwoorden worden alleen online verzonden en nooit stilletjes offline queued.
+Rough.js button rendering volgt het SketchUI-componentpatroon: https://sketchui.sanjoydev.com/docs/components/button. De 12 getekende avatars en 42 gedownloade Unsplash-foto’s zijn lokaal. De foto’s staan met hun bron en licentie op /fotocredits. Fonts hebben lokale browserfallbacks. Offline wordt een privédata-vrije app-shell getoond; antwoorden worden alleen online verzonden en nooit stilletjes offline queued.
 
 ## Cheap & easy online
 
@@ -101,3 +101,9 @@ Domeintests dekken answer privacy, matching, selectie, Amsterdamtijd/DST, rappor
 ## Bewuste grenzen
 
 Dit is een bruikbaar MVP: geen echte boekingsvoorstellen, uitgebreide statistische interactiemodellen, password-resetmail of een live geconfigureerde cloud/pushdienst. Bewaar belangrijke hosted data ook met een periodieke export; de gratis hostingplannen zijn geen vervanging voor je eigen backupkeuze.
+
+## Reisprofiel en sets
+
+Instellingen → Onze reisuitgangspunten bevat de gedeelde en persoonlijke startcontext, open vragen, voorkeursterkte en numerieke grenzen. Nieuwe sets lezen deze data uit PostgreSQL. Het archief houdt ook onafgemaakte eerdere sets bereikbaar. Details: [voorkeurmodel](docs/PREFERENCE_MODEL.md), [vraagstrategie](docs/QUESTION_STRATEGY.md), [bekende context](docs/KNOWN_TRAVEL_CONTEXT.md).
+
+Controleer de echte opslagflow met `node scripts/sets-check.mjs` en de geïsoleerde testflow met `node scripts/preview-check.mjs`. Fotobronnen staan in `public/photos/credits.json`; opnieuw downloaden kan met `node scripts/download-photos.mjs`.

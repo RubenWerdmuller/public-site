@@ -1,4 +1,5 @@
 import type { Attributes, Question, Option } from './domain';
+import { roadtripQuestions } from './roadtrip-questions';
 type Seed = [string, string, string, string, string, string, string, Attributes, Attributes];
 const seeds: Seed[] = [
 ['Langer weg of bijzonder blijven?', 'duur & comfort', 'trade-off', 'Achttien dagen verdwalen', 'Basic huisjes · spectaculaire natuur · € 1.650 p.p.', 'Elf dagen heerlijk landen', 'Eén geweldig verblijf · rustig programma · € 1.750 p.p.', {days:18,budget:1650,nature:5,comfort:1,pace:2},{days:11,budget:1750,nature:3,comfort:5,pace:1}],
@@ -63,4 +64,4 @@ const seeds: Seed[] = [
 ['Zes dagen méér voor hetzelfde geld?', 'duur & reistijd', 'trade-off', '12 dagen met een directe vlucht', '3 uur onderweg · € 1.800 p.p.', '18 dagen met een lange overstap', '14 uur onderweg · € 1.800 p.p.', {days:12,travelHours:3,budget:1800},{days:18,travelHours:14,budget:1800}],
 ];
 function option(title: string, line: string, attributes: Attributes, index: number): Option { return { title, subtitle: line.split(' · ')[0], details: line.split(' · ').slice(1), attributes, art: index === 0 ? 'mountain' : 'house' }; }
-export const questions: Question[] = seeds.map((s, i) => ({ id: `q${String(i + 1).padStart(3, '0')}`, title: s[0], intro: i === 0 ? 'Stel, jullie agenda is leeg. De koffers staan klaar. Waar gaan jullie voor?' : 'Even dromen. Er is geen goed antwoord, alleen jullie keuze.', theme: s[1], type: s[2], options: [option(s[3], s[4], s[7], 0), option(s[5], s[6], s[8], 1)], informationValue: i < 5 ? 2 : 1 }));
+export const questions: Question[] = [...seeds.map((s, i) => ({ id: `q${String(i + 1).padStart(3, '0')}`, title: s[0], intro: i === 0 ? 'Stel, jullie agenda is leeg. De koffers staan klaar. Waar gaan jullie voor?' : 'Even dromen. Er is geen goed antwoord, alleen jullie keuze.', theme: s[1], type: s[2], options: [option(s[3], s[4], s[7], 0), option(s[5], s[6], s[8], 1)] as [Option,Option], informationValue: i < 5 ? 2 : 1 })),...roadtripQuestions];

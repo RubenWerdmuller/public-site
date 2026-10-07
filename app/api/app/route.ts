@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { currentUser, createSession, hashToken, passwordHash, verifyPassword } from '@/lib/auth';
 import { query } from '@/lib/db';
 import { dashboard, refreshInsights } from '@/lib/service';
+import { nextSet, SetNotReadyError } from '@/lib/sets';
 import type { Question } from '@/lib/domain';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -37,11 +38,17 @@ export async function POST(req:NextRequest) {
       const ownAnswers=await query('SELECT question_id FROM answers WHERE user_id=$1 LIMIT 1',[user.id]);
       if(existing.length>1||ownAnswers.length) return json({error:'Koppelen kan alleen vóór je eerste antwoord en als je nog geen partner hebt.'},409);
       const rows=await query(`WITH target AS (SELECT code,pair_id FROM invites WHERE code=$1 AND used_at IS NULL AND expires_at>now() AND pair_id<>$3 FOR UPDATE), joined AS (UPDATE memberships SET pair_id=target.pair_id,slot=2 FROM target WHERE memberships.user_id=$2 RETURNING memberships.pair_id) UPDATE invites SET used_at=now() WHERE code=$1 AND pair_id IN (SELECT pair_id FROM joined) RETURNING pair_id`,[code,user.id,user.pair_id]);
-      if(!rows.length) return json({error:'Deze uitnodiging is verlopen of al gebruikt.'},409); return json({ok:true});
+      if(!rows.length) return json({error:'Deze uitnodiging is verlopen of al gebruikt.'},409); await query('DELETE FROM set_progress WHERE user_id=$1',[user.id]); return json({ok:true});
     }
+    if(action==='preference') {
+      const data=z.object({preferenceId:z.string().max(150),kind:z.enum(['hard_constraint','soft_constraint','strong_preference','weak_preference','interest','personal_wish','open_question']),notes:z.string().max(1000),value:z.union([z.string().max(1000),z.number().finite(),z.boolean(),z.null()]),confidence:z.number().min(0).max(1),boundary:z.object({unit:z.string().max(40),preferred:z.tuple([z.number(),z.number()]).optional(),acceptable:z.tuple([z.number(),z.number()]).optional(),hard:z.tuple([z.number(),z.number()]).optional(),exceptions:z.array(z.string().max(200)).max(10).optional()}).refine(b=>[b.preferred,b.acceptable,b.hard].every(range=>!range||range[0]<=range[1])).nullable()}).parse(body);
+      const changed=await query('UPDATE travel_preferences p SET kind=$1,value=$2::jsonb,confidence=$3,notes=$4,boundary=$5::jsonb,updated_at=now() FROM preference_subjects s WHERE p.subject_id=s.id AND s.pair_id=$6 AND p.id=$7 AND p.source=$8 RETURNING p.id',[data.kind,JSON.stringify(data.value),data.confidence,data.notes,JSON.stringify(data.boundary),user.pair_id,data.preferenceId,'explicitly_stated']);
+      return changed.length?json({ok:true}):json({error:'Dit uitgangspunt hoort niet bij jullie boekje.'},403);
+    }
+    if(action==='next-set') {const id=z.string().max(120).parse(body.setId);const next=await nextSet(user,id);return next?json({ok:true}):json({error:'Jullie hebben alle sets ontdekt. Tijd om de bewaarde vragen samen te bekijken.'},409);}
     if(action==='answer'||action==='save') {
       const qid=z.string().regex(/^q\d{3}$/).parse(body.questionId);
-      const accessible=await query<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2))',[qid,user.pair_id]);
+      const accessible=await query<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM question_sets s WHERE s.pair_id=$2 AND s.question_ids @> jsonb_build_array(q.id)) OR EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2))',[qid,user.pair_id]);
       if(!accessible[0]) return json({error:'Deze vraag hoort niet bij jullie stapel.'},403);
       if(action==='save') await query('INSERT INTO saved_questions(user_id,pair_id,question_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[user.id,user.pair_id,qid]);
       else {
@@ -61,5 +68,5 @@ export async function POST(req:NextRequest) {
     }
     if(action==='unsubscribe') { await query('DELETE FROM push_subscriptions WHERE user_id=$1',[user.id]); return json({ok:true}); }
     return json({error:'Onbekende actie.'},400);
-  } catch(error) { if(error instanceof z.ZodError) return json({error:'Controleer je invoer. Een wachtwoord heeft minimaal 10 tekens.'},400); if((error as {code?:string}).code==='23505') return json({error:'Dit e-mailadres bestaat al, of het duo is al compleet.'},409); console.error('App request failed:',error instanceof Error ? error.message : 'unknown'); return json({error:'Opslaan lukte niet. Probeer het opnieuw.'},500); }
+  } catch(error) { if(error instanceof SetNotReadyError)return json({error:error.message},409); if(error instanceof z.ZodError) return json({error:'Controleer je invoer. Een wachtwoord heeft minimaal 10 tekens; controleer bij grenzen ook van/tot.'},400); if((error as {code?:string}).code==='23505') return json({error:'Dit e-mailadres bestaat al, of het duo is al compleet.'},409); console.error('App request failed:',error instanceof Error ? error.message : 'unknown'); return json({error:'Opslaan lukte niet. Probeer het opnieuw.'},500); }
 }
