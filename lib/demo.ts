@@ -54,6 +54,6 @@ export function previewDashboard(state: PreviewState): Awaited<ReturnType<typeof
     history: [...new Set(state.answers.map(a => a.question_id))].map(id => enrich(questions.find(q => q.id === id)!)).reverse(),
     insights: insights(paired, members.map(m => m.id)),
     report: { id: 'preview', week: weekKey(), content: createReport(paired, members.map(m => m.id)) },
-    invite: '', pushConfigured: false, day: localDay(),
+    invite: '', pushConfigured: false, pushPublicKey:null, day: localDay(),
   };
 }

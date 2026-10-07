@@ -1,3 +1,6 @@
+import {pushReadiness} from '@/lib/push-config';
+import {sendPush} from '@/lib/push';
+import type webpush from 'web-push';
 import { NextRequest, NextResponse } from 'next/server';
 import { randomBytes, randomUUID } from 'node:crypto';
 import { cookies } from 'next/headers';
@@ -64,6 +67,14 @@ export async function POST(req:NextRequest) {
     }
     if(action==='profile') { const name=z.string().trim().min(1).max(40).parse(body.name); const avatar=z.number().int().min(0).max(11).parse(body.avatar); await query('UPDATE users SET name=$1,avatar=$2 WHERE id=$3',[name,avatar,user.id]); return json({ok:true}); }
     if(action==='feedback') { const reportId=z.string().parse(body.reportId); const rating=z.enum(['love','partly','no']).parse(body.rating); const exists=await query('SELECT id FROM weekly_reports WHERE id=$1 AND pair_id=$2',[reportId,user.pair_id]); if(!exists.length) return json({error:'Rapport niet gevonden.'},403); await query('INSERT INTO report_feedback(report_id,user_id,rating) VALUES($1,$2,$3) ON CONFLICT(report_id,user_id) DO UPDATE SET rating=excluded.rating',[reportId,user.id,rating]); return json({ok:true}); }
+    if(action==='push-test') {
+      const endpoint=z.url().max(2000).parse(body.endpoint);
+      const own=await query<{subscription:webpush.PushSubscription}&Record<string,unknown>>('SELECT subscription FROM push_subscriptions WHERE user_id=$1 AND endpoint=$2',[user.id,endpoint]);
+      if(!own[0])return json({error:'Zet berichtjes eerst aan op dit toestel.'},403);
+      if(!pushReadiness().ready)return json({error:'Push is op deze server nog niet volledig ingesteld.'},503);
+      try{await sendPush(own[0].subscription,{title:'Samen op reis',body:'Het werkt! Een klein testberichtje voor jouw toestel.',url:'/?screen=settings'});return json({ok:true});}
+      catch(error){const status=(error as {statusCode?:number}).statusCode;if(status===404||status===410){await query('DELETE FROM push_subscriptions WHERE user_id=$1 AND endpoint=$2',[user.id,endpoint]);return json({error:'Dit toestel moet berichtjes opnieuw aanzetten.'},410);}return json({error:'Testbericht versturen lukte niet. Probeer het later opnieuw.'},502);}
+    }
     if(action==='subscribe') {
       const subscription=z.object({endpoint:z.url().refine(v=>{const u=new URL(v);return u.protocol==='https:' && ['fcm.googleapis.com','updates.push.services.mozilla.com','web.push.apple.com','wns.windows.com'].some(host=>u.hostname===host||u.hostname.endsWith(`.${host}`));}),keys:z.object({p256dh:z.string().min(20).max(200),auth:z.string().min(10).max(100)})}).parse(body.subscription);
       await query('INSERT INTO push_subscriptions(endpoint,user_id,subscription) VALUES($1,$2,$3::jsonb) ON CONFLICT(endpoint) DO UPDATE SET user_id=excluded.user_id,subscription=excluded.subscription',[subscription.endpoint,user.id,JSON.stringify(subscription)]); return json({ok:true});

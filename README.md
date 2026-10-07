@@ -59,7 +59,7 @@ Aanbevolen: **Vercel Hobby + Neon Free** voor deze persoonlijke app. Geen databa
 - Neon Free: https://neon.com/docs/introduction/plans (gratis binnen de actuele limieten; scale-to-zero kan een eerste aanvraag vertragen).
 - Supabase is een goed alternatief als je later managed auth wilt. Free-projecten kunnen pauzeren na inactiviteit: https://supabase.com/docs/guides/platform/free-project-pausing.
 
-Er is eenmalige account/configuratie nodig. ‘Geen databaseonderhoud’ is haalbaar; letterlijk nul setup niet. De app wordt inmiddels vanuit `RubenWerdmuller/public-site` op Vercel gepubliceerd en is bereikbaar op https://rubenwerdmuller.nl. Pushconfiguratie en de externe scheduler moeten afzonderlijk worden ingericht.
+Er is eenmalige account/configuratie nodig. ‘Geen databaseonderhoud’ is haalbaar; letterlijk nul setup niet. De app wordt inmiddels vanuit `RubenWerdmuller/public-site` op Vercel gepubliceerd en is bereikbaar op https://rubenwerdmuller.nl. Pushconfiguratie moet nog worden geactiveerd; de dagelijkse scheduler wordt mee gedeployd vanuit vercel.json.
 
 ## Environment
 
@@ -70,9 +70,9 @@ Kopieer `.env.example` naar `.env.local`. Commit nooit lokale keys.
 | DATABASE_URL | Leeg lokaal; pooled PostgreSQL URL online, met SSL zoals de provider voorschrijft |
 | APP_URL | Canonieke online HTTPS URL |
 | CRON_SECRET | Lang willekeurig geheim voor de scheduler |
-| NEXT_PUBLIC_VAPID_PUBLIC_KEY | Publieke Web Push sleutel; moet vóór de build ingesteld worden |
+| NEXT_PUBLIC_VAPID_PUBLIC_KEY | Publieke Web Push sleutel; wordt vanuit de server opgehaald |
 | VAPID_PRIVATE_KEY | Private Web Push sleutel, alleen server |
-| VAPID_SUBJECT | Eigen mailto: contactadres |
+| VAPID_SUBJECT | Geldige https: of mailto: contact-URL |
 
 VAPID genereren: `npx web-push generate-vapid-keys`. Neem de publieke/private uitvoer alleen over in je lokale en hosted environment, niet in Git.
 
@@ -80,11 +80,11 @@ VAPID genereren: `npx web-push generate-vapid-keys`. Neem de publieke/private ui
 
 Na installatie: Instellingen → Zet berichtjes aan. Geen permissievraag bij eerste bezoek. iOS: Safari → Delen → Zet op beginscherm, daarna vanuit het app-icoon notificaties activeren. Werkt vanaf iOS 16.4+ en ondersteunde browsers.
 
-Roep `/api/jobs` iedere 15 minuten server-side aan met `Authorization: Bearer <CRON_SECRET>`, bijvoorbeeld via cron-job.org. Vercel Hobby-cron is alleen dagelijks en voldoet niet aan variabele pushmomenten. Jobs zijn onafhankelijk van de browser. Ze maken dagelijkse opdrachten en weekrapporten en sturen maximaal één gepland bericht per gebruiker per dag. Het tijdstip varieert deterministisch van 09:00 tot 19:00 Amsterdamtijd; vertraagde runs mogen tot vóór 21:00 leveren. Maandag krijgt het weekrapport prioriteit. Zomer-/wintertijd is meegenomen. Tijdelijke pushfouten worden opnieuw geprobeerd, verlopen subscriptions verwijderd. Notification clicks deep-linken naar de vraag of het rapport.
+De standaard Vercel-taak roept `/api/jobs` dagelijks in de avond aan. Voor gevarieerde eerdere tijden en extra herpogingen kun je optioneel iedere 15 minuten server-side aanroepen met `Authorization: Bearer <CRON_SECRET>`, bijvoorbeeld via cron-job.org. Jobs zijn onafhankelijk van de browser. Ze maken dagelijkse opdrachten en weekrapporten en sturen maximaal één gepland bericht per gebruiker per dag. Het tijdstip varieert deterministisch van 09:00 tot 19:00 Amsterdamtijd; vertraagde runs mogen tot vóór 21:00 leveren. Maandag krijgt het weekrapport prioriteit. Zomer-/wintertijd is meegenomen. Tijdelijke pushfouten worden opnieuw geprobeerd, verlopen subscriptions verwijderd. Notification clicks deep-linken naar de vraag of het rapport.
 
 Lokaal jobs uitvoeren: zet de variabelen in je shell en `npm run jobs` terwijl de devserver gestopt is (PGlite heeft één proces als eigenaar). In de draaiende app test je liever de beschermde HTTP-route. De CLI laadt `.env.local` niet automatisch.
 
-Het MVP bevat nog geen onmiddellijke ‘je partner heeft gekozen’-push; het antwoord verschijnt via polling. Gebruik voor handmatige push QA een echt geïnstalleerde HTTPS-app, geef permissie en roep de scheduler op een geldig moment aan.
+Het MVP bevat nog geen onmiddellijke ‘je partner heeft gekozen’-push; het antwoord verschijnt via polling. Gebruik voor handmatige push QA een echt geïnstalleerde HTTPS-app, geef permissie en kies bij Instellingen Stuur mij een testberichtje.
 
 ## Controle
 
@@ -127,6 +127,16 @@ Het schetsboek bevat daarnaast 50 gedownloade Doodle Icons van Khushmeen Sidhu (
 
 Elk appscherm biedt onderaan Zet de app op je beginscherm. Ondersteunende browsers openen het native installatievenster; zonder dat venster volgen apparaatinstructies. Op iPhone leidt de knop naar de stappen in het deelmenu. Een gebruikte prompt wordt gewist; afwijzen is geen installatie. Standalone-modus en het appinstalled-event tonen de geïnstalleerde staat. Testmodus roept nooit het installatievenster aan. Installeren zet notificaties niet automatisch aan.
 
-De instellingen tonen nu of de server publiek/private VAPID en CRON_SECRET heeft. Zonder alle drie blijft de opt-in uitgeschakeld. Deze gereedheidscheck bewijst geen draaiende externe scheduler; /api/jobs moet daarnaast periodiek aangeroepen worden. Op iPhone vraagt de app alleen vanuit de geïnstalleerde webapp om push.
+De instellingen tonen nu of de server publiek/private VAPID en CRON_SECRET heeft. Zonder alle drie blijft de opt-in uitgeschakeld. Deze gereedheidscheck bewijst geen geslaagde levering; de dagelijkse taak in vercel.json moet op Vercel gedeployd zijn. Op iPhone vraagt de app alleen vanuit de geïnstalleerde webapp om push.
 
 `node scripts/install-check.mjs` test native installatie, afwijzen en opnieuw proberen, geïnstalleerde staat, iPhone-uitleg en isolatie van testmodus. Gebruik `APP_TEST_URL` voor een andere tijdelijke testserver.
+
+## Push activeren zonder losse handmatige sleutelstappen
+
+`npm run push:prepare` maakt een passend VAPID-sleutelpaar en een sterk scheduler-geheim, of behoudt bestaande bruikbare sleutels. De waarden staan uitsluitend in de genegeerde map `data/push-setup`; ze worden niet gelogd of gepubliceerd.
+
+Eenmalig: `npx --yes vercel@62.7.0 login`. Daarna: `npm run push:activate`. Het script controleert het bestaande project `public-site-goai`, de scope `rubenwerdmullers-projects` en de aanwezige productie-database. Het uploadt alleen ontbrekende variabelen via stdin, bewaart private sleutels en CRON_SECRET als sensitive, overschrijft geen bestaande hostingwaarden en publiceert opnieuw. Bij een ander project gebruik je PUSH_VERCEL_PROJECT/PUSH_VERCEL_SCOPE. Als de database nog ontbreekt, stopt het script voordat pushwaarden worden toegevoegd.
+
+`vercel.json` roept de beschermde `/api/jobs` eenmaal per dag aan om 18:00 UTC. Dat valt op het gratis plan binnen ongeveer 19:00-20:00 Nederlandse wintertijd en 20:00-21:00 zomertijd, na alle persoonlijke doeluren en binnen het bestaande venster. Vercel levert de Authorization-header vanuit CRON_SECRET. Het precieze tijdstip is geen garantie; gemiste of sterk vertraagde runs worden niet de volgende ochtend ingehaald. Bestaande frequentere externe jobs mogen daarnaast blijven draaien; de dagclaim voorkomt dubbele geplande berichten. Voor een betrouwbaardere herpoging of gevarieerde eerdere tijden kun je later iedere 15 minuten een externe scheduler gebruiken.
+
+De app haalt de publieke sleutel bij de server op; de private sleutel blijft server-side. De gereedheidscheck valideert het sleutelpaar, de subject-URL en het scheduler-geheim. Na installatie en aanmelden: Instellingen, Zet berichtjes aan, Stuur mij een testberichtje. De server verstuurt dat testbericht alleen naar een subscription die bij jouw account en dit toestel hoort. Het testbericht vervangt geen dagelijkse dagclaim.

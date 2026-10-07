@@ -7,3 +7,5 @@ data/
 tsconfig.tsbuildinfo
 test-results/
 playwright-report/
+
+.vercel/
