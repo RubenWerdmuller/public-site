@@ -2,6 +2,7 @@ import { query } from './db';
 import { createReport, insights, localDay, reveal, weekKey, type Answer, type Question } from './domain';
 import { currentSet, ensureSet, loadPreferences } from './sets';
 import { completedSetCount } from './preferences';
+import { weeklyQuestionDashboard } from './weekly-questions';
 import type { User } from './auth';
 type AnswerRow = Answer & Record<string, unknown>;
 type QuestionRow = { id: string; content: Question } & Record<string, unknown>;
@@ -31,6 +32,7 @@ export async function weeklyReport(pairId:string) {
 export async function dashboard(user:User) {
   await ensureAssignments(user.pair_id);
   const preferences=await loadPreferences(user.pair_id);
+  const weekly=await weeklyQuestionDashboard(user.pair_id,user.id);
   const activeSet=await currentSet(user);
   const members=await query<{id:string;name:string;avatar:number}&Record<string,unknown>>('SELECT u.id,u.name,u.avatar FROM memberships m JOIN users u ON u.id=m.user_id WHERE m.pair_id=$1 ORDER BY m.slot',[user.pair_id]);
   const answers=await pairAnswers(user.pair_id);
@@ -47,5 +49,5 @@ export async function dashboard(user:User) {
   const shared = answers.filter(a => members.length===2 && members.every(m=>answers.some(b=>b.user_id===m.id && b.question_id===a.question_id)));
   const report=await weeklyReport(user.pair_id);
   const invite=await query<{code:string}&Record<string,unknown>>('SELECT code FROM invites WHERE pair_id=$1 AND used_at IS NULL AND expires_at>now()',[user.pair_id]);
-  return {user,members,preferences,setArchive,questions:rows.map(r=>enrich(r.content)),set:activeSet?{id:activeSet.id,ordinal:activeSet.ordinal}:null,setTotals,saved:savedRows.map(r=>enrich(r.content)),history:completed.reverse(),insights:insights(shared,members.map(m=>String(m.id))),report,invite:invite[0]?.code??null,pushConfigured:!!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,day:localDay()};
+  return {user,members,preferences,...weekly,setArchive,questions:rows.map(r=>enrich(r.content)),set:activeSet?{id:activeSet.id,ordinal:activeSet.ordinal}:null,setTotals,saved:savedRows.map(r=>enrich(r.content)),history:completed.reverse(),insights:insights(shared,members.map(m=>String(m.id))),report,invite:invite[0]?.code??null,pushConfigured:!!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,day:localDay()};
 }

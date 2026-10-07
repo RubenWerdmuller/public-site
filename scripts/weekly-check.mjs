@@ -1,0 +1,45 @@
+import assert from 'node:assert/strict';
+import {chromium} from '@playwright/test';
+import {mkdir,writeFile} from 'node:fs/promises';
+const base='http://localhost:3100';
+function client(){let cookie='';return async(payload)=>{const response=await fetch(`${base}/api/app`,{method:payload?'POST':'GET',headers:{Cookie:cookie,...(payload?{Origin:base,'Content-Type':'application/json'}:{})},body:payload?JSON.stringify(payload):undefined});const session=response.headers.get('set-cookie');if(session)cookie=session.split(';')[0];return {status:response.status,data:await response.json()};};}
+const a=client(),b=client();const nonce=Date.now();
+for(const [i,user] of [a,b].entries())assert.equal((await user({action:'register',name:`Weekly ${i}`,email:`weekly-${nonce}-${i}@example.com`,password:'weekly-test-only-123',avatar:i})).status,200);
+const first=(await a()).data;const week=first.weeklyQuestion.week;
+assert.equal((await b({action:'join',code:first.invite})).status,200);
+assert.deepEqual((await b()).data.weeklyQuestion.question,first.weeklyQuestion.question);
+assert.equal((await a({action:'weekly-answer',week,choice:0})).status,200);
+assert.equal((await b()).data.weeklyQuestion.partner,null);
+assert.equal((await a()).data.questions.find(q=>q.id===first.weeklyQuestion.question.id).own,null);
+assert.equal((await b({action:'weekly-answer',week,choice:1})).status,200);
+assert.equal((await b()).data.weeklyQuestion.partner,0);
+assert.equal((await a({action:'weekly-answer',week,choice:1})).status,200);
+assert.equal((await a()).data.weeklyQuestion.own,0);
+assert.deepEqual((await a()).data.setTotals.map(p=>p.completed),[0,0]);
+assert.equal((await a({action:'weekly-answer',week:'2099-01-01',choice:0})).status,403);
+await mkdir('test-results',{recursive:true});
+await writeFile('test-results/weekly-persistence.json',JSON.stringify({email:`weekly-${nonce}-0@example.com`,week}));
+const browser=await chromium.launch({channel:'msedge',headless:true});
+try{
+  const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();const errors=[],requests=[];
+  page.on('pageerror',e=>errors.push(e.message));await page.route('**/api/**',route=>{requests.push(route.request().url());return route.abort();});
+  await page.goto(`${base}/test`);await page.waitForFunction(()=>Boolean(document.querySelector('.option .choice')?.onclick));
+  await page.getByLabel('Soort en categorie').getByText('Open vraag',{exact:true}).waitFor();
+  await page.locator('.weekly-card').click();await page.getByText(/Hoofdvraag · week van/).waitFor();
+  assert.equal(await page.locator('.topbar').count(),0);
+  await page.getByRole('button',{name:/^Ik kies A:/}).click();
+  await page.getByRole('heading',{name:'Jouw keuze staat in het boekje.'}).waitFor();
+  await page.getByRole('button',{name:'Speel als Roebie'}).click();
+  await page.getByRole('button',{name:/^Ik kies B:/}).click();
+  await page.getByRole('heading',{name:'Twee kanten. Eén avontuur.'}).waitFor();
+  await page.getByText('Testopties',{exact:true}).click();
+  for(let i=0;i<3;i++)await page.getByRole('button',{name:'Volgende week',exact:true}).click();
+  await page.getByRole('heading',{name:first.weeklyQuestion.question.title}).waitFor();
+  await page.getByRole('button',{name:/^Ik kies A:/}).click();
+  await page.getByRole('heading',{name:'Jouw keuze staat in het boekje.'}).waitFor();
+  assert.ok(await page.locator('.weekly-history').getByText('Zes maanden eenvoudig leven',{exact:false}).count()>0);
+  await mkdir('test-results',{recursive:true});await page.screenshot({path:'test-results/weekly-mobile.png',fullPage:true});
+  await page.reload();await page.getByRole('button',{name:/^Ik kies A:/}).waitFor();assert.equal(await page.locator('.weekly-history > div').count(),0);
+  assert.deepEqual(requests,[]);assert.deepEqual(errors,[]);
+  console.log('PASS: persistent weekly assignment, privacy, immutable weekly answers, no daily/set contamination; mobile labels, main question, recurrence with fresh answers, history and preview reset without API writes.');
+}finally{await browser.close();}

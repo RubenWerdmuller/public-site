@@ -15,3 +15,11 @@ Nieuwe afspraken beïnvloeden nog te maken sets. Een bestaande gedeelde set word
 Directe beantwoording onderbreekt de flow niet met een reveal. De uitkomst is later beschikbaar via Antwoordgeschiedenis of Alle sets. Alleen dan, na beide antwoorden, worden keuzes vergeleken. Het volledige kaartvlak gebruikt dezelfde native knop voor muis, touch en toetsenbord.
 
 Voor iteratief proberen: `/test` gebruikt dezelfde vragen, foto’s, selectie, individuele tellers en schermen uitsluitend in geheugen. Beide personen, bewaren, extra sets, instellingen, rapportvoorbeelden en reset werken zonder app-API, storage of service-workerregistratie. `npm test`, `scripts/sets-check.mjs` en `scripts/preview-check.mjs` controleren de domeinregels, echte databaseflow en browserflow.
+
+## Zichtbare labels en hoofdvragen
+
+`questionLabel` bepaalt het zichtbare onderzoekstype; de categorie komt uit `theme`. Open expliciete onderwerpen krijgen het label Open vraag bij een kernvraag; grens-, persoonlijke, afstemmings- en speelse vragen behouden hun specifieke soort. Grens verkennen is een vraaglabel, geen automatisch vastgelegde harde afspraak.
+
+De wekelijkse hoofdvraag selecteert uit kernvragen met dezelfde contextfilters als sets. De laatste twee hoofdvragen zijn uitgesloten, maar eerder beantwoorde vragen mogen later opnieuw verschijnen. Een opdracht wordt eenmaal per duo en Amsterdamse kalenderweek vanaf maandag vastgelegd als snapshot. Antwoorden hebben een afzonderlijke weekidentiteit, zodat dagelijkse antwoorden en eerdere weken nooit de nieuwe ronde invullen. Beide personen beantwoorden onafhankelijk; vergelijking vereist antwoorden van allebei in dezelfde week. De hoofdvraag telt niet mee als dagelijkse set. De bestaande dagelijkse schattingen en rapporten blijven gebaseerd op setantwoorden.
+
+In de testflow simuleert Volgende week deze opdrachten en geschiedenis uitsluitend in geheugen. Vernieuwen wist ook de hoofdvraagantwoorden en toont opnieuw de keuzes, zelfs wanneer de URL nog naar het antwoordscherm wijst.

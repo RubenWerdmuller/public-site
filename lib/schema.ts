@@ -26,5 +26,7 @@ CREATE TABLE IF NOT EXISTS travel_preferences (id text PRIMARY KEY, subject_id t
 CREATE TABLE IF NOT EXISTS preference_evidence (preference_id text REFERENCES travel_preferences(id), user_id text, question_id text, PRIMARY KEY(preference_id,user_id,question_id), FOREIGN KEY(user_id,question_id) REFERENCES answers(user_id,question_id));
 CREATE TABLE IF NOT EXISTS question_sets (id text PRIMARY KEY, pair_id text NOT NULL REFERENCES travel_pairs(id), day text NOT NULL, ordinal integer NOT NULL CHECK(ordinal>0), question_ids jsonb NOT NULL, UNIQUE(pair_id,day,ordinal));
 CREATE TABLE IF NOT EXISTS set_progress (user_id text REFERENCES users(id), day text NOT NULL, ordinal integer NOT NULL CHECK(ordinal>0), PRIMARY KEY(user_id,day));
+CREATE TABLE IF NOT EXISTS weekly_question_assignments (pair_id text REFERENCES travel_pairs(id), week text NOT NULL, question_id text NOT NULL REFERENCES questions(id), snapshot jsonb NOT NULL, PRIMARY KEY(pair_id,week));
+CREATE TABLE IF NOT EXISTS weekly_question_answers (pair_id text, week text, user_id text REFERENCES users(id), choice integer NOT NULL CHECK(choice IN (0,1)), answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,pair_id,week), FOREIGN KEY(pair_id,week) REFERENCES weekly_question_assignments(pair_id,week));
 INSERT INTO question_sets(id,pair_id,day,ordinal,question_ids) SELECT pair_id||':'||day||':1',pair_id,day,1,jsonb_agg(question_id ORDER BY position) FROM daily_assignments GROUP BY pair_id,day ON CONFLICT DO NOTHING;
 `;

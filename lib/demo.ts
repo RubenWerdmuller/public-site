@@ -3,10 +3,21 @@ import { createReport, insights, localDay, reveal, weekKey, type Answer } from '
 import { questions } from './questions';
 import { completedSetCount, knownTravelContext, selectTravelSet, type Preference } from './preferences';
 import type { dashboard } from './service';
+import { revealWeekly, selectWeeklyQuestion, weeklyOccurrence, type WeeklyAssignment } from './weekly-question-domain';
 
-export type PreviewState = { active: CharacterId; answers: Answer[]; saved: string[]; roebieCap: boolean; feedback: string | null; sets:string[][]; cursors:Record<CharacterId,number>; preferences:Preference[] };
+export type PreviewState = { active: CharacterId; answers: Answer[]; saved: string[]; roebieCap: boolean; feedback: string | null; sets:string[][]; cursors:Record<CharacterId,number>; preferences:Preference[]; weeklyQuestions:WeeklyAssignment[]; weeklyAnswers:Answer[] };
 export const previewQuestions = selectTravelSet(questions, [], [], knownTravelContext);
-export function initialPreview(): PreviewState { return { active: CHARACTERS.oelie.id, answers: [], saved: [], roebieCap: true, feedback: null, sets:[previewQuestions.map(q=>q.id)],cursors:{oelie:0,roebie:0},preferences:structuredClone(knownTravelContext) }; }
+export function initialPreview(): PreviewState { return { active: CHARACTERS.oelie.id, answers: [], saved: [], roebieCap: true, feedback: null, sets:[previewQuestions.map(q=>q.id)],cursors:{oelie:0,roebie:0},preferences:structuredClone(knownTravelContext),weeklyQuestions:[{week:weekKey(),question:selectWeeklyQuestion(questions,[],[],knownTravelContext)!}],weeklyAnswers:[] }; }
+export function previewWeeklyAnswer(state:PreviewState,week:string,choice:number):PreviewState {
+  const assignment=state.weeklyQuestions.find(q=>q.week===week);if(!assignment||(choice!==0&&choice!==1))return state;
+  const id=weeklyOccurrence(week,assignment.question.id);if(state.weeklyAnswers.some(a=>a.user_id===state.active&&a.question_id===id))return state;
+  return {...state,weeklyAnswers:[...state.weeklyAnswers,{user_id:state.active,question_id:id,choice,snapshot:assignment.question,answered_at:new Date().toISOString(),mode:'weekly'}]};
+}
+export function previewNextWeek(state:PreviewState):PreviewState {
+  const last=state.weeklyQuestions.at(-1)!;const day=new Date(`${last.week}T12:00:00Z`);day.setUTCDate(day.getUTCDate()+7);
+  const question=selectWeeklyQuestion(questions,state.weeklyQuestions,state.weeklyAnswers,state.preferences);if(!question)return state;
+  return {...state,weeklyQuestions:[...state.weeklyQuestions,{week:day.toISOString().slice(0,10),question}]};
+}
 export function previewNextSet(state:PreviewState):PreviewState {
   const cursor=state.cursors[state.active];const current=state.sets[cursor];
   if(current.some(id=>!state.answers.some(a=>a.user_id===state.active&&a.question_id===id)&&!state.saved.includes(id)))return state;
@@ -33,6 +44,8 @@ export function previewDashboard(state: PreviewState): Awaited<ReturnType<typeof
   const paired = state.answers.filter(a => members.every(m => state.answers.some(b => b.user_id === m.id && b.question_id === a.question_id)));
   return {
     user: { ...active, email: '', pair_id: 'preview' }, members,preferences:state.preferences,
+    weeklyQuestion:revealWeekly(state.weeklyQuestions.at(-1)!,state.weeklyAnswers,state.active),
+    weeklyHistory:[...state.weeklyQuestions].reverse().map(q=>revealWeekly(q,state.weeklyAnswers,state.active)),
     questions: state.sets[state.cursors[state.active]].map(id=>questions.find(q=>q.id===id)!).map(enrich),
     set:{id:`preview:${state.cursors[state.active]}`,ordinal:state.cursors[state.active]+1},
     setTotals:members.map(m=>({userId:m.id,name:m.name,avatar:m.avatar,completed:completedSetCount(state.sets.map(questionIds=>({questionIds})),state.answers,m.id)})),

@@ -25,6 +25,7 @@ De dagelijkse vraag begint direct bovenaan met A/B en een klein vraagnummer. De 
 Onder **Testopties**:
 
 - **Test berichtje** simuleert de dagelijkse notificatie. Een klik opent meteen een nog onbeantwoorde vraag.
+- **Volgende week** laat een nieuwe hoofdvraag zien, met eigen antwoorden per week en terugkerende vragen.
 - **Voorbeeldweek** voegt expliciet fictieve antwoorden toe voor een gevuld reisrapport.
 - **Pet af / Pet op** wisselt Roebies portret overal tegelijk.
 - **Bespreken** geeft bespreekvragen en een tijdelijk kladblok.
@@ -107,3 +108,11 @@ Dit is een bruikbaar MVP: geen echte boekingsvoorstellen, uitgebreide statistisc
 Instellingen → Onze reisuitgangspunten bevat de gedeelde en persoonlijke startcontext, open vragen, voorkeursterkte en numerieke grenzen. Nieuwe sets lezen deze data uit PostgreSQL. Het archief houdt ook onafgemaakte eerdere sets bereikbaar. Details: [voorkeurmodel](docs/PREFERENCE_MODEL.md), [vraagstrategie](docs/QUESTION_STRATEGY.md), [bekende context](docs/KNOWN_TRAVEL_CONTEXT.md).
 
 Controleer de echte opslagflow met `node scripts/sets-check.mjs` en de geïsoleerde testflow met `node scripts/preview-check.mjs`. Fotobronnen staan in `public/photos/credits.json`; opnieuw downloaden kan met `node scripts/download-photos.mjs`.
+
+## Soort, categorie en hoofdvraag
+
+Bij het beantwoorden en vergelijken staat onder de titel zowel de soort vraag (bijvoorbeeld Grens verkennen, Voorkeur, Open vraag of Persoonlijke wens) als het onderwerp. Dit beschrijft wat je onderzoekt; een A/B-antwoord legt niet automatisch een harde grens vast.
+
+Vandaag en het rapport tonen de hoofdvraag van deze week. Beide personen krijgen dezelfde vraag; antwoorden blijven geheim tot beiden die week hebben gekozen. De hoofdvraag telt apart van de dagelijkse sets. Elke Amsterdamse kalenderweek vanaf maandag heeft een eigen opdracht en onveranderbare antwoorden. Hoofdvragen mogen terugkomen, met de laatste twee opdrachten als rustpauze; eerdere antwoorden blijven apart bewaard en zichtbaar bij de hoofdvraag. De gewone dagelijkse inzichten en rapportberekeningen gebruiken hun bestaande setantwoorden.
+
+Proberen zonder opslag: http://localhost:3100/test?screen=weekly-question. Onder Testopties laat Volgende week zien hoe een volgende ronde en herhaling werken. `node scripts/weekly-check.mjs` controleert de opgeslagen hoofdvraag, geheimhouding, scheiding van sets en de browserflow.

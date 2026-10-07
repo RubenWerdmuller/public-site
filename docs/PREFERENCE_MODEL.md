@@ -15,3 +15,7 @@ Gezamenlijke inzichten en weekrapporten gebruiken uitsluitend dubbel beantwoorde
 Sets staan in `question_sets` als gedeelde, onveranderlijke geordende vraag-ID’s. `set_progress` bewaart per gebruiker/dag de gekozen set. Totalen worden uit antwoorden afgeleid, niet opgeteld bij klikken: alle werkelijke vragen in een set moeten door die persoon beantwoord zijn. Bewaren, het openen van een set en fictieve rapportdata tellen niet. Bestaande dagtoewijzingen worden additief als eerste sets overgenomen. Alle sets blijven via het archief bereikbaar, ook op een latere dag.
 
 Een persoonlijke droom is niet hetzelfde als een persoonsgebonden toegangsscherm. Nieuwe persoonsidentificatie, vrij toevoegen van profielitems, expliciete sterktevragen en een verder adaptief model kunnen op deze tabellen voortbouwen.
+
+## Wekelijkse hoofdvraag
+
+`weekly_question_assignments` legt een vraag-snapshot vast met primaire sleutel `(pair_id, week)`. `weekly_question_answers` bewaart ??n onveranderbare keuze per gebruiker, duo en week en verwijst naar die opdracht. Deze tabellen zijn aanvullend; dagelijkse antwoordidentiteiten en settotalen blijven ongewijzigd. De dashboardprojectie verbergt partnerkeuzes per afzonderlijke week totdat de gebruiker zelf heeft gekozen. Een herhaalde vraag gebruikt een nieuwe weekidentiteit en behoudt de oudere snapshots.

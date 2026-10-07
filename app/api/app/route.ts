@@ -6,6 +6,7 @@ import { currentUser, createSession, hashToken, passwordHash, verifyPassword } f
 import { query } from '@/lib/db';
 import { dashboard, refreshInsights } from '@/lib/service';
 import { nextSet, SetNotReadyError } from '@/lib/sets';
+import { answerWeeklyQuestion } from '@/lib/weekly-questions';
 import type { Question } from '@/lib/domain';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -31,6 +32,7 @@ export async function POST(req:NextRequest) {
       await createSession(id); return json({ok:true});
     }
     const user=await currentUser(); if(!user) return json({error:'Log eerst in.'},401);
+    if(action==='weekly-answer'){const week=z.string().regex(/^\d{4}-\d{2}-\d{2}$/).parse(body.week);const choice=z.number().int().min(0).max(1).parse(body.choice);return await answerWeeklyQuestion(user.pair_id,user.id,week,choice)?json({ok:true}):json({error:'Deze hoofdvraag hoort niet bij jullie week.'},403);}
     if(action==='logout') { const token=(await cookies()).get('travel-session')?.value; if(token) await query('DELETE FROM sessions WHERE token_hash=$1',[hashToken(token)]); (await cookies()).delete('travel-session'); return json({ok:true}); }
     if(action==='join') {
       const code=z.string().regex(/^[a-f0-9]{18}$/).parse(body.code);

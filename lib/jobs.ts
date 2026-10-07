@@ -3,9 +3,10 @@ import { query } from './db';
 import { ensureAssignments, weeklyReport } from './service';
 import { localDay, localHour, notificationWindow } from './domain';
 import { createHash } from 'node:crypto';
+import { ensureWeeklyQuestion } from './weekly-questions';
 export async function runJobs(now = new Date()) {
   const pairs=await query<{id:string}&Record<string,unknown>>('SELECT id FROM travel_pairs WHERE EXISTS(SELECT 1 FROM memberships WHERE pair_id=travel_pairs.id)');
-  for(const pair of pairs) { await ensureAssignments(pair.id); await weeklyReport(pair.id); }
+  for(const pair of pairs) { await ensureAssignments(pair.id); await ensureWeeklyQuestion(pair.id); await weeklyReport(pair.id); }
   if(!notificationWindow(now)||!process.env.VAPID_PRIVATE_KEY||!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY) return {pairs:pairs.length,sent:0,push:'not configured or outside window'};
   webpush.setVapidDetails(process.env.VAPID_SUBJECT??'mailto:hello@example.com',process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,process.env.VAPID_PRIVATE_KEY);
   const members=await query<{id:string;pair_id:string}&Record<string,unknown>>('SELECT u.id,m.pair_id FROM users u JOIN memberships m ON m.user_id=u.id WHERE EXISTS(SELECT 1 FROM push_subscriptions WHERE user_id=u.id)'); let sent=0;
