@@ -49,7 +49,7 @@ Wachtwoorden: salted scrypt. Sessies: willekeurige tokens, alleen hashes opgesla
 
 `selectTravelSet` is de vervangbare domeingrens: vermijdt herhaling, wisselt vraagtypes af en geeft minder onderzochte thema’s voorrang. De 124 vragen zijn geen AI-generatie. Nieuwe sets gebruiken de 64 autoreisvragen met expliciete context, grensvragen en eigen dromen. Schattingen zijn eenvoudige directional evidence; geen causaliteit of gevalideerd adaptive conjoint model. Interactieanalyse en feedbackgestuurde selectie zijn uitbreidingen. Rapporten gebruiken uitsluitend samen beantwoorde vragen, zijn vaste wekelijkse momentopnames, en tonen voorlopige tekst bij weinig gegevens. Rapportfeedback wordt opgeslagen voor een later model.
 
-Rough.js button rendering volgt het SketchUI-componentpatroon: https://sketchui.sanjoydev.com/docs/components/button. De 12 getekende avatars en 42 gedownloade Unsplash-foto’s zijn lokaal. De foto’s staan met hun bron en licentie op /fotocredits. Fonts hebben lokale browserfallbacks. Offline wordt een privédata-vrije app-shell getoond; antwoorden worden alleen online verzonden en nooit stilletjes offline queued.
+Rough.js button rendering volgt het SketchUI-componentpatroon: https://sketchui.sanjoydev.com/docs/components/button. De 12 getekende avatars en 56 vraagillustraties zijn lokaal. Het schetsboek staat op /schetsboek; eerdere foto’s en credits zijn gearchiveerd op /fotocredits. Fonts hebben lokale browserfallbacks. Offline wordt een privédata-vrije app-shell getoond; antwoorden worden alleen online verzonden en nooit stilletjes offline queued.
 
 ## Cheap & easy online
 
@@ -116,3 +116,7 @@ Bij het beantwoorden en vergelijken staat onder de titel zowel de soort vraag (b
 Vandaag en het rapport tonen de hoofdvraag van deze week. Beide personen krijgen dezelfde vraag; antwoorden blijven geheim tot beiden die week hebben gekozen. De hoofdvraag telt apart van de dagelijkse sets. Elke Amsterdamse kalenderweek vanaf maandag heeft een eigen opdracht en onveranderbare antwoorden. Hoofdvragen mogen terugkomen, met de laatste twee opdrachten als rustpauze; eerdere antwoorden blijven apart bewaard en zichtbaar bij de hoofdvraag. De gewone dagelijkse inzichten en rapportberekeningen gebruiken hun bestaande setantwoorden.
 
 Proberen zonder opslag: http://localhost:3100/test?screen=weekly-question. Onder Testopties laat Volgende week zien hoe een volgende ronde en herhaling werken. `node scripts/weekly-check.mjs` controleert de opgeslagen hoofdvraag, geheimhouding, scheiding van sets en de browserflow.
+
+## Schetsboek
+
+Bij vragen staan nu 56 originele lokale SVG-schetsen in de notitieboekstijl, in plaats van foto's. Veertien onderwerpen hebben elk vier verschillende tekeningen, waaronder zeilen, tuinieren, keramiek, koken, wandelen, kamperen en grappige dieren. De keuze hangt stabiel af van het onderwerp, vraagnummer en de antwoordoptie; beide personen krijgen dezelfde tekeningen. Rough.js maakt vaste potloodstreken zonder netwerkverzoeken. Alle illustraties staan op `/schetsboek`, ook bereikbaar via Instellingen. De eerder gedownloade foto's en hun bronvermelding blijven als archief beschikbaar op `/fotocredits`.

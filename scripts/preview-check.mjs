@@ -11,7 +11,9 @@ try {
   await mkdir('test-results',{recursive:true});await page.goto('http://localhost:3100/test');
   await page.getByRole('heading',{name:'Hoe lang mag ons nieuwe leven duren?'}).waitFor();
   await page.waitForFunction(()=>Boolean(document.querySelector('.option .choice')?.onclick));
-  await page.locator('.travel-photo img').first().evaluate(async img=>{if(!img.complete)await new Promise(resolve=>img.addEventListener('load',resolve,{once:true}));});
+  await page.locator('.option .travel-sketch').first().waitFor();
+  assert.equal(await page.locator('.option img').count(),0);
+  assert.notEqual(await page.locator('.travel-sketch').first().getAttribute('data-sketch'),await page.locator('.travel-sketch').last().getAttribute('data-sketch'));
   await page.screenshot({path:'test-results/test-desktop.png',fullPage:true});
   await page.locator('.option').first().click({position:{x:100,y:100}});
   await page.getByRole('heading',{name:'Is 35 graden nog vakantie?'}).waitFor();
@@ -81,5 +83,5 @@ try {
   assert.deepEqual(await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length})),{local:0,session:0});
   assert.equal(await page.evaluate(async()=>(await navigator.serviceWorker.getRegistrations()).length),0);
   assert.deepEqual(apiRequests,[]);assert.deepEqual(errors,[]);
-  console.log('PASS: whole-card photo click and keyboard, immediate questions, two-person reveal/history, shared sets and independent totals/cursors, saved questions, editable context, cap, notification, report/feedback/scratchpad, reset, desktop/mobile; no API/storage/SW writes.');
+  console.log('PASS: whole-card sketch click and keyboard, immediate questions, two-person reveal/history, shared sets and independent totals/cursors, saved questions, editable context, cap, notification, report/feedback/scratchpad, reset, desktop/mobile; no API/storage/SW writes.');
 } finally {await browser.close();}
