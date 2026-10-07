@@ -1,0 +1,7 @@
+const CACHE='reis-shell-v1';
+self.addEventListener('install',event=>{event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(['/offline.html','/icon.svg','/icons/icon-192.png'])));self.skipWaiting();});
+self.addEventListener('activate',event=>{event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key)))));self.clients.claim();});
+// Never cache personal pages or API responses. Offline shell has no private duo data.
+self.addEventListener('fetch',event=>{if(event.request.mode==='navigate')event.respondWith(fetch(event.request).catch(()=>caches.match('/offline.html')));});
+self.addEventListener('push',event=>{let data={};try{data=event.data.json();}catch{}const url=typeof data.url==='string'&&data.url.startsWith('/?')?data.url:'/';event.waitUntil(self.registration.showNotification(data.title||'Samen op reis',{body:data.body||'Een beetje nieuwe voorpret.',icon:'/icons/icon-192.png',badge:'/icons/icon-192.png',data:{url},tag:'reis-'+url}));});
+self.addEventListener('notificationclick',event=>{event.notification.close();const url=new URL(event.notification.data?.url||'/',self.location.origin).href;event.waitUntil(self.clients.matchAll({type:'window',includeUncontrolled:true}).then(async clients=>{for(const client of clients){if('focus'in client){await client.navigate(url);return client.focus();}}return self.clients.openWindow(url);}));});

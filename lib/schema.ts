@@ -1,0 +1,24 @@
+export const schema = `
+CREATE TABLE IF NOT EXISTS app_migrations (version text PRIMARY KEY);
+CREATE TABLE IF NOT EXISTS avatars (id integer PRIMARY KEY, name text NOT NULL);
+CREATE TABLE IF NOT EXISTS users (id text PRIMARY KEY, email text NOT NULL UNIQUE, name text NOT NULL, password_hash text NOT NULL, avatar integer NOT NULL REFERENCES avatars(id), created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS sessions (token_hash text PRIMARY KEY, user_id text NOT NULL REFERENCES users(id), expires_at timestamptz NOT NULL);
+CREATE TABLE IF NOT EXISTS travel_pairs (id text PRIMARY KEY, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS memberships (user_id text PRIMARY KEY REFERENCES users(id), pair_id text NOT NULL REFERENCES travel_pairs(id), slot integer NOT NULL CHECK(slot IN (1,2)), UNIQUE(pair_id,slot));
+CREATE TABLE IF NOT EXISTS invites (code text PRIMARY KEY, pair_id text NOT NULL REFERENCES travel_pairs(id), expires_at timestamptz NOT NULL, used_at timestamptz);
+CREATE TABLE IF NOT EXISTS questions (id text PRIMARY KEY, content jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS question_options (question_id text REFERENCES questions(id), choice integer CHECK(choice IN (0,1)), content jsonb NOT NULL, PRIMARY KEY(question_id,choice));
+CREATE TABLE IF NOT EXISTS attributes (key text PRIMARY KEY, value_type text NOT NULL);
+CREATE TABLE IF NOT EXISTS attribute_values (id text PRIMARY KEY, attribute_key text NOT NULL REFERENCES attributes(key), value jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS question_option_attributes (question_id text, choice integer, attribute_key text REFERENCES attributes(key), value_id text REFERENCES attribute_values(id), PRIMARY KEY(question_id,choice,attribute_key), FOREIGN KEY(question_id,choice) REFERENCES question_options(question_id,choice));
+CREATE TABLE IF NOT EXISTS answers (user_id text REFERENCES users(id), pair_id text NOT NULL REFERENCES travel_pairs(id), question_id text REFERENCES questions(id), choice integer NOT NULL CHECK(choice IN (0,1)), snapshot jsonb NOT NULL, answered_at timestamptz NOT NULL DEFAULT now(), mode text NOT NULL CHECK(mode IN ('daily','later')), information_value real, confidence real, PRIMARY KEY(user_id,question_id));
+CREATE TABLE IF NOT EXISTS saved_questions (user_id text REFERENCES users(id), pair_id text NOT NULL REFERENCES travel_pairs(id), question_id text REFERENCES questions(id), saved_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,question_id));
+CREATE TABLE IF NOT EXISTS daily_assignments (pair_id text REFERENCES travel_pairs(id), day text, question_id text REFERENCES questions(id), position integer NOT NULL, PRIMARY KEY(pair_id,day,question_id), UNIQUE(pair_id,day,position));
+CREATE TABLE IF NOT EXISTS weekly_reports (id text PRIMARY KEY, pair_id text NOT NULL REFERENCES travel_pairs(id), week text NOT NULL, content jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now(), UNIQUE(pair_id,week));
+CREATE TABLE IF NOT EXISTS report_feedback (report_id text REFERENCES weekly_reports(id), user_id text REFERENCES users(id), rating text NOT NULL CHECK(rating IN ('love','partly','no')), PRIMARY KEY(report_id,user_id));
+CREATE TABLE IF NOT EXISTS preference_estimates (pair_id text REFERENCES travel_pairs(id), user_id text REFERENCES users(id), attribute_key text REFERENCES attributes(key), estimate real NOT NULL, observations integer NOT NULL, PRIMARY KEY(pair_id,user_id,attribute_key));
+CREATE TABLE IF NOT EXISTS compatibility_insights (pair_id text PRIMARY KEY REFERENCES travel_pairs(id), content jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS push_subscriptions (endpoint text PRIMARY KEY, user_id text NOT NULL REFERENCES users(id), subscription jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
+CREATE TABLE IF NOT EXISTS notification_deliveries (user_id text REFERENCES users(id), day text, kind text, sent_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,day,kind));
+CREATE TABLE IF NOT EXISTS auth_attempts (key text PRIMARY KEY, attempts integer NOT NULL, window_start timestamptz NOT NULL DEFAULT now());
+`;

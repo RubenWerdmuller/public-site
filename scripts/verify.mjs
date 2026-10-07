@@ -1,0 +1,27 @@
+import assert from 'node:assert/strict';
+import { mkdir, writeFile } from 'node:fs/promises';
+const base='http://localhost:3100';
+const makeClient=()=>{let cookie='';return async(payload)=>{const res=await fetch(base+'/api/app',{method:payload?'POST':'GET',headers:{...(payload?{'Content-Type':'application/json',Origin:base}:{}),Cookie:cookie},body:payload?JSON.stringify(payload):undefined});const session=res.headers.get('set-cookie');if(session)cookie=session.split(';')[0];return {status:res.status,data:await res.json()};};};
+const a=makeClient(),b=makeClient(),outsider=makeClient();const nonce=Date.now();
+for(const [client,name] of [[a,'Ruben'],[b,'Noor'],[outsider,'Ander duo']]){const res=await client({action:'register',email:`test-${nonce}-${name.replaceAll(' ','')}@example.com`,password:'local-test-only-123',name,avatar:name==='Ruben'?0:1});assert.equal(res.status,200,JSON.stringify(res.data));}
+const first=(await a()).data;assert.equal(first.questions.length,4);assert.equal(first.members.length,1);
+assert.equal((await b({action:'join',code:first.invite})).status,200);
+assert.equal((await a()).data.members.length,2);
+assert.equal((await outsider({action:'join',code:first.invite})).status,409);
+const question=first.questions[0];
+assert.equal((await a({action:'answer',questionId:question.id,choice:0,mode:'daily'})).status,200);
+let partner=(await b()).data;assert.equal(partner.questions.find(q=>q.id===question.id).partner,null);assert.equal(partner.insights.match,null);assert.equal(partner.report.content.match,null);
+assert.equal((await b({action:'answer',questionId:question.id,choice:1,mode:'daily'})).status,200);
+partner=(await b()).data;assert.equal(partner.questions.find(q=>q.id===question.id).partner,0);assert.equal(partner.insights.match,0);
+assert.equal((await a({action:'answer',questionId:question.id,choice:1,mode:'daily'})).status,200);assert.equal((await a()).data.questions.find(q=>q.id===question.id).own,0);
+assert.equal((await a({action:'save',questionId:first.questions[1].id})).status,200);assert.equal((await b()).data.saved.length,1);
+assert.equal((await outsider({action:'feedback',reportId:first.report.id,rating:'love'})).status,403);
+assert.equal((await a({action:'answer',questionId:'q060',choice:0})).status,403);
+assert.equal((await a({action:'feedback',reportId:first.report.id,rating:'love'})).status,200);
+const report=(await outsider()).data;assert.equal(report.history.length,0);assert.equal(report.members.length,1);
+const unsafe=await fetch(base+'/api/app',{method:'POST',headers:{'Content-Type':'application/json',Origin:'https://evil.example'},body:JSON.stringify({action:'logout'})});assert.equal(unsafe.status,403);
+assert.equal((await fetch(base+'/api/jobs')).status,401);
+const manifest=await(await fetch(base+'/manifest.webmanifest')).json();assert.equal(manifest.display,'standalone');for(const icon of manifest.icons)assert.equal((await fetch(base+icon.src)).status,200);
+console.log('PASS: registration, pairing, immutable answers, hidden partner response, reveal, shared saved stack, cross-duo protection, CSRF, scheduler auth, PWA icons.');
+await mkdir('test-results',{recursive:true});await writeFile('test-results/persistence.json',JSON.stringify({email:`test-${nonce}-Ruben@example.com`,questionId:question.id}));
+console.log(`Test accounts: test-${nonce}-Ruben@example.com / test-${nonce}-Noor@example.com (password local-test-only-123; test data only).`);
