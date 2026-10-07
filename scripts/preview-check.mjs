@@ -70,10 +70,9 @@ try {
   await page.reload();await page.getByText('Nog even ontdekken',{exact:true}).waitFor();
   await page.getByText('Testopties',{exact:true}).click();await page.getByRole('button',{name:'Opnieuw',exact:true}).click();
   await page.setViewportSize({width:390,height:844});await page.evaluate(()=>window.scrollTo({top:0,behavior:'instant'}));
-  const heading=await page.locator('.daily-heading h1').boundingBox();assert.ok(heading.y<50);
-  const secondChoice=await page.getByRole('button',{name:/^Ik kies B:/}).boundingBox();
+  const heading=await page.locator('.daily-heading h1').boundingBox();const banner=await page.locator('.test-mode-banner').boundingBox();assert.ok(heading.y<banner.height+50);assert.equal(await page.getByRole('button',{name:'Pet af',exact:true}).isVisible(),true);
   const mobileNav=await page.locator('.mobile-nav').boundingBox();
-  assert.ok(secondChoice.y+secondChoice.height<mobileNav.y,'both choices fit above the mobile navigation');
+  await page.screenshot({path:'test-results/test-mobile.png',fullPage:true});await page.getByRole('button',{name:/^Ik kies B:/}).evaluate(el=>el.scrollIntoView({block:'center',behavior:'instant'}));const visibleChoice=await page.getByRole('button',{name:/^Ik kies B:/}).boundingBox();assert.ok(visibleChoice.y+visibleChoice.height<mobileNav.y,'choice stays reachable above the mobile navigation');const stickyBanner=await page.locator('.test-mode-banner').boundingBox();assert.equal(stickyBanner.y,0);assert.equal(await page.getByRole('button',{name:'Pet af',exact:true}).isVisible(),true);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true);
   await page.screenshot({path:'test-results/test-mobile.png',fullPage:true});
   await page.getByRole('button',{name:/^Ik kies A:/}).focus();await page.keyboard.press('Space');

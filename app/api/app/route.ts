@@ -10,7 +10,7 @@ import { query } from '@/lib/db';
 import { dashboard, refreshInsights } from '@/lib/service';
 import { nextSet, SetNotReadyError } from '@/lib/sets';
 import { answerWeeklyQuestion } from '@/lib/weekly-questions';
-import type { Question } from '@/lib/domain';
+import {joinPair,recordQuestion,PairActionError} from '@/lib/pair-actions';
 import { questionId } from '@/lib/ai-contracts';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -22,7 +22,7 @@ export async function POST(req:NextRequest) {
   const origin=req.headers.get('origin');
   if(!origin||!URL.canParse(origin)||new URL(origin).host!==req.headers.get('host')) return json({error:'Deze aanvraag komt niet uit de app.'},403);
   try {
-    const body=await req.json(); const action=z.string().parse(body.action);
+    const raw=await req.text();if(raw.length>16000)return json({error:'Deze aanvraag is te groot.'},413);const body=z.record(z.string(),z.unknown()).parse(JSON.parse(raw)); const action=z.string().parse(body.action);
     if(action==='register'||action==='login') {
       const data=credentials.parse(body); const email=data.email.toLowerCase();
       const key=hashToken(email); const attempts=await query<{attempts:number}&Record<string,unknown>>("INSERT INTO auth_attempts(key,attempts) VALUES($1,1) ON CONFLICT(key) DO UPDATE SET attempts=CASE WHEN auth_attempts.window_start < now()-interval '15 minutes' THEN 1 ELSE auth_attempts.attempts+1 END,window_start=CASE WHEN auth_attempts.window_start < now()-interval '15 minutes' THEN now() ELSE auth_attempts.window_start END RETURNING attempts",[key]);
@@ -40,11 +40,7 @@ export async function POST(req:NextRequest) {
     if(action==='logout') { const token=(await cookies()).get('travel-session')?.value; if(token) await query('DELETE FROM sessions WHERE token_hash=$1',[hashToken(token)]); (await cookies()).delete('travel-session'); return json({ok:true}); }
     if(action==='join') {
       const code=z.string().regex(/^[a-f0-9]{18}$/).parse(body.code);
-      const existing=await query('SELECT user_id FROM memberships WHERE pair_id=$1',[user.pair_id]);
-      const ownAnswers=await query('SELECT question_id FROM answers WHERE user_id=$1 LIMIT 1',[user.id]);
-      if(existing.length>1||ownAnswers.length) return json({error:'Koppelen kan alleen vóór je eerste antwoord en als je nog geen partner hebt.'},409);
-      const rows=await query(`WITH target AS (SELECT code,pair_id FROM invites WHERE code=$1 AND used_at IS NULL AND expires_at>now() AND pair_id<>$3 FOR UPDATE), joined AS (UPDATE memberships SET pair_id=target.pair_id,slot=2 FROM target WHERE memberships.user_id=$2 RETURNING memberships.pair_id) UPDATE invites SET used_at=now() WHERE code=$1 AND pair_id IN (SELECT pair_id FROM joined) RETURNING pair_id`,[code,user.id,user.pair_id]);
-      if(!rows.length) return json({error:'Deze uitnodiging is verlopen of al gebruikt.'},409); await query('DELETE FROM set_progress WHERE user_id=$1',[user.id]); return json({ok:true});
+      await joinPair(user,code);return json({ok:true});
     }
     if(action==='preference') {
       const data=z.object({preferenceId:z.string().max(150),kind:z.enum(['hard_constraint','soft_constraint','strong_preference','weak_preference','interest','personal_wish','open_question']),notes:z.string().max(1000),value:z.union([z.string().max(1000),z.number().finite(),z.boolean(),z.null()]),confidence:z.number().min(0).max(1),boundary:z.object({unit:z.string().max(40),preferred:z.tuple([z.number(),z.number()]).optional(),acceptable:z.tuple([z.number(),z.number()]).optional(),hard:z.tuple([z.number(),z.number()]).optional(),exceptions:z.array(z.string().max(200)).max(10).optional()}).refine(b=>[b.preferred,b.acceptable,b.hard].every(range=>!range||range[0]<=range[1])).nullable()}).parse(body);
@@ -54,16 +50,8 @@ export async function POST(req:NextRequest) {
     if(action==='next-set') {const id=z.string().max(120).parse(body.setId);const next=await nextSet(user,id);return next?json({ok:true}):json({error:'Jullie hebben alle sets ontdekt. Tijd om de bewaarde vragen samen te bekijken.'},409);}
     if(action==='answer'||action==='save') {
       const qid=questionId.parse(body.questionId);
-      const accessible=await query<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM question_sets s WHERE s.pair_id=$2 AND s.question_ids @> jsonb_build_array(q.id)) OR EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2))',[qid,user.pair_id]);
-      if(!accessible[0]) return json({error:'Deze vraag hoort niet bij jullie stapel.'},403);
-      if(action==='save') await query('INSERT INTO saved_questions(user_id,pair_id,question_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[user.id,user.pair_id,qid]);
-      else {
-        const choice=z.number().int().min(0).max(1).parse(body.choice); const mode=z.enum(['daily','later']).parse(body.mode??'daily');
-        await query('INSERT INTO answers(user_id,pair_id,question_id,choice,snapshot,mode,information_value) VALUES($1,$2,$3,$4,$5::jsonb,$6,$7) ON CONFLICT DO NOTHING',[user.id,user.pair_id,qid,choice,JSON.stringify(accessible[0].content),mode,accessible[0].content.informationValue]);
-        // Shared saved card remains until both people have answered.
-        await query('DELETE FROM saved_questions WHERE pair_id=$1 AND question_id=$2 AND (SELECT count(*) FROM answers WHERE pair_id=$1 AND question_id=$2)=2',[user.pair_id,qid]);
-        await refreshInsights(user.pair_id);
-      }
+      if(action==='save')await recordQuestion(user,qid,{action});
+      else{const choice=z.number().int().min(0).max(1).parse(body.choice);const mode=z.enum(['daily','later']).parse(body.mode??'daily');await recordQuestion(user,qid,{action,choice,mode});await refreshInsights(user.pair_id);}
       return json({ok:true});
     }
     if(action==='profile') { const name=z.string().trim().min(1).max(40).parse(body.name); const avatar=z.number().int().min(0).max(11).parse(body.avatar); await query('UPDATE users SET name=$1,avatar=$2 WHERE id=$3',[name,avatar,user.id]); return json({ok:true}); }
@@ -82,5 +70,5 @@ export async function POST(req:NextRequest) {
     }
     if(action==='unsubscribe') { await query('DELETE FROM push_subscriptions WHERE user_id=$1',[user.id]); return json({ok:true}); }
     return json({error:'Onbekende actie.'},400);
-  } catch(error) { if(error instanceof SetNotReadyError)return json({error:error.message},409); if(error instanceof z.ZodError) return json({error:'Controleer je invoer. Een wachtwoord heeft minimaal 10 tekens; controleer bij grenzen ook van/tot.'},400); if((error as {code?:string}).code==='23505') return json({error:'Dit e-mailadres bestaat al, of het duo is al compleet.'},409); console.error('App request failed:',error instanceof Error ? error.message : 'unknown'); return json({error:'Opslaan lukte niet. Probeer het opnieuw.'},500); }
+  } catch(error) { if(error instanceof PairActionError)return json({error:error.message},error.status); if(error instanceof SyntaxError)return json({error:'Controleer je invoer.'},400); if(error instanceof SetNotReadyError)return json({error:error.message},409); if(error instanceof z.ZodError) return json({error:'Controleer je invoer. Een wachtwoord heeft minimaal 10 tekens; controleer bij grenzen ook van/tot.'},400); if((error as {code?:string}).code==='23505') return json({error:'Dit e-mailadres bestaat al, of het duo is al compleet.'},409); console.error('App request failed:',error instanceof Error ? error.message : 'unknown'); return json({error:'Opslaan lukte niet. Probeer het opnieuw.'},500); }
 }

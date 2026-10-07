@@ -1,4 +1,5 @@
-import { query } from './db';
+import { query, transaction } from './db';
+import {lockMembership} from './pair-actions';
 import { weekKey, type Answer, type Question } from './domain';
 import { loadPreferences } from './sets';
 import { revealWeekly, selectWeeklyQuestion, weeklyOccurrence } from './weekly-question-domain';
@@ -25,6 +26,9 @@ export async function weeklyQuestionDashboard(pairId:string,userId:string){
   return {weeklyQuestion:current?revealWeekly(current,answers,userId):null,weeklyHistory:history};
 }
 export async function answerWeeklyQuestion(pairId:string,userId:string,week:string,choice:number){
+  return transaction(async query=>{
+  await lockMembership(query,pairId,userId);
   await query('INSERT INTO weekly_question_answers(pair_id,week,user_id,choice) SELECT pair_id,week,$3,$4 FROM weekly_question_assignments WHERE pair_id=$1 AND week=$2 ON CONFLICT DO NOTHING',[pairId,week,userId,choice]);
   return (await query('SELECT week FROM weekly_question_assignments WHERE pair_id=$1 AND week=$2',[pairId,week])).length>0;
+  });
 }

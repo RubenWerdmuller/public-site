@@ -1,5 +1,5 @@
 import {pushReadiness} from './push-config';
-import { query } from './db';
+import { query,transaction,type Query } from './db';
 import { createReport, insights, localDay, reveal, weekKey, type Answer, type Question } from './domain';
 import { currentSet, ensureSet, loadPreferences } from './sets';
 import { completedSetCount } from './preferences';
@@ -7,14 +7,16 @@ import { weeklyQuestionDashboard } from './weekly-questions';
 import type { User } from './auth';
 type AnswerRow = Answer & Record<string, unknown>;
 type QuestionRow = { id: string; content: Question } & Record<string, unknown>;
-export async function pairAnswers(pairId: string) { return query<AnswerRow>('SELECT * FROM answers WHERE pair_id=$1 ORDER BY answered_at', [pairId]); }
-export async function ensureAssignments(pairId: string) {
-  const day = localDay(); const existing = await query('SELECT question_id FROM daily_assignments WHERE pair_id=$1 AND day=$2',[pairId,day]); if(existing.length) return;
+export async function pairAnswers(pairId: string,read:Query=query) { return read<AnswerRow>('SELECT * FROM answers WHERE pair_id=$1 ORDER BY answered_at', [pairId]); }
+export async function ensureAssignments(pairId: string,day=localDay()) {
+  const existing = await query<{question_id:string}&Record<string,unknown>>('SELECT question_id FROM daily_assignments WHERE pair_id=$1 AND day=$2',[pairId,day]);
   const set=await ensureSet(pairId,day);if(!set)return;
-  for (const [i,id] of set.question_ids.entries()) await query('INSERT INTO daily_assignments(pair_id,day,question_id,position) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[pairId,day,id,i]);
+  for (const [i,id] of set.question_ids.entries()) if(!existing.some(row=>row.question_id===id))await query('INSERT INTO daily_assignments(pair_id,day,question_id,position) VALUES($1,$2,$3,$4) ON CONFLICT DO NOTHING',[pairId,day,id,i]);
 }
 export async function refreshInsights(pairId: string) {
-  const answers=await pairAnswers(pairId); const members=await query<{user_id:string}&Record<string,unknown>>('SELECT user_id FROM memberships WHERE pair_id=$1',[pairId]);
+  return transaction(async query=>{
+  await query('SELECT pg_advisory_xact_lock(hashtext($1))',[`insights:${pairId}`]);
+  const answers=await pairAnswers(pairId,query); const members=await query<{user_id:string}&Record<string,unknown>>('SELECT user_id FROM memberships WHERE pair_id=$1',[pairId]);
   const result=insights(answers,members.map(m=>m.user_id));
   await query('INSERT INTO compatibility_insights(pair_id,content) VALUES($1,$2::jsonb) ON CONFLICT(pair_id) DO UPDATE SET content=excluded.content,updated_at=now()',[pairId,JSON.stringify(result)]);
   for(const [key,v] of Object.entries(result.estimates)) { const [uid,attr]=key.split(':'); await query('INSERT INTO preference_estimates(pair_id,user_id,attribute_key,estimate,observations) VALUES($1,$2,$3,$4,$5) ON CONFLICT(pair_id,user_id,attribute_key) DO UPDATE SET estimate=excluded.estimate,observations=excluded.observations',[pairId,uid,attr,v.sum/v.count,v.count]); }
@@ -23,10 +25,11 @@ export async function refreshInsights(pairId: string) {
   if(preferences.length)await query('INSERT INTO travel_preferences(id,subject_id,attribute_key,kind,value,confidence,source,notes) SELECT * FROM jsonb_to_recordset($1::jsonb) AS x(id text,subject_id text,attribute_key text,kind text,value jsonb,confidence real,source text,notes text) ON CONFLICT(id) DO UPDATE SET value=excluded.value,confidence=excluded.confidence,updated_at=now()',[JSON.stringify(preferences)]);
   const evidence=answers.flatMap(a=>{const chosen=a.snapshot.options[a.choice].attributes,other=a.snapshot.options[1-a.choice].attributes;return Object.keys(chosen).filter(key=>typeof chosen[key]==='number'&&typeof other[key]==='number'&&chosen[key]!==other[key]).map(key=>({preference_id:`${pairId}:inferred:${a.user_id}:${key}`,user_id:a.user_id,question_id:a.question_id}));});
   if(evidence.length)await query('INSERT INTO preference_evidence SELECT * FROM jsonb_to_recordset($1::jsonb) AS x(preference_id text,user_id text,question_id text) ON CONFLICT DO NOTHING',[JSON.stringify(evidence)]);
+  });
 }
-export async function weeklyReport(pairId:string) {
+export async function weeklyReport(pairId:string,week=weekKey()) {
   type ReportRow = {id:string;week:string;content:ReturnType<typeof createReport>}&Record<string,unknown>;
-  const week=weekKey(); let reports=await query<ReportRow>('SELECT * FROM weekly_reports WHERE pair_id=$1 AND week=$2',[pairId,week]);
+  let reports=await query<ReportRow>('SELECT * FROM weekly_reports WHERE pair_id=$1 AND week=$2',[pairId,week]);
   if (!reports.length) { const members=await query<{user_id:string}&Record<string,unknown>>('SELECT user_id FROM memberships WHERE pair_id=$1',[pairId]); const all=await pairAnswers(pairId); const shared=all.filter(a=>members.length===2 && members.every(m=>all.some(b=>b.user_id===m.user_id && b.question_id===a.question_id))); const report=createReport(shared,members.map(m=>m.user_id)); await query('INSERT INTO weekly_reports(id,pair_id,week,content) VALUES($1,$2,$3,$4::jsonb) ON CONFLICT DO NOTHING',[`${pairId}:${week}`,pairId,week,JSON.stringify(report)]); reports=await query('SELECT * FROM weekly_reports WHERE pair_id=$1 AND week=$2',[pairId,week]); }
   return reports[0];
 }

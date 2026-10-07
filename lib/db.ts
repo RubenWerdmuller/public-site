@@ -36,3 +36,20 @@ async function connect(): Promise<DB> {
   return db;
 }
 export async function query<T extends Row = Row>(sql: string, args: unknown[] = []) { globalDb.travelDB ??= connect(); return (await (await globalDb.travelDB).query<T>(sql, args)).rows; }
+export type Query = typeof query;
+export async function transaction<T>(work: (query: Query) => Promise<T>): Promise<T> {
+  globalDb.travelDB ??= connect();
+  const db = await globalDb.travelDB;
+  if (db instanceof Pool) {
+    const client = await db.connect();
+    try {
+      await client.query('BEGIN');
+      const result = await work(async <R extends Row = Row>(sql: string, args: unknown[] = []) => (await client.query<R>(sql, args)).rows);
+      await client.query('COMMIT');
+      return result;
+    } catch (error) { await client.query('ROLLBACK'); throw error; }
+    finally { client.release(); }
+  }
+  if (db instanceof PGlite) return db.transaction(tx => work(async <R extends Row = Row>(sql: string, args: unknown[] = []) => (await tx.query<R>(sql, args)).rows));
+  throw new Error('Database does not support transactions.');
+}

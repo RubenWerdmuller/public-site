@@ -36,7 +36,7 @@ test('question revisions get immutable IDs and validate ownership targets and pr
   assert.throws(() => validateBatch(invalid, id, questions));
 });
 test('code proposals cannot change auth, schema, workflows or the pipeline', () => {
-  for (const file of ['lib/auth.ts', 'lib/db.ts', 'lib/schema.ts', 'lib/ai-tasks.ts', '.github/workflows/ai-pipeline.yml', 'scripts/ai-code-guard.mjs', 'app/api/app/route.ts', 'app/api/jobs/route.ts', 'app/api/ai/worker/route.ts', 'components/ai-desk.tsx', '.env.local']) assert.equal(permittedFile(file), false, file);
+  for (const file of ['lib/auth.ts', 'lib/pair-actions.ts', 'lib/db.ts', 'lib/schema.ts', 'lib/ai-tasks.ts', '.github/workflows/ai-pipeline.yml', 'scripts/ai-code-guard.mjs', 'app/api/app/route.ts', 'app/api/jobs/route.ts', 'app/api/ai/worker/route.ts', 'components/ai-desk.tsx', '.env.local']) assert.equal(permittedFile(file), false, file);
   assert.equal(permittedFile('components/travel-app.tsx'), true);
   assert.equal(inspectText('const normal = 1;'), true);
   assert.equal(inspectText('postgresql://user:password@database.example/db'), false);

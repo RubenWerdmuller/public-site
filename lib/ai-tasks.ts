@@ -1,5 +1,5 @@
 import { randomUUID } from 'node:crypto';
-import { query } from './db';
+import { query, type Query } from './db';
 import type { User } from './auth';
 import type { Question } from './domain';
 import { isAiAdmin, nextAmsterdamWeek, validateBatch, type TaskKind, type TaskView } from './ai-contracts';
@@ -14,8 +14,8 @@ export async function enqueueTask(user: User, input: { kind: TaskKind; instructi
 export async function changeTask(user: User, id: string, action: 'cancel' | 'retry') {
   return query('UPDATE ai_tasks SET status=$1,receipt=NULL,claimed_at=NULL,result=NULL WHERE id=$2 AND pair_id=$3 AND status=ANY($4::text[]) RETURNING id', [action === 'cancel' ? 'cancelled' : 'queued', id, user.pair_id, action === 'cancel' ? ['queued', 'failed'] : ['failed']]);
 }
-export async function availableBank(pairId: string) {
-  return (await query<{ content: Question } & Record<string, unknown>>(`SELECT q.content FROM questions q WHERE
+export async function availableBank(pairId: string, read: Query = query) {
+  return (await read<{ content: Question } & Record<string, unknown>>(`SELECT q.content FROM questions q WHERE
     (NOT EXISTS(SELECT 1 FROM ai_question_ownership o WHERE o.question_id=q.id) OR EXISTS(SELECT 1 FROM ai_question_ownership o WHERE o.question_id=q.id AND o.pair_id=$1))
     AND NOT EXISTS(SELECT 1 FROM ai_question_retirements r WHERE r.question_id=q.id AND r.pair_id=$1) ORDER BY q.id`, [pairId])).map(r => r.content);
 }

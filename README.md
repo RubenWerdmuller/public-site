@@ -140,3 +140,10 @@ Eenmalig: `npx --yes vercel@62.7.0 login`. Daarna: `npm run push:activate`. Het 
 `vercel.json` roept de beschermde `/api/jobs` eenmaal per dag aan om 18:00 UTC. Dat valt op het gratis plan binnen ongeveer 19:00-20:00 Nederlandse wintertijd en 20:00-21:00 zomertijd, na alle persoonlijke doeluren en binnen het bestaande venster. Vercel levert de Authorization-header vanuit CRON_SECRET. Het precieze tijdstip is geen garantie; gemiste of sterk vertraagde runs worden niet de volgende ochtend ingehaald. Bestaande frequentere externe jobs mogen daarnaast blijven draaien; de dagclaim voorkomt dubbele geplande berichten. Voor een betrouwbaardere herpoging of gevarieerde eerdere tijden kun je later iedere 15 minuten een externe scheduler gebruiken.
 
 De app haalt de publieke sleutel bij de server op; de private sleutel blijft server-side. De gereedheidscheck valideert het sleutelpaar, de subject-URL en het scheduler-geheim. Na installatie en aanmelden: Instellingen, Zet berichtjes aan, Stuur mij een testberichtje. De server verstuurt dat testbericht alleen naar een subscription die bij jouw account en dit toestel hoort. Het testbericht vervangt geen dagelijkse dagclaim.
+
+
+## Regressiecontrole van opslag, privacy en push
+
+De reviewtests controleren transactionele duo-koppeling, gelijktijdige antwoorden en setkeuze, herstel van gedeeltelijke dagtoewijzingen, dagelijkse push voor de actieve set, herstel van onderbroken pushclaims en veilige notificatielinks. Bestaande verzonden meldingen blijven verzonden bij de additieve schema-update.
+
+Op een tijdelijke lokale productie-server: `node --import tsx scripts/review-check.mjs`. Deze controleert ook ongeldige aanvragen, verouderde pollingreacties, gewijzigde pushsleutels, profielavatars bij directe links, de rapportlink na login en onvolledige grenzen. Push en API-reacties in de browsergevallen zijn gesimuleerd; er gaan geen berichten naar echte toestellen. Gebruik `APP_TEST_URL` voor een andere poort. `scripts/preview-check.mjs` controleert de volledige proefmodus zonder API-, opslag- of serviceworker-writes.

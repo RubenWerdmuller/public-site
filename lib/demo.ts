@@ -25,6 +25,10 @@ export function previewNextSet(state:PreviewState):PreviewState {
   if(!sets[cursor+1]){const picked=selectTravelSet(questions,sets.flat(),state.answers,state.preferences);if(!picked.length)return state;sets.push(picked.map(q=>q.id));}
   return {...state,sets,cursors:{...state.cursors,[state.active]:cursor+1}};
 }
+export function previewSave(state:PreviewState,questionId:string):PreviewState {
+  if(!state.sets.flat().includes(questionId)||state.saved.includes(questionId)||Object.keys(CHARACTERS).every(user=>state.answers.some(a=>a.user_id===user&&a.question_id===questionId)))return state;
+  return {...state,saved:[...state.saved,questionId]};
+}
 export function previewAnswer(state: PreviewState, questionId: string, choice: number): PreviewState {
   const question = questions.find(q => q.id === questionId);
   if (!question || (!state.sets.flat().includes(questionId) && !state.saved.includes(questionId)) || (choice !== 0 && choice !== 1) || state.answers.some(a => a.user_id === state.active && a.question_id === questionId)) return state;

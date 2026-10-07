@@ -3,7 +3,7 @@ import { readFileSync, lstatSync } from 'node:fs';
 
 export function permittedFile(file) {
   if (!/^(app|components|lib|tests)\//.test(file) || !/\.(ts|tsx|css|json)$/.test(file)) return false;
-  if (/^(app\/api\/|app\/ai\/|lib\/(ai-|auth\.|db\.|schema\.)|components\/ai-desk\.)/.test(file)) return false;
+  if (/^(app\/api\/|app\/ai\/|lib\/(ai-|auth\.|db\.|schema\.|pair-actions\.)|components\/ai-desk\.)/.test(file)) return false;
   return !file.split('/').some(part => part.startsWith('.') || /secret|credential/i.test(part));
 }
 export function inspectText(text) {
