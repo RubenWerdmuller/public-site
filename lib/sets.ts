@@ -2,6 +2,7 @@ import { query } from './db';
 import type { User } from './auth';
 import { localDay, type Answer, type Question } from './domain';
 import { knownTravelContext, selectTravelSet, type Preference } from './preferences';
+import { availableBank } from './ai-tasks';
 type SetRow={id:string;day:string;ordinal:number;question_ids:string[]}&Record<string,unknown>;
 export class SetNotReadyError extends Error {}
 export async function loadPreferences(pairId:string):Promise<Preference[]> {
@@ -15,7 +16,7 @@ export async function ensureSet(pairId:string,day=localDay(),ordinal=1):Promise<
   let existing=await query<SetRow>('SELECT * FROM question_sets WHERE pair_id=$1 AND day=$2 AND ordinal=$3',[pairId,day,ordinal]);
   if(existing[0])return existing[0];
   const context=await loadPreferences(pairId);
-  const bank=(await query<{content:Question}&Record<string,unknown>>('SELECT content FROM questions ORDER BY id')).map(r=>r.content);
+  const bank=await availableBank(pairId);
   const previous=await query<SetRow>('SELECT * FROM question_sets WHERE pair_id=$1',[pairId]);
   const answers=await query<Answer&Record<string,unknown>>('SELECT * FROM answers WHERE pair_id=$1 ORDER BY answered_at',[pairId]);
   const picked=selectTravelSet(bank,previous.flatMap(s=>s.question_ids),answers,context);

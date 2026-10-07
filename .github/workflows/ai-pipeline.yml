@@ -1,0 +1,148 @@
+name: AI opdrachten
+
+on:
+  schedule:
+    - cron: '17,47 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ai-pipeline
+  cancel-in-progress: false
+
+jobs:
+  questions:
+    if: vars.AI_PIPELINE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - run: npm ci --no-audit --no-fund
+      - name: Genereer en valideer vragen
+        run: npx tsx scripts/ai-questions.ts
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          OPENAI_MODEL: ${{ vars.OPENAI_MODEL || 'gpt-6.1-sol' }}
+      - name: Controleer publicaties en stuur meldingen
+        if: always()
+        run: node scripts/ai-control.mjs tick
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
+          AI_VERCEL_CONTEXT: ${{ vars.AI_VERCEL_CONTEXT }}
+          GH_TOKEN: ${{ github.token }}
+      - name: Verwerk dagelijkse berichtjes en reisrapporten
+        if: always()
+        run: node scripts/ai-control.mjs daily
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+
+  system:
+    if: vars.AI_PIPELINE_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+      - name: Haal één systeemopdracht op
+        id: task
+        run: node scripts/ai-control.mjs prepare
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
+      - name: Bewaar vertrouwde controles buiten de werkmap
+        if: steps.task.outputs.has_task == 'true'
+        run: |
+          cp scripts/ai-code-guard.mjs "$RUNNER_TEMP/ai-code-guard.mjs"
+          cp scripts/ai-control.mjs "$RUNNER_TEMP/ai-control.mjs"
+          cp scripts/ai-http.mjs "$RUNNER_TEMP/ai-http.mjs"
+          cp scripts/ai-check.mjs "$RUNNER_TEMP/ai-check.mjs"
+          echo "AI_BASE_COMMIT=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+      - name: Controleer publicatie-instellingen
+        if: steps.task.outputs.has_task == 'true'
+        run: |
+          test -n "$AI_GITHUB_TOKEN"
+          test -n "$AI_COMMIT_AUTHOR"
+        env:
+          AI_GITHUB_TOKEN: ${{ secrets.AI_GITHUB_TOKEN }}
+          AI_COMMIT_AUTHOR: ${{ vars.AI_COMMIT_AUTHOR }}
+      - if: steps.task.outputs.has_task == 'true'
+        run: npm ci --no-audit --no-fund
+      - name: Maak een applicatiewijziging
+        if: steps.task.outputs.has_task == 'true'
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: ${{ runner.temp }}/ai-prompt.txt
+          safety-strategy: drop-sudo
+          sandbox: workspace-write
+          codex-args: '--model ${{ vars.CODEX_MODEL || ''gpt-6.1-sol'' }}'
+      - name: Controleer bereik van de wijziging
+        if: steps.task.outputs.has_task == 'true'
+        run: |
+          git restore --source="$AI_BASE_COMMIT" --staged --worktree -- next-env.d.ts
+          node "$RUNNER_TEMP/ai-code-guard.mjs"
+      - if: steps.task.outputs.has_task == 'true'
+        run: npm test
+      - if: steps.task.outputs.has_task == 'true'
+        run: npm run build
+      - if: steps.task.outputs.has_task == 'true'
+        run: npm run typecheck
+      - name: Controleer de echte login-, privacy- en opdrachtenflow
+        if: steps.task.outputs.has_task == 'true'
+        run: node "$RUNNER_TEMP/ai-check.mjs"
+      - name: Verwijder gegenereerde Next-types en controleer opnieuw
+        if: steps.task.outputs.has_task == 'true'
+        run: |
+          git restore --source="$AI_BASE_COMMIT" --staged --worktree -- next-env.d.ts
+          node "$RUNNER_TEMP/ai-code-guard.mjs"
+      - name: Open een pull request
+        if: steps.task.outputs.has_task == 'true'
+        id: pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.AI_GITHUB_TOKEN }}
+          author: ${{ vars.AI_COMMIT_AUTHOR }}
+          committer: ${{ vars.AI_COMMIT_AUTHOR }}
+          branch: feature/ai-task-${{ steps.task.outputs.task_id }}
+          base: master
+          commit-message: 'Apply reviewed AI application proposal'
+          title: 'AI applicatievoorstel ${{ steps.task.outputs.task_id }}'
+          body: |
+            Applicatievoorstel vanuit de besloten AI-opdrachtenpagina.
+            De opdrachttekst en databasecontext worden niet in deze pull request gepubliceerd.
+
+            Controles: applicatiebereik, tests, productiebuild en TypeScript.
+            Bekijk de codewijziging en Vercel-preview vóór samenvoegen.
+      - name: Meld dat de wijziging klaarstaat
+        if: steps.task.outputs.has_task == 'true'
+        run: node "$RUNNER_TEMP/ai-control.mjs" review
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
+          AI_PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+      - name: Meld een mislukte opdracht
+        if: failure() && steps.task.outputs.has_task == 'true'
+        run: node "$RUNNER_TEMP/ai-control.mjs" failed
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
