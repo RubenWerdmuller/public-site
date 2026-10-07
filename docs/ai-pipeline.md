@@ -14,7 +14,7 @@ Na jouw merge naar `master` deployt Vercel. De pipeline markeert de opdracht pas
 
 ## 1. Nieuwste deployment controleren
 
-Controleer in Vercel de nieuwste deployment van `master` met commitbericht `Add scheduled AI question and application pipeline`. De AI-pipeline is standaard uitgeschakeld en de opdrachtenpagina blijft besloten tot beheeradressen zijn ingesteld. Stel onderstaande secrets/variabelen in vóór je de pipeline inschakelt. Deze wijziging raakt niet de ontwikkeling die de andere agent in `Samen Op Reis` doet.
+Controleer in Vercel de nieuwste deployment van `master` en of `/ai` bereikbaar is. De AI-pipeline is standaard uitgeschakeld en de opdrachtenpagina blijft besloten tot beheeradressen zijn ingesteld. Stel onderstaande secrets/variabelen in vóór je de pipeline inschakelt. Deze wijziging raakt niet de ontwikkeling die de andere agent in `Samen Op Reis` doet.
 
 Voor de andere agent: haal de nieuwste `master` uit `public-site` op voordat je opnieuw pusht. De AI-integratie gebruikt `availableBank(pairId)` uit `lib/ai-tasks.ts` in `ensureSet` en `ensureWeeklyQuestion`, zodat nieuwe vragenbank-query's dezelfde duo-filtering behouden. Behoud `questionId`-validatie voor AI-ID's. Combineer schematabellen additief; verwijder geen bestaande tabellen of antwoord-snapshots.
 
@@ -61,7 +61,7 @@ Onder Variables:
 | Naam | Waarde |
 | --- | --- |
 | `APP_URL` | `https://www.rubenwerdmuller.nl` |
-| `AI_VERCEL_CONTEXT` | `Vercel – public-site-goai` (let op het lange streepje) |
+| `AI_VERCEL_CONTEXT` | `Vercel` (de huidige GitHub-status van public-site-goai; gebruik bij meerdere gekoppelde projecten de exacte projectstatus) |
 | `AI_COMMIT_AUTHOR` | Je GitHub-naam en geverifieerde mail, bijvoorbeeld `Ruben Werdmuller <rubenwerdmuller@gmail.com>` |
 | `AI_PIPELINE_ENABLED` | Eerst `false`, na testen `true` |
 | `OPENAI_MODEL` | Optioneel; standaard `gpt-6.1-sol` |
