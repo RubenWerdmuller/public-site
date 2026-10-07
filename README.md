@@ -59,7 +59,7 @@ Aanbevolen: **Vercel Hobby + Neon Free** voor deze persoonlijke app. Geen databa
 - Neon Free: https://neon.com/docs/introduction/plans (gratis binnen de actuele limieten; scale-to-zero kan een eerste aanvraag vertragen).
 - Supabase is een goed alternatief als je later managed auth wilt. Free-projecten kunnen pauzeren na inactiviteit: https://supabase.com/docs/guides/platform/free-project-pausing.
 
-Er is eenmalige account/configuratie nodig. ‘Geen databaseonderhoud’ is haalbaar; letterlijk nul setup niet. Er is nog geen online deployment aangemaakt.
+Er is eenmalige account/configuratie nodig. ‘Geen databaseonderhoud’ is haalbaar; letterlijk nul setup niet. De app wordt inmiddels vanuit `RubenWerdmuller/public-site` op Vercel gepubliceerd en is bereikbaar op https://rubenwerdmuller.nl. Pushconfiguratie en de externe scheduler moeten afzonderlijk worden ingericht.
 
 ## Environment
 
@@ -122,3 +122,11 @@ Proberen zonder opslag: http://localhost:3100/test?screen=weekly-question. Onder
 Bij vragen staan 106 lokale SVG-schetsen in de notitieboekstijl: 56 eigen tekeningen en 50 gedownloade doodles. De eigen tekeningen bestrijken veertien onderwerpen, waaronder zeilen, tuinieren, keramiek, koken, wandelen, kamperen en grappige dieren. De keuze hangt stabiel af van het onderwerp, vraagnummer en de antwoordoptie; beide personen krijgen dezelfde tekeningen. Rough.js maakt vaste potloodstreken zonder netwerkverzoeken. Alle illustraties staan op `/schetsboek`, ook bereikbaar via Instellingen. De eerder gedownloade foto's en hun bronvermelding blijven als archief beschikbaar op `/fotocredits`.
 
 Het schetsboek bevat daarnaast 50 gedownloade Doodle Icons van Khushmeen Sidhu (CC0-1.0): samen 106 tekeningen. De originele handgetekende vormen blijven behouden; de inkt en lokale omlijsting gebruiken het notitieboekpalet en een licht SVG-filter maakt de lijnen fijner. Selectie, bron-URL per bestand en gepinde bronversie staan in `lib/imported-sketches.json`; alle SVG-bestanden en licenties staan in `public/sketches`. Opnieuw downloaden: `node scripts/import-doodles.mjs`. Zowel vragen als het schetsboek gebruiken dezelfde registratie en thema-selectie.
+
+## Installatieknop en pushstatus
+
+Elk appscherm biedt onderaan Zet de app op je beginscherm. Ondersteunende browsers openen het native installatievenster; zonder dat venster volgen apparaatinstructies. Op iPhone leidt de knop naar de stappen in het deelmenu. Een gebruikte prompt wordt gewist; afwijzen is geen installatie. Standalone-modus en het appinstalled-event tonen de geïnstalleerde staat. Testmodus roept nooit het installatievenster aan. Installeren zet notificaties niet automatisch aan.
+
+De instellingen tonen nu of de server publiek/private VAPID en CRON_SECRET heeft. Zonder alle drie blijft de opt-in uitgeschakeld. Deze gereedheidscheck bewijst geen draaiende externe scheduler; /api/jobs moet daarnaast periodiek aangeroepen worden. Op iPhone vraagt de app alleen vanuit de geïnstalleerde webapp om push.
+
+`node scripts/install-check.mjs` test native installatie, afwijzen en opnieuw proberen, geïnstalleerde staat, iPhone-uitleg en isolatie van testmodus. Gebruik `APP_TEST_URL` voor een andere tijdelijke testserver.

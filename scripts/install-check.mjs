@@ -1,0 +1,19 @@
+import assert from 'node:assert/strict';
+import {chromium} from '@playwright/test';
+const base=process.env.APP_TEST_URL??'http://localhost:3101';
+const browser=await chromium.launch({channel:'msedge',headless:true});
+try{
+ const context=await browser.newContext({viewport:{width:390,height:844}});const page=await context.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('**/api/app',route=>route.fulfill({json:{user:null}}));
+ await page.goto(base);await page.waitForFunction(()=>Boolean(document.querySelector('.install-shortcut button')?.onclick));
+ async function prompt(outcome){await page.evaluate(outcome=>{window.installCalls=0;const event=new Event('beforeinstallprompt',{cancelable:true});event.prompt=async()=>{window.installCalls++;return {outcome};};window.dispatchEvent(event);},outcome);}
+ await prompt('dismissed');await page.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).click();
+ await page.getByText('Installatie overgeslagen. Je kunt de app later alsnog toevoegen.').waitFor();assert.equal(await page.evaluate(()=>window.installCalls),1);
+ await page.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).click();await page.getByRole('heading',{name:'Een plekje op je beginscherm.'}).waitFor();assert.equal(await page.evaluate(()=>window.installCalls),1);
+ await prompt('accepted');await page.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).click();assert.equal(await page.evaluate(()=>window.installCalls),1);
+ await page.evaluate(()=>window.dispatchEvent(new Event('appinstalled')));await page.getByText('De app staat op je beginscherm.',{exact:true}).waitFor();assert.equal(await page.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).count(),0);
+ const iphone=await browser.newContext({viewport:{width:390,height:844},userAgent:'Mozilla/5.0 (iPhone; CPU iPhone OS 18_0 like Mac OS X) AppleWebKit/605.1.15 Version/18.0 Mobile/15E148 Safari/604.1'});
+ const iosPage=await iphone.newPage();await iosPage.route('**/api/app',route=>route.fulfill({json:{user:null}}));await iosPage.goto(base);await iosPage.waitForFunction(()=>Boolean(document.querySelector('.install-shortcut button')?.onclick));await iosPage.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).click();await iosPage.getByRole('heading',{name:'Zo werkt het op jouw iPhone of iPad'}).waitFor();await iosPage.getByText(/Open als webapp/).waitFor();await iosPage.screenshot({path:'test-results/install-iphone.png',fullPage:true});
+ const demo=await browser.newContext();const demoPage=await demo.newPage();const api=[];await demoPage.route('**/api/**',route=>{api.push(route.request().url());return route.abort();});await demoPage.goto(`${base}/test`);await demoPage.waitForFunction(()=>Boolean(document.querySelector('.install-shortcut button')?.onclick));await demoPage.evaluate(()=>{window.installCalls=0;const event=new Event('beforeinstallprompt',{cancelable:true});event.prompt=async()=>{window.installCalls++;return {outcome:'accepted'};};window.dispatchEvent(event);});await demoPage.getByRole('button',{name:'Zet de app op je beginscherm',exact:true}).click();await demoPage.getByText(/Je bekijkt de installatieflow in testmodus/).waitFor();assert.equal(await demoPage.evaluate(()=>window.installCalls),0);assert.deepEqual(api,[]);assert.equal(await demoPage.evaluate(async()=>(await navigator.serviceWorker.getRegistrations()).length),0);assert.deepEqual(errors,[]);
+ console.log('PASS: native prompt, one-use dismissal/acceptance, installed state, iPhone instructions, and isolated preview without install/API/SW actions.');
+}finally{await browser.close();}

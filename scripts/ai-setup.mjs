@@ -10,6 +10,7 @@ await writeFile(file, [
   '# Local setup values. Never commit or paste these in chat. Existing Vercel values are not changed.',
   '# Keep existing VAPID keys if push is already configured.',
   `AI_PIPELINE_SECRET=${randomBytes(32).toString('hex')}`,
+  `CRON_SECRET=${randomBytes(32).toString('hex')}`,
   `NEXT_PUBLIC_VAPID_PUBLIC_KEY=${keys.publicKey}`,
   `VAPID_PRIVATE_KEY=${keys.privateKey}`,
   `VAPID_SUBJECT=mailto:${email}`,

@@ -49,5 +49,5 @@ export async function dashboard(user:User) {
   const shared = answers.filter(a => members.length===2 && members.every(m=>answers.some(b=>b.user_id===m.id && b.question_id===a.question_id)));
   const report=await weeklyReport(user.pair_id);
   const invite=await query<{code:string}&Record<string,unknown>>('SELECT code FROM invites WHERE pair_id=$1 AND used_at IS NULL AND expires_at>now()',[user.pair_id]);
-  return {user,members,preferences,...weekly,setArchive,questions:rows.map(r=>enrich(r.content)),set:activeSet?{id:activeSet.id,ordinal:activeSet.ordinal}:null,setTotals,saved:savedRows.map(r=>enrich(r.content)),history:completed.reverse(),insights:insights(shared,members.map(m=>String(m.id))),report,invite:invite[0]?.code??null,pushConfigured:!!process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY,day:localDay()};
+  return {user,members,preferences,...weekly,setArchive,questions:rows.map(r=>enrich(r.content)),set:activeSet?{id:activeSet.id,ordinal:activeSet.ordinal}:null,setTotals,saved:savedRows.map(r=>enrich(r.content)),history:completed.reverse(),insights:insights(shared,members.map(m=>String(m.id))),report,invite:invite[0]?.code??null,pushConfigured:!!(process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY&&process.env.VAPID_PRIVATE_KEY&&process.env.CRON_SECRET),day:localDay()};
 }

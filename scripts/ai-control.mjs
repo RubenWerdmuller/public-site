@@ -1,6 +1,6 @@
 import { writeFile, readFile, appendFile } from 'node:fs/promises';
 import path from 'node:path';
-import { worker } from './ai-http.mjs';
+import { worker, dailyJobs } from './ai-http.mjs';
 
 const temp = process.env.RUNNER_TEMP ?? process.env.AI_TASK_DIRECTORY;
 const taskFile = temp ? path.join(temp, 'ai-task.json') : null;
@@ -26,6 +26,7 @@ async function reconcile() {
 }
 async function main() {
   const action = process.argv[2];
+  if (action === 'daily') { await dailyJobs(); return; }
   if (action === 'tick') { await worker({ action: 'tick' }); await reconcile(); await worker({ action: 'tick' }); return; }
   if (!taskFile) throw new Error('RUNNER_TEMP or AI_TASK_DIRECTORY must be set.');
   if (action === 'prepare') {

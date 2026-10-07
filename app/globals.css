@@ -147,3 +147,8 @@
 .sketch-gallery figure:nth-child(2n) { background: #f2ede3; border-color: #cbbda6; }
 .sketch-gallery figcaption { text-align: center; font-family: 'Caveat',cursive; font-size: 23px; color: #7b8073; }
 @media(max-width:550px) { .daily-flow .option .travel-sketch { height: 94px; padding: 0 15px; } }
+
+.install-shortcut { display: flex; justify-content: center; margin: 30px 0 18px; }
+.installed-note { display: flex; align-items: center; justify-content: center; gap: 8px; color: #75886a; font-size: 12px; margin: 10px 0; }
+.push-status { padding: 12px; background: var(--paper); border: 1px dashed var(--line); border-radius: 4px; font-size: 12px; }
+.install .sketch-button { max-width: 100%; white-space: normal; }

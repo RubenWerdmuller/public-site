@@ -41,6 +41,12 @@ jobs:
           AI_PIPELINE_SECRET: ${{ secrets.AI_PIPELINE_SECRET }}
           AI_VERCEL_CONTEXT: ${{ vars.AI_VERCEL_CONTEXT }}
           GH_TOKEN: ${{ github.token }}
+      - name: Verwerk dagelijkse berichtjes en reisrapporten
+        if: always()
+        run: node scripts/ai-control.mjs daily
+        env:
+          APP_URL: ${{ vars.APP_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
 
   system:
     if: vars.AI_PIPELINE_ENABLED == 'true'

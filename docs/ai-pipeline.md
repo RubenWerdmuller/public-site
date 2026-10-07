@@ -33,6 +33,7 @@ Ga naar Settings → Environment Variables en stel in voor Production:
 | `DATABASE_URL` | De reeds gekoppelde Neon-URL |
 | `AI_ADMIN_EMAILS` | Jullie bestaande app-loginadressen, komma-gescheiden |
 | `AI_PIPELINE_SECRET` | Waarde uit `.env.ai-setup` |
+| `CRON_SECRET` | Aparte setupwaarde voor dagelijkse berichtjes; behoud een reeds ingestelde waarde |
 | `AI_GITHUB_REPOSITORY` | `RubenWerdmuller/public-site` |
 | `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Setupwaarde, of de bestaande publieke sleutel |
 | `VAPID_PRIVATE_KEY` | Bijpassende private setupwaarde, of de bestaande sleutel |
@@ -50,6 +51,7 @@ Onder Secrets:
 | --- | --- |
 | `OPENAI_API_KEY` | Eigen OpenAI Platform-key met API-billing |
 | `AI_PIPELINE_SECRET` | Exact dezelfde waarde als in Vercel |
+| `CRON_SECRET` | Exact dezelfde waarde als in Vercel, voor de bestaande dagelijkse scheduler |
 | `AI_GITHUB_TOKEN` | Fine-grained token van de eigenaar, alleen voor public-site, Contents: read/write en Pull requests: read/write |
 
 Het GitHub-token is voor de gecontroleerde PR-publicatiestap, niet voor de codeagent of tests. Een eigen token zorgt dat vervolgchecks en de Vercel-preview kunnen starten. Stel een vervaldatum in en vervang het token bij verlopen toegang.
@@ -78,7 +80,7 @@ Gebruik voor de commit-auteur het eigen account dat Vercel Hobby beheert. Dit vo
 7. Na succesvolle Vercel-publicatie meldt de volgende pipeline-run de opdracht als gepubliceerd. Een afgewezen/gesloten PR wordt als niet gepubliceerd gemeld.
 8. Zet in de app Instellingen → Zet berichtjes aan. Op iPhone eerst installeren via Safari → Delen → Zet op beginscherm. De maandagherinnering en resultaatmeldingen volgen tussen 09:00 en 21:00 Amsterdamtijd.
 
-Voor wekelijkse automatische vraaggeneratie: voer een vraagopdracht in met bijvoorbeeld `Maak iedere week 14 afwisselende nieuwe vragen op basis van onze gezamenlijke context` en vink de wekelijkse herhaling aan. Er is geen aparte cron-job.org-taak nodig voor deze AI-pipeline. De bestaande dagelijkse pushscheduler is een afzonderlijke voorziening.
+Voor wekelijkse automatische vraaggeneratie: voer een vraagopdracht in met bijvoorbeeld `Maak iedere week 14 afwisselende nieuwe vragen op basis van onze gezamenlijke context` en vink de wekelijkse herhaling aan. Dezelfde GitHub-workflow roept met `CRON_SECRET` ook de bestaande `/api/jobs`-scheduler voor dagelijkse berichtjes en reisrapporten aan. Er is geen aparte cron-job.org-taak nodig. De app bewaakt het Nederlandse tijdvenster en voorkomt herhaalde dagelijkse meldingen.
 
 ## Controles en grenzen
 
