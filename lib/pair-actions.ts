@@ -1,3 +1,4 @@
+import {randomBytes} from 'node:crypto';
 import {transaction, type Query} from './db';
 import type {User} from './auth';
 import type {Question} from './domain';
@@ -38,5 +39,19 @@ export async function recordQuestion(user:User,qid:string,input:{action:'save'}|
     }
     // Serialize the shared card cleanup, including concurrent saves and final answers.
     await read('DELETE FROM saved_questions WHERE pair_id=$1 AND question_id=$2 AND (SELECT count(*) FROM answers WHERE pair_id=$1 AND question_id=$2)=2',[user.pair_id,qid]);
+  });
+}
+
+export async function activeInvite(user:User):Promise<string|null>{
+  return transaction(async read=>{
+    await lockMembership(read,user.pair_id,user.id);
+    await read('SELECT id FROM travel_pairs WHERE id=$1 FOR UPDATE',[user.pair_id]);
+    const members=await read('SELECT user_id FROM memberships WHERE pair_id=$1',[user.pair_id]);
+    if(members.length!==1)return null;
+    const [existing]=await read<{code:string}&Record<string,unknown>>('SELECT code FROM invites WHERE pair_id=$1 AND used_at IS NULL AND expires_at>now() ORDER BY expires_at DESC LIMIT 1',[user.pair_id]);
+    if(existing)return existing.code;
+    const code=randomBytes(9).toString('hex');
+    await read("INSERT INTO invites(code,pair_id,expires_at) VALUES($1,$2,now()+interval '7 days')",[code,user.pair_id]);
+    return code;
   });
 }

@@ -76,6 +76,6 @@ export function selectTravelSketch(option:Option,questionId:string,index:number)
  const matches=travelSketches.filter(sketch=>sketch.art===option.art);
  const pool=matches.length?matches:travelSketches.filter(sketch=>sketch.art==='mountain');
  // Rotate within a theme, so gaps in question IDs never skip half the drawings.
- const position=questionPositions.get(`${questionId}:${index}`)??((Number(questionId.replace(/\D/g,''))||0)+index);
+ const position=questionPositions.get(`${questionId}:${index}`)??([...questionId].reduce((hash,char)=>(Math.imul(hash,31)+char.charCodeAt(0))>>>0,0)+index);
  return pool[position%pool.length];
 }

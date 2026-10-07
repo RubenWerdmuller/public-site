@@ -7,7 +7,7 @@ import {questions} from '../lib/questions';
 import {query,transaction} from '../lib/db';
 import {ensureSet} from '../lib/sets';
 import {ensureAssignments} from '../lib/service';
-import {joinPair,recordQuestion} from '../lib/pair-actions';
+import {joinPair,recordQuestion,activeInvite} from '../lib/pair-actions';
 import {answerWeeklyQuestion,ensureWeeklyQuestion} from '../lib/weekly-questions';
 import {initialPreview,previewSave,previewAnswer} from '../lib/demo';
 import {runJobs} from '../lib/jobs';
@@ -104,3 +104,13 @@ test('unknown screens recover instead of leaving an empty app; login accepts rep
   assert.equal(appScreen('notification',false),'today');assert.equal(appScreen('notification',true),'notification');
   assert.equal(isAppScreen('report'),true);assert.equal(isAppScreen('settings'),true);assert.equal(isAppScreen('https://evil.example'),false);
 });
+
+test('expired invitations renew once under concurrent requests and complete duos get no invitation',async()=>database(async()=>{
+  await query("INSERT INTO invites(code,pair_id,expires_at) VALUES('expired','a',now()-interval '1 day')");
+  const [first,second]=await Promise.all([activeInvite(user('one','a')),activeInvite(user('one','a'))]);
+  assert.match(first!,/^[a-f0-9]{18}$/);assert.equal(first,second);
+  assert.equal((await query("SELECT code FROM invites WHERE pair_id='a' AND used_at IS NULL AND expires_at>now()")).length,1);
+  await joinPair(user('two','b'),first!);
+  assert.equal(await activeInvite(user('one','a')),null);
+  await assert.rejects(activeInvite(user('two','b')),/gewijzigd/);
+}));

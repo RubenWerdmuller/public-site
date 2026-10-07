@@ -25,7 +25,8 @@ export function validSchedule(value: string, now = new Date()) {
 const attributeTypes: Record<string, string> = Object.fromEntries(initialQuestions.flatMap(q => q.options.flatMap(o => Object.entries(o.attributes).map(([key, value]) => [key, typeof value]))));
 export const attributeKeys = Object.keys(attributeTypes) as [string, ...string[]];
 const text = z.string().trim().min(1).max(300);
-const option = z.object({ title: text, subtitle: text, details: z.array(text).min(1).max(5), art: z.enum(['mountain', 'house']), attributes: z.array(z.object({ key: z.enum(attributeKeys), value: z.union([z.number().finite().min(-100).max(100000), z.string().trim().min(1).max(60)]) })).min(1).max(15) });
+export const illustrationThemes = ['mountain', 'house', 'camper', 'garden', 'surf', 'hiking', 'sailing', 'pottery', 'alpaca', 'coffee', 'market', 'yoga', 'dance', 'campfire'] as const;
+const option = z.object({ title: text, subtitle: text, details: z.array(text).min(1).max(5), art: z.enum(illustrationThemes), attributes: z.array(z.object({ key: z.enum(attributeKeys), value: z.union([z.number().finite().min(-100).max(100000), z.string().trim().min(1).max(60)]) })).min(1).max(15) });
 export const generatedBatch = z.object({ summary: z.string().trim().min(1).max(1000), questions: z.array(z.object({ sourceQuestionId: questionId.nullable(), title: text, intro: text, theme: text, type: z.enum(['trade-off', 'extreme', 'scenario', 'one-change', 'wildcard', 'boundary', 'refinement', 'conditional', 'conflict', 'personal-dream', 'bundle']), role: z.enum(['core', 'boundary', 'personal', 'wildcard']), focus: z.array(z.enum(attributeKeys)).min(1).max(5), informationValue: z.number().min(0).max(3), options: z.array(option).length(2) })).min(1).max(14) });
 export type GeneratedBatch = z.infer<typeof generatedBatch>;
 
