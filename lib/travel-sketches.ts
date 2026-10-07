@@ -1,8 +1,9 @@
+import notebookScenes from './notebook-scenes.json';
 import importedSketches from './imported-sketches.json';
 import { questions } from './questions';
 import type { Option } from './domain';
 export type SketchPath = { d:string; fill?:string };
-export type TravelSketch = { id:string; title:string; art:string; paths:SketchPath[]; file?:string; source?:string; author?:string; license?:string };
+export type TravelSketch = { id:string; title:string; art:string; alsoArts?:string[]; paths:SketchPath[]; file?:string; source?:string; author?:string; license?:string };
 const sage='#b7c8ac', sand='#ead8b7', clay='#ca8b70', blue='#b4cbd0', gold='#ebc879';
 const p=(d:string,fill?:string):SketchPath=>({d,fill});
 const circle=(x:number,y:number,r:number,fill?:string)=>p(`M${x-r} ${y}a${r} ${r} 0 1 0 ${r*2} 0a${r} ${r} 0 1 0 -${r*2} 0`,fill);
@@ -66,6 +67,7 @@ export const travelSketches:TravelSketch[]=[
  s('campfire','Marshmallows met grote plannen',p('M92 168 269 75M105 84 272 185'),p('m246 77 31-18 12 23-31 18zM113 68l28 16-13 22-28-16z',sand),p('M156 175q-15-31 22-56-5 27 13 17 19-20 17-40 50 42 27 78z',clay),p('M141 187h109')),
  s('campfire','Lampje naast de tent',p('M154 174V94h89v80z',sand),p('M147 89h104l-20-19h-64zM151 180h97m-80-110V50q30-33 63 0v20m-40 42v53m20-53v53',sage),p('M191 155q-17-23 8-44 24 26 9 44z',gold)),
  ...importedSketches.map(sketch=>({...sketch,paths:[]})),
+ ...notebookScenes,
 ];
 const themeCounts=new Map<string,number>();
 const questionPositions=new Map(questions.flatMap(question=>question.options.map((option,index)=>{
@@ -73,7 +75,7 @@ const questionPositions=new Map(questions.flatMap(question=>question.options.map
  return [`${question.id}:${index}`,position] as const;
 })));
 export function selectTravelSketch(option:Option,questionId:string,index:number):TravelSketch {
- const matches=travelSketches.filter(sketch=>sketch.art===option.art);
+ const matches=travelSketches.filter(sketch=>sketch.art===option.art||sketch.alsoArts?.includes(option.art)).sort((a,b)=>Number(b.id.startsWith('scene-'))-Number(a.id.startsWith('scene-')));
  const pool=matches.length?matches:travelSketches.filter(sketch=>sketch.art==='mountain');
  // Rotate within a theme, so gaps in question IDs never skip half the drawings.
  const position=questionPositions.get(`${questionId}:${index}`)??([...questionId].reduce((hash,char)=>(Math.imul(hash,31)+char.charCodeAt(0))>>>0,0)+index);

@@ -1,5 +1,5 @@
 import { currentUser } from '@/lib/auth';
-import { changeTask, enqueueTask, isAiAdmin, listTasks } from '@/lib/ai-tasks';
+import { TaskQueueFullError, changeTask, enqueueTask, isAiAdmin, listTasks } from '@/lib/ai-tasks';
 import { taskInput, validSchedule } from '@/lib/ai-contracts';
 import { z } from 'zod';
 
@@ -30,12 +30,11 @@ export async function POST(request: Request) {
     } else {
       const input = taskInput.parse(body);
       if (!validSchedule(input.scheduledAt)) return json({ error: 'Kies een tijdstip binnen de komende 90 dagen.' }, 400);
-      const queued = (await listTasks(user)).filter(t => t.status === 'queued' || t.status === 'running');
-      if (queued.length >= 10) return json({ error: 'Er staan al tien opdrachten klaar. Wacht tot er één is afgerond.' }, 429);
       await enqueueTask(user, input);
     }
     return json({ tasks: await listTasks(user) });
   } catch (error) {
+    if(error instanceof TaskQueueFullError)return json({error:error.message},429);
     if (error instanceof z.ZodError || error instanceof SyntaxError) return json({ error: 'Controleer je opdracht en het uitvoermoment.' }, 400);
     return json({ error: 'Opslaan lukte niet. Probeer later opnieuw.' }, 500);
   }

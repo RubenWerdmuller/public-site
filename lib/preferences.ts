@@ -24,6 +24,7 @@ export function selectTravelSet(bank: Question[], seen: string[], recent: Answer
   const frequency=new Map<string,number>(); recent.slice(-24).forEach(a=>frequency.set(a.snapshot.theme,(frequency.get(a.snapshot.theme)??0)+1));
   const hard=context.filter(p=>p.subject==='couple'&&p.kind==='hard_constraint');
   const ranked=bank.filter(q=>q.role&&!excluded.has(q.id)&&q.options.every(o=>hard.every(p=>{
+    if(p.attribute==='flight'&&p.value==='avoid')return o.attributes.transport!=='flight';
     const v=o.attributes[p.attribute]; if(v===undefined)return true;
     if(p.boundary?.hard&&typeof v==='number')return v>=p.boundary.hard[0]&&v<=p.boundary.hard[1];
     return p.value===v;
@@ -37,4 +38,16 @@ export function selectTravelSet(bank: Question[], seen: string[], recent: Answer
 export function completedSetCount(sets: {questionIds:string[]}[], answers: Answer[], userId:string) {
   const answered=new Set(answers.filter(a=>a.user_id===userId&&a.mode!=='example').map(a=>a.question_id));
   return sets.filter(s=>s.questionIds.length>0&&s.questionIds.every(id=>answered.has(id))).length;
+}
+
+// These fields describe quantities, including when their initial value is still null.
+const numericPreferences=new Set(['months','departureMonth','monthlyBudget','temperature']);
+export function normalizePreferenceValue(attribute:string,value:string|number|boolean|null){
+  if(value===null||typeof value==='boolean')return value;
+  const raw=typeof value==='string'?value.trim():String(value);if(!raw)return null;
+  if(!numericPreferences.has(attribute)||(attribute==='temperature'&&raw==='warm_and_dry'))return typeof value==='number'?value:raw;
+  if(typeof value==='string'&&!/^-?\d+(?:[.,]\d+)?$/.test(raw))throw Error('Vul een geldig getal in bij deze reisafspraak.');
+  const number=Number(raw.replace(',','.'));
+  if(!Number.isFinite(number)||(attribute!=='temperature'&&number<0)||(attribute==='months'&&number===0)||(attribute==='departureMonth'&&(!Number.isInteger(number)||number<1||number>12)))throw Error('Controleer het getal: reisduur is positief en een vertrekmaand ligt tussen 1 en 12.');
+  return number;
 }

@@ -1,6 +1,6 @@
 'use client';
 import Link from 'next/link';
-import { useEffect, useState, type FormEvent } from 'react';
+import { useEffect, useState, useRef, type FormEvent } from 'react';
 import { SketchButton } from './sketch-button';
 import type { TaskKind, TaskView } from '@/lib/ai-contracts';
 import { fromAmsterdamDateTime } from '@/lib/ai-schedule';
@@ -8,6 +8,8 @@ import { fromAmsterdamDateTime } from '@/lib/ai-schedule';
 const states = { queued: 'Ingepland', running: 'Wordt uitgevoerd', review: 'Klaar om te bekijken', published: 'Gepubliceerd', failed: 'Niet gelukt', cancelled: 'Geannuleerd' };
 const date = (value: string) => new Intl.DateTimeFormat('nl-NL', { timeZone: 'Europe/Amsterdam', dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value));
 export function AiDesk({ initialTasks }: { initialTasks: TaskView[] }) {
+  const requestVersion=useRef(0);
+  const mutationPending=useRef(false);
   const [tasks, setTasks] = useState(initialTasks);
   const [kind, setKind] = useState<TaskKind>('questions');
   const [instruction, setInstruction] = useState('');
@@ -20,13 +22,17 @@ export function AiDesk({ initialTasks }: { initialTasks: TaskView[] }) {
   useEffect(() => {
     const controller = new AbortController();
     const timer = setInterval(() => {
+      if(mutationPending.current)return;
+      const version=++requestVersion.current;
       void fetch('/api/ai/tasks', { cache: 'no-store', signal: controller.signal }).then(async r => {
-        if (r.ok) { const data = await r.json(); if (!controller.signal.aborted) setTasks(data.tasks); }
+        if (r.ok) { const data = await r.json(); if (!controller.signal.aborted&&version===requestVersion.current) setTasks(data.tasks); }
       }).catch(() => {});
     }, 20000);
     return () => { clearInterval(timer); controller.abort(); };
   }, []);
   async function send(payload: unknown) {
+    mutationPending.current=true;
+    ++requestVersion.current;
     setBusy(true); setNotice('');
     try {
       const response = await fetch('/api/ai/tasks', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
@@ -34,7 +40,7 @@ export function AiDesk({ initialTasks }: { initialTasks: TaskView[] }) {
       if (!response.ok) throw new Error(data.error || 'Opslaan lukte niet.');
       setTasks(data.tasks); return true;
     } catch (error) { setNotice(error instanceof Error ? error.message : 'Geen verbinding. Probeer opnieuw.'); return false; }
-    finally { setBusy(false); }
+    finally { mutationPending.current=false;setBusy(false); }
   }
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();

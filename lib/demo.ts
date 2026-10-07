@@ -5,9 +5,9 @@ import { completedSetCount, knownTravelContext, selectTravelSet, type Preference
 import type { dashboard } from './service';
 import { revealWeekly, selectWeeklyQuestion, weeklyOccurrence, type WeeklyAssignment } from './weekly-question-domain';
 
-export type PreviewState = { active: CharacterId; answers: Answer[]; saved: string[]; roebieCap: boolean; feedback: string | null; sets:string[][]; cursors:Record<CharacterId,number>; preferences:Preference[]; weeklyQuestions:WeeklyAssignment[]; weeklyAnswers:Answer[] };
+export type PreviewState = { active: CharacterId; answers: Answer[]; exampleAnswers:Answer[]; saved: string[]; roebieCap: boolean; feedback: string | null; sets:string[][]; cursors:Record<CharacterId,number>; preferences:Preference[]; weeklyQuestions:WeeklyAssignment[]; weeklyAnswers:Answer[] };
 export const previewQuestions = selectTravelSet(questions, [], [], knownTravelContext);
-export function initialPreview(): PreviewState { return { active: CHARACTERS.oelie.id, answers: [], saved: [], roebieCap: true, feedback: null, sets:[previewQuestions.map(q=>q.id)],cursors:{oelie:0,roebie:0},preferences:structuredClone(knownTravelContext),weeklyQuestions:[{week:weekKey(),question:selectWeeklyQuestion(questions,[],[],knownTravelContext)!}],weeklyAnswers:[] }; }
+export function initialPreview(): PreviewState { return { active: CHARACTERS.oelie.id, answers: [], exampleAnswers:[], saved: [], roebieCap: true, feedback: null, sets:[previewQuestions.map(q=>q.id)],cursors:{oelie:0,roebie:0},preferences:structuredClone(knownTravelContext),weeklyQuestions:[{week:weekKey(),question:selectWeeklyQuestion(questions,[],[],knownTravelContext)!}],weeklyAnswers:[] }; }
 export function previewWeeklyAnswer(state:PreviewState,week:string,choice:number):PreviewState {
   const assignment=state.weeklyQuestions.find(q=>q.week===week);if(!assignment||(choice!==0&&choice!==1))return state;
   const id=weeklyOccurrence(week,assignment.question.id);if(state.weeklyAnswers.some(a=>a.user_id===state.active&&a.question_id===id))return state;
@@ -37,9 +37,9 @@ export function previewAnswer(state: PreviewState, questionId: string, choice: n
   return { ...state, answers, saved };
 }
 export function previewWeek(state: PreviewState): PreviewState {
-  // Explicit example data for exploring report layout; never merged into live data.
-  const extra: Answer[] = questions.filter(q=>q.role).slice(4, 10).flatMap((q, i) => Object.values(CHARACTERS).map(person => person.id).map(user => ({ user_id: user, question_id: q.id, choice: user === CHARACTERS.roebie.id && i % 3 === 0 ? 1 : 0, snapshot: q, answered_at: new Date().toISOString(), mode: 'example' }))).filter(a => !state.answers.some(existing => existing.user_id === a.user_id && existing.question_id === a.question_id));
-  return { ...state, answers: [...state.answers, ...extra] };
+  // Report examples never become real test answers or block later question sets.
+  const examples:Answer[]=questions.filter(q=>q.role&&!state.answers.some(a=>a.question_id===q.id)).slice(4,10).flatMap((q,i)=>Object.values(CHARACTERS).map(person=>({user_id:person.id,question_id:q.id,choice:person.id===CHARACTERS.roebie.id&&i%3===0?1:0,snapshot:q,answered_at:new Date().toISOString(),mode:'example'})));
+  return {...state,exampleAnswers:examples};
 }
 export function previewDashboard(state: PreviewState): Awaited<ReturnType<typeof dashboard>> {
   const members = Object.values(CHARACTERS).map(person => ({ id: person.id, name: person.name, avatar: person.id === CHARACTERS.roebie.id && !state.roebieCap ? CHARACTERS.roebie.withoutCapAvatar : person.avatar }));
@@ -57,7 +57,7 @@ export function previewDashboard(state: PreviewState): Awaited<ReturnType<typeof
     saved: state.saved.map(id => questions.find(q => q.id === id)!).filter(Boolean).map(enrich),
     history: [...new Set(state.answers.map(a => a.question_id))].map(id => enrich(questions.find(q => q.id === id)!)).reverse(),
     insights: insights(paired, members.map(m => m.id)),
-    report: { id: 'preview', week: weekKey(), content: createReport(paired, members.map(m => m.id)) },
+    report: { id: 'preview', week: weekKey(), content: createReport([...paired,...state.exampleAnswers.filter(a=>!state.answers.some(real=>real.question_id===a.question_id))], members.map(m => m.id)) },
     invite: '', pushConfigured: false, pushPublicKey:null, day: localDay(),
   };
 }

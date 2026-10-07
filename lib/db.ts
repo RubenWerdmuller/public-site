@@ -15,6 +15,7 @@ async function connect(): Promise<DB> {
     if (process.env.VERCEL) throw new Error('DATABASE_URL is required on hosted deployments.');
     const dir = path.join(process.cwd(), 'data', 'postgres'); await mkdir(dir, { recursive: true }); db = new PGlite(dir);
   }
+  try {
   // pg supports multi-statement migrations; PGlite requires exec for this batch.
   const local = db instanceof PGlite ? db : null;
   if (local) await local.exec(schema); else await (db as DB).query(schema);
@@ -34,12 +35,20 @@ async function connect(): Promise<DB> {
   await db.query('INSERT INTO question_option_attributes SELECT * FROM jsonb_to_recordset($1::jsonb) AS x(question_id text,choice integer,attribute_key text,value_id text) ON CONFLICT DO NOTHING',[JSON.stringify(optionAttrs)]);
   await db.query("INSERT INTO app_migrations(version) VALUES('seed-v2-roadtrip') ON CONFLICT DO NOTHING");
   return db;
+  } catch(error) {
+    // Release a failed initialization before another request tries a fresh connection.
+    try { if(db instanceof Pool)await db.end();else if(db instanceof PGlite)await db.close(); } catch {}
+    throw error;
+  }
 }
-export async function query<T extends Row = Row>(sql: string, args: unknown[] = []) { globalDb.travelDB ??= connect(); return (await (await globalDb.travelDB).query<T>(sql, args)).rows; }
+async function database():Promise<DB>{
+  const pending=globalDb.travelDB??=connect();
+  try{return await pending;}catch(error){if(globalDb.travelDB===pending)delete globalDb.travelDB;throw error;}
+}
+export async function query<T extends Row = Row>(sql: string, args: unknown[] = []) { return (await (await database()).query<T>(sql, args)).rows; }
 export type Query = typeof query;
 export async function transaction<T>(work: (query: Query) => Promise<T>): Promise<T> {
-  globalDb.travelDB ??= connect();
-  const db = await globalDb.travelDB;
+  const db = await database();
   if (db instanceof Pool) {
     const client = await db.connect();
     try {

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { questions } from '../lib/questions';
-import { knownTravelContext, selectTravelSet, completedSetCount } from '../lib/preferences';
+import { normalizePreferenceValue, knownTravelContext, selectTravelSet, completedSetCount } from '../lib/preferences';
 import { initialPreview, previewAnswer, previewDashboard, previewNextSet, previewQuestions } from '../lib/demo';
 
 test('new sets cover a core, boundary, personal and playful question without flying',()=>{
@@ -62,4 +62,26 @@ test('all sixteen new sets are unique and exhaustion leaves state unchanged',()=
   assert.equal(previewDashboard(state).setTotals[0].completed,16);
   assert.equal(previewNextSet(state),state);
   assert.deepEqual(previewQuestions.map(q=>q.id),initialPreview().sets[0]);
+});
+
+test('numeric preferences start as numbers, decimal commas work and clearing stays open',()=>{
+ assert.equal(normalizePreferenceValue('monthlyBudget','1800'),1800);
+ assert.equal(normalizePreferenceValue('months','1,5'),1.5);
+ assert.equal(normalizePreferenceValue('departureMonth','9'),9);
+ assert.equal(normalizePreferenceValue('monthlyBudget','  '),null);
+ assert.equal(normalizePreferenceValue('temperature','warm_and_dry'),'warm_and_dry');
+ assert.throws(()=>normalizePreferenceValue('months','someday'));
+ assert.throws(()=>normalizePreferenceValue('departureMonth',13));
+ assert.throws(()=>normalizePreferenceValue('departureMonth','2.5'));
+ assert.throws(()=>normalizePreferenceValue('monthlyBudget',-1));
+ const question={...questions.find(q=>q.role==='core')!,id:'budget-test',options:[{...questions[0].options[0],attributes:{monthlyBudget:1800}},{...questions[0].options[1],attributes:{monthlyBudget:1800}}] as typeof questions[0]['options']};
+ const pref={...knownTravelContext.find(p=>p.attribute==='monthlyBudget')!,kind:'hard_constraint' as const,value:normalizePreferenceValue('monthlyBudget','1800')};
+ assert.equal(selectTravelSet([question],[],[],[pref]).length,1);
+});
+test('a hard no-flight agreement filters transport even without a flight attribute',()=>{
+ const base=questions.find(q=>q.role==='core')!;
+ const flying={...base,id:'flight-test',options:[{...base.options[0],attributes:{transport:'flight'}},{...base.options[1],attributes:{transport:'flight'}}] as typeof base.options};
+ const driving={...base,id:'car-test',options:[{...base.options[0],attributes:{transport:'car'}},{...base.options[1],attributes:{transport:'car'}}] as typeof base.options};
+ const preference={...knownTravelContext.find(p=>p.attribute==='flight')!,kind:'hard_constraint' as const};
+ assert.deepEqual(selectTravelSet([flying,driving],[],[],[preference]).map(q=>q.id),['car-test']);
 });

@@ -82,5 +82,18 @@ try {
   assert.deepEqual(await page.evaluate(()=>({local:localStorage.length,session:sessionStorage.length})),{local:0,session:0});
   assert.equal(await page.evaluate(async()=>(await navigator.serviceWorker.getRegistrations()).length),0);
   assert.deepEqual(apiRequests,[]);assert.deepEqual(errors,[]);
-  console.log('PASS: whole-card sketch click and keyboard, immediate questions, two-person reveal/history, shared sets and independent totals/cursors, saved questions, editable context, cap, notification, report/feedback/scratchpad, reset, desktop/mobile; no API/storage/SW writes.');
+  const reportFlow=await context.newPage();reportFlow.on('pageerror',error=>errors.push(error.message));
+  await reportFlow.goto('http://localhost:3100/test');await reportFlow.getByText('Testopties',{exact:true}).click();
+  await reportFlow.getByRole('button',{name:'Voorbeeldweek',exact:true}).click();
+  await reportFlow.getByText(/Dit voorbeeldrapport bevat fictieve antwoorden/).waitFor();
+  await reportFlow.getByRole('button',{name:'Vandaag',exact:true}).first().click();
+  await reportFlow.getByRole('button',{name:'Verder met onze set',exact:true}).click();
+  for(let set=0;set<2;set++){
+    for(let question=0;question<4;question++)await reportFlow.getByRole('button',{name:/^Ik kies A:/}).click();
+    await reportFlow.getByRole('heading',{name:'Een setje dichterbij.'}).waitFor();
+    assert.equal((await reportFlow.locator('.set-totals small').allTextContents())[0],`${set+1} ${set?'sets':'set'} beantwoord`);
+    if(set===0)await reportFlow.getByRole('button',{name:'Nog een set',exact:true}).click();
+  }
+  assert.deepEqual(apiRequests,[]);assert.deepEqual(errors,[]);
+  console.log('PASS: whole-card sketch click and keyboard, immediate questions, two-person reveal/history, shared sets and independent totals/cursors, saved questions, editable context, cap, notification, report/feedback/scratchpad, real sets after example report, reset, desktop/mobile; no API/storage/SW writes.');
 } finally {await browser.close();}

@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { AVATARS, CHARACTERS, portrait } from '../lib/characters';
-import { initialPreview, previewAnswer, previewDashboard, previewWeek, previewQuestions } from '../lib/demo';
+import { initialPreview, previewAnswer, previewDashboard, previewWeek, previewNextSet, previewQuestions } from '../lib/demo';
 
 test('canonical characters resolve to blond, bald and capped portraits', () => {
   assert.equal(portrait(CHARACTERS.oelie.avatar).hairColor, '#d6b961');
@@ -53,4 +53,21 @@ test('reset removes answers, saved cards, feedback and restores canonical portra
   assert.equal(reset.history.length, 0);
   assert.equal(reset.saved.length, 0);
   assert.equal(reset.members[1].avatar, CHARACTERS.roebie.avatar);
+});
+
+test('example reports do not answer, reveal or block real test questions and set totals',()=>{
+ let state=previewWeek(initialPreview());
+ assert.equal(state.answers.length,0);assert.equal(state.exampleAnswers.length,12);
+ assert.equal(previewDashboard(state).history.length,0);
+ assert.equal(previewDashboard(state).insights.match,null);
+ for(let set=0;set<2;set++){
+  for(const id of state.sets[state.cursors.oelie]){
+   assert.equal(previewDashboard(state).questions.find(q=>q.id===id)?.own,null);
+   state=previewAnswer(state,id,0);
+  }
+  if(set===0)state=previewNextSet(state);
+ }
+ assert.equal(previewDashboard(state).setTotals[0].completed,2);
+ assert.ok(state.answers.every(a=>a.mode!=='example'));
+ assert.equal(initialPreview().exampleAnswers.length,0);
 });

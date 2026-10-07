@@ -1,5 +1,6 @@
 import { randomUUID } from 'node:crypto';
-import { query, type Query } from './db';
+import { query, transaction, type Query } from './db';
+import {lockMembership} from './pair-actions';
 import type { User } from './auth';
 import type { Question } from './domain';
 import { isAiAdmin, nextAmsterdamWeek, validateBatch, type TaskKind, type TaskView } from './ai-contracts';
@@ -8,11 +9,29 @@ type Task = TaskView & { pair_id: string; created_by: string; receipt: string } 
 export async function listTasks(user: User) {
   return query<TaskView & Record<string, unknown>>('SELECT id,kind,instruction,status,scheduled_at,created_at,result,pr_url,repeat_weekly FROM ai_tasks WHERE pair_id=$1 ORDER BY created_at DESC LIMIT 50', [user.pair_id]);
 }
+export class TaskQueueFullError extends Error {constructor(){super('Er staan al tien opdrachten klaar. Wacht tot er één is afgerond.');}}
+async function queueCapacity(read:Query,pairId:string){
+  const [row]=await read<{count:number}&Record<string,unknown>>("SELECT count(*)::int AS count FROM ai_tasks WHERE pair_id=$1 AND status IN('queued','running')",[pairId]);
+  if(row.count>=10)throw new TaskQueueFullError();
+}
 export async function enqueueTask(user: User, input: { kind: TaskKind; instruction: string; scheduledAt: string; repeatWeekly?: boolean }) {
-  await query('INSERT INTO ai_tasks(id,pair_id,created_by,kind,instruction,scheduled_at,repeat_weekly) VALUES($1,$2,$3,$4,$5,$6,$7)', [randomUUID(), user.pair_id, user.id, input.kind, input.instruction, input.scheduledAt, input.kind === 'questions' && !!input.repeatWeekly]);
+  await transaction(async read=>{
+    await lockMembership(read,user.pair_id,user.id);
+    await read('SELECT pg_advisory_xact_lock(hashtext($1))',[`ai-queue:${user.pair_id}`]);
+    await queueCapacity(read,user.pair_id);
+    await read('INSERT INTO ai_tasks(id,pair_id,created_by,kind,instruction,scheduled_at,repeat_weekly) VALUES($1,$2,$3,$4,$5,$6,$7)', [randomUUID(), user.pair_id, user.id, input.kind, input.instruction, input.scheduledAt, input.kind === 'questions' && !!input.repeatWeekly]);
+  });
 }
 export async function changeTask(user: User, id: string, action: 'cancel' | 'retry') {
-  return query('UPDATE ai_tasks SET status=$1,receipt=NULL,claimed_at=NULL,result=NULL WHERE id=$2 AND pair_id=$3 AND status=ANY($4::text[]) RETURNING id', [action === 'cancel' ? 'cancelled' : 'queued', id, user.pair_id, action === 'cancel' ? ['queued', 'failed'] : ['failed']]);
+  return transaction(async read=>{
+    await lockMembership(read,user.pair_id,user.id);
+    await read('SELECT pg_advisory_xact_lock(hashtext($1))',[`ai-queue:${user.pair_id}`]);
+    if(action==='retry'){
+      if(!(await read("SELECT id FROM ai_tasks WHERE id=$1 AND pair_id=$2 AND status='failed'",[id,user.pair_id])).length)return [];
+      await queueCapacity(read,user.pair_id);
+    }
+    return read('UPDATE ai_tasks SET status=$1,receipt=NULL,claimed_at=NULL,result=NULL WHERE id=$2 AND pair_id=$3 AND status=ANY($4::text[]) RETURNING id', [action === 'cancel' ? 'cancelled' : 'queued', id, user.pair_id, action === 'cancel' ? ['queued', 'failed'] : ['failed']]);
+  });
 }
 export async function availableBank(pairId: string, read: Query = query) {
   return (await read<{ content: Question } & Record<string, unknown>>(`SELECT q.content FROM questions q WHERE

@@ -11,6 +11,7 @@ import { dashboard, refreshInsights } from '@/lib/service';
 import { nextSet, SetNotReadyError } from '@/lib/sets';
 import { answerWeeklyQuestion } from '@/lib/weekly-questions';
 import {joinPair,recordQuestion,PairActionError} from '@/lib/pair-actions';
+import {normalizePreferenceValue} from '@/lib/preferences';
 import { questionId } from '@/lib/ai-contracts';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -44,7 +45,10 @@ export async function POST(req:NextRequest) {
     }
     if(action==='preference') {
       const data=z.object({preferenceId:z.string().max(150),kind:z.enum(['hard_constraint','soft_constraint','strong_preference','weak_preference','interest','personal_wish','open_question']),notes:z.string().max(1000),value:z.union([z.string().max(1000),z.number().finite(),z.boolean(),z.null()]),confidence:z.number().min(0).max(1),boundary:z.object({unit:z.string().max(40),preferred:z.tuple([z.number(),z.number()]).optional(),acceptable:z.tuple([z.number(),z.number()]).optional(),hard:z.tuple([z.number(),z.number()]).optional(),exceptions:z.array(z.string().max(200)).max(10).optional()}).refine(b=>[b.preferred,b.acceptable,b.hard].every(range=>!range||range[0]<=range[1])).nullable()}).parse(body);
-      const changed=await query('UPDATE travel_preferences p SET kind=$1,value=$2::jsonb,confidence=$3,notes=$4,boundary=$5::jsonb,updated_at=now() FROM preference_subjects s WHERE p.subject_id=s.id AND s.pair_id=$6 AND p.id=$7 AND p.source=$8 RETURNING p.id',[data.kind,JSON.stringify(data.value),data.confidence,data.notes,JSON.stringify(data.boundary),user.pair_id,data.preferenceId,'explicitly_stated']);
+      const [preference]=await query<{attribute_key:string}&Record<string,unknown>>('SELECT p.attribute_key FROM travel_preferences p JOIN preference_subjects s ON s.id=p.subject_id WHERE s.pair_id=$1 AND p.id=$2 AND p.source=$3',[user.pair_id,data.preferenceId,'explicitly_stated']);
+      if(!preference)return json({error:'Dit uitgangspunt hoort niet bij jullie boekje.'},403);
+      let value;try{value=normalizePreferenceValue(preference.attribute_key,data.value);}catch(error){return json({error:error instanceof Error?error.message:'Controleer je afspraak.'},400);}
+      const changed=await query('UPDATE travel_preferences p SET kind=$1,value=$2::jsonb,confidence=$3,notes=$4,boundary=$5::jsonb,updated_at=now() FROM preference_subjects s WHERE p.subject_id=s.id AND s.pair_id=$6 AND p.id=$7 AND p.source=$8 RETURNING p.id',[data.kind,JSON.stringify(value),data.confidence,data.notes,JSON.stringify(data.boundary),user.pair_id,data.preferenceId,'explicitly_stated']);
       return changed.length?json({ok:true}):json({error:'Dit uitgangspunt hoort niet bij jullie boekje.'},403);
     }
     if(action==='next-set') {const id=z.string().max(120).parse(body.setId);const next=await nextSet(user,id);return next?json({ok:true}):json({error:'Jullie hebben alle sets ontdekt. Tijd om de bewaarde vragen samen te bekijken.'},409);}

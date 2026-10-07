@@ -12,6 +12,7 @@ import {answerWeeklyQuestion,ensureWeeklyQuestion} from '../lib/weekly-questions
 import {initialPreview,previewSave,previewAnswer} from '../lib/demo';
 import {runJobs} from '../lib/jobs';
 import type {User} from '../lib/auth';
+import {enqueueTask,changeTask,TaskQueueFullError,listTasks} from '../lib/ai-tasks';
 import {appScreen,isAppScreen} from '../lib/navigation';
 
 const user=(id:string,pair_id:string):User=>({id,pair_id,email:`${id}@example.test`,name:id,avatar:0});
@@ -113,4 +114,20 @@ test('expired invitations renew once under concurrent requests and complete duos
   await joinPair(user('two','b'),first!);
   assert.equal(await activeInvite(user('one','a')),null);
   await assert.rejects(activeInvite(user('two','b')),/gewijzigd/);
+}));
+
+test('AI queue limits include older tasks, concurrent submissions and retries',async()=>database(async()=>{
+  await query("INSERT INTO ai_tasks(id,pair_id,created_by,kind,instruction,scheduled_at,status,created_at) SELECT 'history-'||i,'a','one','questions','Done',now(),'published',now() FROM generate_series(1,51) i");
+  await query("INSERT INTO ai_tasks(id,pair_id,created_by,kind,instruction,scheduled_at,created_at) SELECT 'old-'||i,'a','one','questions','Queued',now(),now()-interval '1 day' FROM generate_series(1,9) i");
+  assert.equal((await listTasks(user('one','a'))).filter(t=>t.status==='queued').length,0);
+  const input={kind:'questions' as const,instruction:'Maak nieuwe vragen',scheduledAt:new Date().toISOString()};
+  const results=await Promise.allSettled([enqueueTask(user('one','a'),input),enqueueTask(user('one','a'),input)]);
+  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
+  assert.ok(results.some(r=>r.status==='rejected'&&r.reason instanceof TaskQueueFullError));
+  await query("INSERT INTO ai_tasks(id,pair_id,created_by,kind,instruction,scheduled_at,status) VALUES('retry','a','one','questions','Retry',now(),'failed')");
+  await assert.rejects(changeTask(user('one','a'),'retry','retry'),TaskQueueFullError);
+  assert.deepEqual(await changeTask(user('two','b'),'retry','retry'),[]);
+  await changeTask(user('one','a'),'old-1','cancel');
+  assert.equal((await changeTask(user('one','a'),'retry','retry')).length,1);
+  assert.equal((await query<{count:number}&Record<string,unknown>>("SELECT count(*)::int AS count FROM ai_tasks WHERE pair_id='a' AND status IN('queued','running')"))[0].count,10);
 }));

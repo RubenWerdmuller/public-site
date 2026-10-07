@@ -1,0 +1,1301 @@
+[
+  {
+    "id": "scene-fox",
+    "art": "mountain",
+    "title": "Een vos wijst de weg",
+    "paths": [
+      {
+        "d": "M125 155 145 73 178 105 209 102 246 73 261 154 199 176z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M143 140l35-35 20 44 17-47 31 38-45 33z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "m187 150 12 11 12-11zm-22-27h1m63-1h1M90 178q-32-61 19-89l20 55",
+        "fill": "#ca8b70"
+      }
+    ],
+    "alsoArts": [
+      "alpaca"
+    ]
+  },
+  {
+    "id": "scene-forest-road",
+    "art": "mountain",
+    "title": "Een weg door het bos",
+    "paths": [
+      {
+        "d": "M53 158 92 76 132 158zM264 156 302 50 348 156z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M91 79v105m211-128v129M162 188q63-38 24-58 36-20 40-49",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M133 77 153 30 175 77z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M153 49v62"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-waterfall",
+    "art": "mountain",
+    "title": "Waterval met een zwemplek",
+    "paths": [
+      {
+        "d": "M75 142 114 67 174 70 193 43 298 54 329 151",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M165 71h66l-9 105h-55z",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M112 178q77-24 172 0-74 30-172 0z",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M183 77l-3 78m27-88-5 80m-62 24h31m43 13h27"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-canoe",
+    "art": "mountain",
+    "title": "Kano op een stil meer",
+    "paths": [
+      {
+        "d": "M76 163q118 45 236-2l-34 39H110z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M191 158v-40m0 10-31 17m32-18 33 16"
+      },
+      {
+        "d": "M174 101a17 17 0 1 0 34 0a17 17 0 1 0 -34 0",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M139 151 249 190m-1-9 19 15-9 9-19-15z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M70 205h80m77 0h97",
+        "fill": "#b4cbd0"
+      }
+    ],
+    "alsoArts": [
+      "sailing"
+    ]
+  },
+  {
+    "id": "scene-rainbow",
+    "art": "mountain",
+    "title": "Regenboog boven onze route",
+    "paths": [
+      {
+        "d": "M91 168q14-143 113-143t99 143",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M113 168q10-114 91-114t76 114",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M131 168q8-89 73-89t57 89",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M64 168q-18-39 15-41 11-26 32-7 32 1 16 48zm184 0q-15-38 15-40 10-27 30-9 34 4 15 49z",
+        "fill": "#ead8b7"
+      }
+    ],
+    "alsoArts": [
+      "surf"
+    ]
+  },
+  {
+    "id": "scene-bridge",
+    "art": "mountain",
+    "title": "Het bruggetje naar nergens",
+    "paths": [
+      {
+        "d": "M71 184q124-45 247 0M95 182v-67q102-69 204 0v66",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M111 154q84-48 171 0m-171-35v46m29-60v50m29-61v47m30-54v48m28-40v47m29-33v47m29-24v46"
+      },
+      {
+        "d": "M61 194q20-8 40 0t40 0t40 0t40 0t40 0t40 0",
+        "fill": "#b4cbd0"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-bicycle",
+    "art": "mountain",
+    "title": "Fiets met veel te volle mand",
+    "paths": [
+      {
+        "d": "M76 153a35 35 0 1 0 70 0a35 35 0 1 0 -70 0"
+      },
+      {
+        "d": "M248 153a35 35 0 1 0 70 0a35 35 0 1 0 -70 0"
+      },
+      {
+        "d": "M112 153 165 97 209 153zm53-56 42 55 48-74 27 74M153 85h31m61-14h30"
+      },
+      {
+        "d": "M260 75h58l-8 33h-43z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M276 75l-5-28m21 28 9-24m-132 46-4-11",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M262 43a8 8 0 1 0 16 0a8 8 0 1 0 -16 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M293 47a9 9 0 1 0 18 0a9 9 0 1 0 -18 0",
+        "fill": "#ebc879"
+      }
+    ],
+    "alsoArts": [
+      "camper"
+    ]
+  },
+  {
+    "id": "scene-lighthouse",
+    "art": "mountain",
+    "title": "Vuurtoren voor de verdwaalde",
+    "paths": [
+      {
+        "d": "M158 180 172 75h52l16 105z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M173 75V48h50v27zm-9 46h69m-64 21h67",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M168 46l31-22 29 22z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M190 163v17h18v-17zM199 52v16M94 92l56-31m90 0 61 32"
+      },
+      {
+        "d": "M70 189q24-12 48 0t48 0t48 0t48 0t48 0",
+        "fill": "#b4cbd0"
+      }
+    ],
+    "alsoArts": [
+      "sailing"
+    ]
+  },
+  {
+    "id": "scene-whale",
+    "art": "mountain",
+    "title": "Een walvis met vakantieplannen",
+    "paths": [
+      {
+        "d": "M106 130q69-58 138 0l37-26 36 8-32 21 25 18-46-3q-75 64-155 9z",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M146 136a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M127 156q23 17 45 2m6-50V77m-4 1-16-18m25 17 19-18M124 185h126"
+      }
+    ],
+    "alsoArts": [
+      "surf"
+    ]
+  },
+  {
+    "id": "scene-puffin",
+    "art": "mountain",
+    "title": "Papegaaiduiker op de uitkijk",
+    "paths": [
+      {
+        "d": "M139 179q-12-35 3-71-3-58 39-65 54-1 47 57l-7 79z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M165 179q-25-64 18-83 36 4 26 83z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "m226 65 41 14-41 18z",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M203 67a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+      },
+      {
+        "d": "M160 179v15h-16m62-15v15h19M83 196h238"
+      }
+    ],
+    "alsoArts": [
+      "alpaca"
+    ]
+  },
+  {
+    "id": "scene-hammock",
+    "art": "mountain",
+    "title": "Hangmat met uitzicht",
+    "paths": [
+      {
+        "d": "M79 184 88 47m212 139-11-142"
+      },
+      {
+        "d": "M89 92q110 128 199 0-23 92-99 90-78-1-100-90z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M104 114q83 50 169-2M73 54q-47-20-15-29 34-10 29 22 1-34 33-19 23 14-32 29m201-8q-35-30-11-36 26 3 16 29 9-31 35-18 18 14-40 25",
+        "fill": "#b7c8ac"
+      }
+    ],
+    "alsoArts": [
+      "garden"
+    ]
+  },
+  {
+    "id": "scene-dunes",
+    "art": "mountain",
+    "title": "Duinen zonder haast",
+    "paths": [
+      {
+        "d": "M51 177q65-131 141-35 63-127 157 35z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M90 184q88-53 173-9m-133-11-10-47m10 47 8-38m150 20-7-42m7 42 9-26",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M260 48a19 19 0 1 0 38 0a19 19 0 1 0 -38 0",
+        "fill": "#ebc879"
+      }
+    ],
+    "alsoArts": [
+      "surf"
+    ]
+  },
+  {
+    "id": "scene-night-train",
+    "art": "mountain",
+    "title": "Nachttrein door de heuvels",
+    "paths": [
+      {
+        "d": "M77 145h238v39H77z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M97 151h39v19H97zm57 0h39v19h-39zm57 0h39v19h-39zm57 0h30v19h-30z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M63 194h267m-249 4 7 8m48-8 7 8m48-8 7 8m48-8 7 8m48-8 7 8M57 124l79-59 87 59 74-83 54 80",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M215 24q-22 30 11 39-42 14-45-21 9-21 34-18",
+        "fill": "#ebc879"
+      }
+    ],
+    "alsoArts": [
+      "camper"
+    ]
+  },
+  {
+    "id": "scene-snail-sign",
+    "art": "mountain",
+    "title": "Slak bij de wandelwijzer",
+    "paths": [
+      {
+        "d": "M220 181V48m-53 8h102l25 19-25 17H167z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M82 180h97q21-1 22-22m0 0 5-23m-10 26-9-20",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M101 147a30 30 0 1 0 60 0a30 30 0 1 0 -60 0",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M133 165q-25-5-12-27 15-10 21 8 1 14-13 7M183 68h72"
+      },
+      {
+        "d": "M204 132a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-picnic-basket",
+    "art": "mountain",
+    "title": "Picknick met een geheime kaart",
+    "paths": [
+      {
+        "d": "M95 119h110l-16 65h-74z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M112 117q42-80 77 0M110 140h78m-66-21 5 63m25-63v63m23-63-5 63"
+      },
+      {
+        "d": "M224 78 255 91 283 76 316 89v91l-33-13-28 16-31-15z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M255 93v87m28-103v89m-37-36q36 20 55-16"
+      },
+      {
+        "d": "M130 105l-3-22 24-10 10 33",
+        "fill": "#ca8b70"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-deer",
+    "art": "mountain",
+    "title": "Hert tussen de dennen",
+    "paths": [
+      {
+        "d": "M130 163q-9-61 22-74l25-10 31 12 10 73z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M153 85l-27-23 18-4 12 18m44 14 26-23-19-4-9 14M163 71l-4-40m0 16-15-13m15 6 14-17m18 49 8-40m-3 16 17-13m-15 5-8-16"
+      },
+      {
+        "d": "M163 112a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M192 112a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "m173 130 9 8 9-8M259 178l25-79 30 79z",
+        "fill": "#b7c8ac"
+      }
+    ],
+    "alsoArts": [
+      "alpaca"
+    ]
+  },
+  {
+    "id": "scene-boots-river",
+    "art": "mountain",
+    "title": "Laarzen na een modderavontuur",
+    "paths": [
+      {
+        "d": "M95 67h48v81l48 15v22H84zM223 86h47v62l46 17v20h-94z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M85 187h108m27 0h99M96 78h45m83 21h43"
+      },
+      {
+        "d": "M119 48q-18-17 2-29m111 49q21-17-1-29M56 195q13-8 28 0m211 0q16-8 32 0",
+        "fill": "#b4cbd0"
+      }
+    ],
+    "alsoArts": [
+      "hiking"
+    ]
+  },
+  {
+    "id": "scene-hot-spring",
+    "art": "mountain",
+    "title": "Warm bad tussen de rotsen",
+    "paths": [
+      {
+        "d": "M91 148q106-65 209 0-6 50-105 48-99-1-104-48z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M111 153q80-39 168 0-6 24-84 26-75-1-84-26z",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M160 112q-18-20 0-42m38 36q-20-22 0-48m35 55q-18-19 0-40"
+      },
+      {
+        "d": "M72 144 62 117 86 108 104 139m175-8 18-28 24 21-16 29",
+        "fill": "#ead8b7"
+      }
+    ],
+    "alsoArts": [
+      "yoga"
+    ]
+  },
+  {
+    "id": "scene-tent-goose",
+    "art": "mountain",
+    "title": "Een gans bewaakt de tent",
+    "paths": [
+      {
+        "d": "M64 177 148 67 231 177z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M111 177l37-110 38 110z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M265 176q-27-9-22-39l19-7v-39q-11-31 10-33 22 5 11 28l-3 45q35 40-15 45z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "m283 67 20 7-20 8m-27 94v14h-14m33-14v14h13",
+        "fill": "#ebc879"
+      }
+    ],
+    "alsoArts": [
+      "campfire"
+    ]
+  },
+  {
+    "id": "scene-lookout",
+    "art": "mountain",
+    "title": "Twee stoelen aan de horizon",
+    "paths": [
+      {
+        "d": "M101 122h52v41h-52zm132 0h52v41h-52z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M103 161v26m48-26v26m84-26v26m48-26v26M56 92q75-56 141-6 78-64 144 0",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M173 60a22 22 0 1 0 44 0a22 22 0 1 0 -44 0",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M172 175h43m-21-4v20"
+      }
+    ],
+    "alsoArts": [
+      "garden"
+    ]
+  },
+  {
+    "id": "scene-cactus",
+    "art": "mountain",
+    "title": "Cactus met een zonnig humeur",
+    "paths": [
+      {
+        "d": "M180 172V65q0-38 32-33 23 5 20 33v107z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M180 115h-36q-27 1-25-25V74q1-21 20-18 16 2 12 24v11h29m51 43h33q23 0 22-23V94q-2-20-19-18-17 3-14 20v10h-22",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M198 91v4m18-4v4m-22 19q9 10 17 0m-49 57h87l-15 28h-61z",
+        "fill": "#ca8b70"
+      }
+    ],
+    "alsoArts": [
+      "garden"
+    ]
+  },
+  {
+    "id": "scene-sleepy-cat",
+    "art": "house",
+    "title": "Kat claimt het vakantiekussen",
+    "paths": [
+      {
+        "d": "M91 145q107-38 218 0l-11 40H100z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M140 137q-9-39 17-49V62l27 21 25-2 23-19 2 28q21 48-26 53z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M158 111l9 4 9-5m31 1 9 4 8-6m-45 17 9 5 8-5m-41 14q-52 2-35-26M260 66h20l-20 20h20"
+      }
+    ],
+    "alsoArts": [
+      "alpaca"
+    ]
+  },
+  {
+    "id": "scene-bread",
+    "art": "house",
+    "title": "Brood met een eigen mening",
+    "paths": [
+      {
+        "d": "M126 165q-27-78 20-98 53-25 102 5 38 30 12 93z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M147 93l20 21m14-32 21 25m13-19 19 21m-94 64h110m-90-33h1m46 0h1m-43 10q18 12 37 0"
+      },
+      {
+        "d": "M95 184h204"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-record-player",
+    "art": "house",
+    "title": "Een plaat voor de regenmiddag",
+    "paths": [
+      {
+        "d": "M95 93h214v90H95z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M154 131a35 35 0 1 0 70 0a35 35 0 1 0 -70 0",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M181 131a8 8 0 1 0 16 0a8 8 0 1 0 -16 0",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M277 103v37l-28 21m-1 0 9 9m-143-8h29M115 91V57h181v34",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M66 102V70l20-5v29m-20 7q-18 9-15-4 3-8 15-2"
+      }
+    ],
+    "alsoArts": [
+      "dance"
+    ]
+  },
+  {
+    "id": "scene-bath",
+    "art": "house",
+    "title": "Een bad na de bergwandeling",
+    "paths": [
+      {
+        "d": "M98 111h210l-25 67H123z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M89 108h228m-184 71-8 12m147-12 11 12M122 99V61q2-29 36-23v18m0 0h-17"
+      },
+      {
+        "d": "M194 92a15 15 0 1 0 30 0a15 15 0 1 0 -30 0",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M223 79a19 19 0 1 0 38 0a19 19 0 1 0 -38 0",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M256 98a12 12 0 1 0 24 0a12 12 0 1 0 -24 0",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M173 71q-15-16 1-35"
+      }
+    ],
+    "alsoArts": [
+      "yoga"
+    ]
+  },
+  {
+    "id": "scene-books",
+    "art": "house",
+    "title": "Boekenstapel voor heel even",
+    "paths": [
+      {
+        "d": "M110 152h181v29H110zm15-34h152v29H125zm-9-36h176v28H116z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M112 164h170m-144-35h134M124 93h156m-105-9v26m51 8v29",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M174 69v-22h63v22z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M191 31q-10-15 0-26m19 28q-9-17 1-28"
+      }
+    ],
+    "alsoArts": [
+      "yoga"
+    ]
+  },
+  {
+    "id": "scene-board-game",
+    "art": "house",
+    "title": "Dobbelstenen bepalen de avond",
+    "paths": [
+      {
+        "d": "M96 106l42-26 52 26v61l-52 24-42-24z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M96 106l42 26 52-26m-52 26v59"
+      },
+      {
+        "d": "M135 105a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+      },
+      {
+        "d": "M108 140a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M119 161a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M153 150a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M173 139a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M234 96h64v81h-64z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "m252 121 17-10 15 18-15 19-17-17z",
+        "fill": "#ead8b7"
+      }
+    ],
+    "alsoArts": [
+      "dance"
+    ]
+  },
+  {
+    "id": "scene-window-rain",
+    "art": "house",
+    "title": "Regen buiten, thee binnen",
+    "paths": [
+      {
+        "d": "M97 39h164v115H97z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M179 40v114m-81-60h162m-137-33-8 12m39-15-8 12m60 2-8 12m35 22-8 12m-87 5-8 12"
+      },
+      {
+        "d": "M148 167h81v32h-81z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M230 173q33-9 19 15l-19 3M172 161q-12-18 0-34m20 32q-13-19 1-35"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-vinyl-dance",
+    "art": "house",
+    "title": "Sokken aan, dansen maar",
+    "paths": [
+      {
+        "d": "M107 81h50v62l33 14v26H95zM227 93h46v58l34 17v16h-92z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M108 96h47m74 12h41m-113 19h-49m-11 52h89m27 0h89"
+      },
+      {
+        "d": "M185 66V34l28-6v34m-28 4q-20 9-18-5 3-8 18-2m28 3q-18 9-16-5 3-8 16-1"
+      }
+    ],
+    "alsoArts": [
+      "dance"
+    ]
+  },
+  {
+    "id": "scene-cheese-board",
+    "art": "house",
+    "title": "Een plankje lokale ontdekkingen",
+    "paths": [
+      {
+        "d": "M87 119h227v67H87z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M117 145v-44l65 31v24h-65z",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M132 133a6 6 0 1 0 12 0a6 6 0 1 0 -12 0"
+      },
+      {
+        "d": "M160 145a4 4 0 1 0 8 0a4 4 0 1 0 -8 0"
+      },
+      {
+        "d": "M222 112q41-16 62 0l-8 44h-50z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M232 90q-20-44 26-44 17 15 1 35m-27 15 47-10",
+        "fill": "#b7c8ac"
+      }
+    ],
+    "alsoArts": [
+      "market"
+    ]
+  },
+  {
+    "id": "scene-flowers",
+    "art": "house",
+    "title": "Een veldboeket in onze mok",
+    "paths": [
+      {
+        "d": "M155 120h88v58q-43 17-88 0z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M244 132q47-8 28 30h-28M197 121 170 65m27 56 12-72m-12 72 47-52"
+      },
+      {
+        "d": "M152 54a14 14 0 1 0 28 0a14 14 0 1 0 -28 0",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M196 37a15 15 0 1 0 30 0a15 15 0 1 0 -30 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M236 59a14 14 0 1 0 28 0a14 14 0 1 0 -28 0",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M192 110q-42-39-52-15 25 23 52 15m9-25q18-42 39-19-10 20-39 19",
+        "fill": "#b7c8ac"
+      }
+    ],
+    "alsoArts": [
+      "garden"
+    ]
+  },
+  {
+    "id": "scene-painting",
+    "art": "house",
+    "title": "Het uitzicht op een doek",
+    "paths": [
+      {
+        "d": "M110 46h179v109H110z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M110 129l47-52 47 42 38-41 48 45",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M219 65a12 12 0 1 0 24 0a12 12 0 1 0 -24 0",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M199 155v39m-62-40-21 40m148-40 19 40m-73-148V26M89 181h219"
+      }
+    ],
+    "alsoArts": [
+      "pottery"
+    ]
+  },
+  {
+    "id": "scene-pizza-table",
+    "art": "house",
+    "title": "Pizza voor twee, laatste stukje",
+    "paths": [
+      {
+        "d": "M102 156q99-41 198 0-98 51-198 0z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M120 148l76-62 87 62-164 1z",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M128 137q68 25 145-1",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M171 121a7 7 0 1 0 14 0a7 7 0 1 0 -14 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M224 133a6 6 0 1 0 12 0a6 6 0 1 0 -12 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M149 138a5 5 0 1 0 10 0a5 5 0 1 0 -10 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M302 115v70m-7-71V97m7 17V95m7 18V99"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-pancake-flip",
+    "art": "house",
+    "title": "De pannenkoek kiest zelf een route",
+    "paths": [
+      {
+        "d": "M91 151q64-35 146 0-64 48-146 0z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M236 151l74-28 5 12-75 31z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M127 66q50-24 93 0-39 33-93 0z",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M140 100l-8 24m54-25 7 19m40-32 15 24m-63-81h1m-19 8q15 7 27-1"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-nap",
+    "art": "house",
+    "title": "De middagdutkampioen",
+    "paths": [
+      {
+        "d": "M86 133h233v52H86z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M99 108h49v41H99zm49 25q63-54 152-4v32H150z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M116 128q13-14 25 0m26 24h114M271 52h25l-25 25h25m-68-44h19l-19 18h19"
+      }
+    ],
+    "alsoArts": [
+      "yoga"
+    ]
+  },
+  {
+    "id": "scene-jam",
+    "art": "house",
+    "title": "Potjes met zomervoorraad",
+    "paths": [
+      {
+        "d": "M115 98h67v85h-67zM229 88h63v95h-63z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M108 83h80v17h-80zm116-12h73v19h-73z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M128 128h40v30h-40zM241 117h39v33h-39z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M135 136q13-20 24 0-1 12-12 18-13-7-12-18m117-5q4-18 14-7-2 17-14 7",
+        "fill": "#b7c8ac"
+      }
+    ],
+    "alsoArts": [
+      "market"
+    ]
+  },
+  {
+    "id": "scene-letter",
+    "art": "house",
+    "title": "Een kaartje voor thuis",
+    "paths": [
+      {
+        "d": "M93 85h218v104H93z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M95 88l107 71 107-71M94 187l66-66m149 66-64-64"
+      },
+      {
+        "d": "M135 82V38h132v79l-66 42z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M151 54h69m-69 17h94m-94 17h69"
+      },
+      {
+        "d": "M232 111q15-17 24 0-1 17-23 25-24-9-22-25 10-17 21 0",
+        "fill": "#ca8b70"
+      }
+    ],
+    "alsoArts": [
+      "camper"
+    ]
+  },
+  {
+    "id": "scene-tea-two",
+    "art": "house",
+    "title": "Twee mokken, één goed verhaal",
+    "paths": [
+      {
+        "d": "M98 99h71v66q-35 17-71 0zM228 99h71v66q-34 17-71 0z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M169 111q37-10 23 29l-23 5m130-34q38-10 22 29l-22 5M122 85q-12-18 1-36m131 36q-12-19 1-36"
+      },
+      {
+        "d": "M119 126q15-17 29 0m108 0q15 17 29 0M84 188h236"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-knitting",
+    "art": "house",
+    "title": "Een sjaal voor de volgende halte",
+    "paths": [
+      {
+        "d": "M120 129a47 47 0 1 0 94 0a47 47 0 1 0 -94 0",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M126 106q39 3 65 60m-55-71q46 1 69 49m-47-60q32 19 40 39m-74 16q37-4 68-44"
+      },
+      {
+        "d": "M185 144l77-99m-64 110 90-96M168 176q77 36 105 2t-15-34"
+      },
+      {
+        "d": "m264 40-3 10m30 4-6 6"
+      }
+    ],
+    "alsoArts": [
+      "pottery"
+    ]
+  },
+  {
+    "id": "scene-plant-window",
+    "art": "house",
+    "title": "Een kamerplant op wereldreis",
+    "paths": [
+      {
+        "d": "M168 136h76l-16 54h-43z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M202 136V70m0 36q-53-36-59-9 13 23 59 9m0-20q41-40 56-20-6 29-56 20m0-16q-32-51-9-56 25 12 9 56",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M103 31h196v132m-196 0V31m98 0v127m-90-68h181"
+      }
+    ],
+    "alsoArts": [
+      "garden"
+    ]
+  },
+  {
+    "id": "scene-croissant",
+    "art": "house",
+    "title": "Croissant met uitzicht",
+    "paths": [
+      {
+        "d": "M96 150q-15-91 105-93 104 3 92 93l-39-29-48-13-59 14z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M143 121l14-51m48 38V63m50 58-17-51"
+      },
+      {
+        "d": "M117 178q79 20 158 0M312 125h25v34h-25z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M321 111q-10-16 1-31"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-chess",
+    "art": "house",
+    "title": "Een schaakplan dat vakantie heeft",
+    "paths": [
+      {
+        "d": "M107 177h74l-16-23-4-48h-34l-4 48z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M125 101h38V77h-12V59h-11v18h-15z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M229 177h70l-11-19-7-47 18-23-33-35-27 39 15 17-9 49z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "m259 78 12-4m-47 109h-4m-113 0h207"
+      }
+    ],
+    "alsoArts": [
+      "dance"
+    ]
+  },
+  {
+    "id": "scene-dog-suitcase",
+    "art": "house",
+    "title": "De hond heeft zichzelf ingepakt",
+    "paths": [
+      {
+        "d": "M104 109h191v74H104z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M162 109V94h75v15M107 148h185m-130-9v18m81-18v18"
+      },
+      {
+        "d": "M156 102q-28-45 13-66 49-12 67 27l-12 39z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M165 44q-43 0-41 51 20 21 37-27m60-18q40 2 27 48-24 13-26-19",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M181 67a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "M206 67a3 3 0 1 0 6 0a3 3 0 1 0 -6 0"
+      },
+      {
+        "d": "m185 84 12 8 10-8"
+      }
+    ],
+    "alsoArts": [
+      "alpaca"
+    ]
+  },
+  {
+    "id": "scene-movie-night",
+    "art": "house",
+    "title": "Filmavond zonder haast",
+    "paths": [
+      {
+        "d": "M85 49h216v117H85z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M99 61h188v90H99z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "m176 83 38 23-38 23z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M183 165v18m-40 6h85M270 175l-10-37h50l-10 37z",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M260 132a9 9 0 1 0 18 0a9 9 0 1 0 -18 0",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M279 129a9 9 0 1 0 18 0a9 9 0 1 0 -18 0",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M296 132a8 8 0 1 0 16 0a8 8 0 1 0 -16 0",
+        "fill": "#ead8b7"
+      }
+    ],
+    "alsoArts": [
+      "campfire"
+    ]
+  },
+  {
+    "id": "scene-camera-memories",
+    "art": "house",
+    "title": "Ons rommelige fotoalbum",
+    "paths": [
+      {
+        "d": "M90 62l90-13 16 126-90 12z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M108 79l54-9 11 61-55 8z",
+        "fill": "#b4cbd0"
+      },
+      {
+        "d": "M226 78l78 18-23 95-78-18z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M236 99l50 12-13 52-50-12z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M123 118l16-27 26 21m71 26 22-18 10 34M98 41l21-5m185 15 15 13"
+      }
+    ],
+    "alsoArts": [
+      "camper"
+    ]
+  },
+  {
+    "id": "scene-breakfast-hat",
+    "art": "house",
+    "title": "Ontbijt voor de petdrager",
+    "paths": [
+      {
+        "d": "M93 114q53-98 110 0z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M100 114h122q-46 26-122 0z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M234 125h66v46q-34 17-66 0z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M301 133q32-7 16 22l-15 2M252 112q-12-16 0-34m20 34q-12-16 0-34M84 186h238"
+      },
+      {
+        "d": "M121 151q40-12 67 0l-7 18h-53z",
+        "fill": "#ebc879"
+      }
+    ],
+    "alsoArts": [
+      "coffee"
+    ]
+  },
+  {
+    "id": "scene-soup",
+    "art": "coffee",
+    "title": "Soep na een regenwandeling",
+    "paths": [
+      {
+        "d": "M125 112h147q-3 61-74 65-66-6-73-65z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M125 113q73-26 147 0-69 27-147 0z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M156 85q-17-20 1-42m39 38q-18-20 1-42m37 42q-17-20 1-42M109 188h179m15-64v57"
+      },
+      {
+        "d": "M300 110q-19-31 2-32 23 2 4 33z",
+        "fill": "#ead8b7"
+      }
+    ]
+  },
+  {
+    "id": "scene-marshmallow-face",
+    "art": "campfire",
+    "title": "De marshmallow kijkt terug",
+    "paths": [
+      {
+        "d": "M130 93h83v72h-83z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M213 132l83 44m-41 6 17-31M148 113v4m37-4v4m-34 20q15 16 32-1"
+      },
+      {
+        "d": "M113 188q-25-30 14-57-4 29 13 17 26-17 23-48 42 52 24 89z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M117 194h117"
+      }
+    ]
+  },
+  {
+    "id": "scene-moon-tent",
+    "art": "campfire",
+    "title": "Tent onder een lachende maan",
+    "paths": [
+      {
+        "d": "M92 180 189 85 285 180z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M147 180l42-95 36 95z",
+        "fill": "#ead8b7"
+      },
+      {
+        "d": "M269 26q-31 41 12 48-53 20-55-21 7-34 43-27",
+        "fill": "#ebc879"
+      },
+      {
+        "d": "M239 52v3m12 9q12 6 17-5m-176-4 3-9 4 9m52-31 3-9 4 9M188 135v46"
+      }
+    ]
+  },
+  {
+    "id": "scene-camp-chair",
+    "art": "campfire",
+    "title": "Het beste kampvuurgesprek",
+    "paths": [
+      {
+        "d": "M90 99h57l13 43-60 10zM246 101h52l-9 51-59-11z",
+        "fill": "#b7c8ac"
+      },
+      {
+        "d": "M105 149l-8 43m48-49 14 49m82-47-12 47m53-42 10 42"
+      },
+      {
+        "d": "M183 174q-16-30 16-55-1 23 9 19 21-2 7-36 39 45 17 72z",
+        "fill": "#ca8b70"
+      },
+      {
+        "d": "M170 190l71-10m-69-1 66 13",
+        "fill": "#ead8b7"
+      }
+    ]
+  }
+]
