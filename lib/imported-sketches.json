@@ -1,0 +1,502 @@
+[
+  {
+    "id": "doodle-weather-snow",
+    "title": "Sneeuw op de bergpas",
+    "art": "mountain",
+    "file": "/sketches/weather-snow.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/snow.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/snow.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-sunny",
+    "title": "Een zonnige omweg",
+    "art": "mountain",
+    "file": "/sketches/weather-sunny.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/sunny.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/sunny.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-hot-air-balloon",
+    "title": "Ballon boven de bergen",
+    "art": "mountain",
+    "file": "/sketches/misc-hot-air-balloon.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/hot-air-balloon.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/hot-air-balloon.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-sofa",
+    "title": "Even landen op de bank",
+    "art": "house",
+    "file": "/sketches/objects-sofa.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/sofa.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/sofa.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-frame",
+    "title": "Een uitzicht om te bewaren",
+    "art": "house",
+    "file": "/sketches/objects-frame.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/frame.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/frame.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-tv",
+    "title": "Filmavond in ons huisje",
+    "art": "house",
+    "file": "/sketches/objects-tv.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/tv.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/tv.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-car",
+    "title": "Ons autootje op avontuur",
+    "art": "camper",
+    "file": "/sketches/misc-car.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/car.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/car.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-bus",
+    "title": "Een bus vol plannen",
+    "art": "camper",
+    "file": "/sketches/misc-bus.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/bus.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/bus.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-e-commerce-truck",
+    "title": "Alles mee voor onderweg",
+    "art": "camper",
+    "file": "/sketches/e-commerce-truck.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/truck.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/truck.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-rocket",
+    "title": "De belachelijk snelle omweg",
+    "art": "camper",
+    "file": "/sketches/misc-rocket.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/rocket.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/rocket.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-finance-money-plant",
+    "title": "Ons eigen groeipotje",
+    "art": "garden",
+    "file": "/sketches/finance-money-plant.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/finance/money-plant.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/finance/money-plant.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-bug",
+    "title": "Een piepkleine reisgenoot",
+    "art": "garden",
+    "file": "/sketches/misc-bug.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/bug.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/bug.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-rain-light",
+    "title": "Een buitje voor de tuin",
+    "art": "garden",
+    "file": "/sketches/weather-rain-light.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/rain-light.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/rain-light.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-cloudy-day",
+    "title": "Wachten tot de zon terugkomt",
+    "art": "garden",
+    "file": "/sketches/weather-cloudy-day.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/cloudy-day.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/cloudy-day.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-popsicle",
+    "title": "Een ijsje na het zwemmen",
+    "art": "surf",
+    "file": "/sketches/food-popsicle.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/popsicle.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/popsicle.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-ice-cream",
+    "title": "De stranddag is compleet",
+    "art": "surf",
+    "file": "/sketches/food-ice-cream.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/ice-cream.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/ice-cream.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-drink",
+    "title": "Limonade met zeezicht",
+    "art": "surf",
+    "file": "/sketches/food-drink.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/drink.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/drink.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-wind",
+    "title": "Wind door ons haar",
+    "art": "surf",
+    "file": "/sketches/weather-wind.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/wind.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/wind.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-e-commerce-location",
+    "title": "Waar het pad ons brengt",
+    "art": "hiking",
+    "file": "/sketches/e-commerce-location.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/location.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/location.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-e-commerce-bag",
+    "title": "Alles voor een dag buiten",
+    "art": "hiking",
+    "file": "/sketches/e-commerce-bag.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/bag.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/bag.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-camera",
+    "title": "Die ene gekke vakantiefoto",
+    "art": "camper",
+    "file": "/sketches/objects-camera.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/camera.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/camera.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-water",
+    "title": "Drinkpauze op het wandelpad",
+    "art": "garden",
+    "file": "/sketches/food-water.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/water.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/water.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-anchor",
+    "title": "Even voor anker",
+    "art": "sailing",
+    "file": "/sketches/objects-anchor.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/anchor.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/anchor.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-ship",
+    "title": "Een nieuwe bootdroom",
+    "art": "sailing",
+    "file": "/sketches/misc-ship.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/ship.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/ship.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-cloudy-night",
+    "title": "Een nachtje op het water",
+    "art": "sailing",
+    "file": "/sketches/weather-cloudy-night.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/cloudy-night.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/cloudy-night.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-paint-brush",
+    "title": "Een penseel vol plannen",
+    "art": "pottery",
+    "file": "/sketches/objects-paint-brush.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-brush.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-brush.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-paint-brush-2",
+    "title": "Kleine streken, groot plezier",
+    "art": "pottery",
+    "file": "/sketches/objects-paint-brush-2.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-brush-2.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-brush-2.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-paint-bucket",
+    "title": "Kleur aan onze reis geven",
+    "art": "pottery",
+    "file": "/sketches/objects-paint-bucket.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-bucket.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-bucket.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-paint-roller",
+    "title": "Samen iets moois maken",
+    "art": "pottery",
+    "file": "/sketches/objects-paint-roller.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-roller.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/paint-roller.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-cool-emoji",
+    "title": "Heel ontspannen doen",
+    "art": "alpaca",
+    "file": "/sketches/emojis-cool-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/cool-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/cool-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-laugh-emoji",
+    "title": "Hier lachen we later om",
+    "art": "alpaca",
+    "file": "/sketches/emojis-laugh-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/laugh-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/laugh-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-wink-emoji",
+    "title": "Een knipoog naar het plan",
+    "art": "yoga",
+    "file": "/sketches/emojis-wink-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/wink-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/wink-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-surprised-emoji",
+    "title": "Dat stond niet in de reisgids",
+    "art": "camper",
+    "file": "/sketches/emojis-surprised-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/surprised-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/surprised-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-grinning-squinting-emoji",
+    "title": "De slappe lach onderweg",
+    "art": "coffee",
+    "file": "/sketches/emojis-grinning-squinting-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/grinning-squinting-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/grinning-squinting-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-coffee-cup-1",
+    "title": "Een langzame koffiemorgen",
+    "art": "coffee",
+    "file": "/sketches/misc-coffee-cup-1.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/coffee-cup-1.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/coffee-cup-1.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-coffee-cup-2",
+    "title": "Nog eentje voor onderweg",
+    "art": "coffee",
+    "file": "/sketches/misc-coffee-cup-2.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/coffee-cup-2.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/coffee-cup-2.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-egg",
+    "title": "Ontbijt zonder haast",
+    "art": "coffee",
+    "file": "/sketches/food-egg.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/egg.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/egg.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-cake",
+    "title": "Een taartje voor de omweg",
+    "art": "coffee",
+    "file": "/sketches/food-cake.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/cake.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/cake.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-e-commerce-basket",
+    "title": "Een mandje vol lokale vondsten",
+    "art": "market",
+    "file": "/sketches/e-commerce-basket.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/basket.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/basket.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-e-commerce-shop",
+    "title": "Het winkeltje om de hoek",
+    "art": "market",
+    "file": "/sketches/e-commerce-shop.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/shop.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/e-commerce/shop.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-finance-wallet",
+    "title": "Ons potje voor kleine avonturen",
+    "art": "market",
+    "file": "/sketches/finance-wallet.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/finance/wallet.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/finance/wallet.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-food-pizza",
+    "title": "Pizza op het dorpsplein",
+    "art": "market",
+    "file": "/sketches/food-pizza.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/pizza.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/food/pizza.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-smiling-with-eyes-emoji",
+    "title": "Met een rustig hoofd verder",
+    "art": "yoga",
+    "file": "/sketches/emojis-smiling-with-eyes-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/smiling-with-eyes-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/smiling-with-eyes-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-emojis-happy-emoji",
+    "title": "Gewoon heel tevreden zijn",
+    "art": "yoga",
+    "file": "/sketches/emojis-happy-emoji.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/happy-emoji.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/emojis/happy-emoji.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-weather-night",
+    "title": "Een avond helemaal voor ons",
+    "art": "yoga",
+    "file": "/sketches/weather-night.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/night.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/weather/night.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-guitar",
+    "title": "Een liedje bij nieuwe vrienden",
+    "art": "dance",
+    "file": "/sketches/objects-guitar.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/guitar.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/guitar.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-balloon",
+    "title": "Er valt altijd iets te vieren",
+    "art": "dance",
+    "file": "/sketches/objects-balloon.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/balloon.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/balloon.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-movie-clapper",
+    "title": "Onze eigen reisfilm",
+    "art": "dance",
+    "file": "/sketches/objects-movie-clapper.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/movie-clapper.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/movie-clapper.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-misc-fire",
+    "title": "Nog een verhaal bij het vuur",
+    "art": "campfire",
+    "file": "/sketches/misc-fire.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/fire.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/misc/fire.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  },
+  {
+    "id": "doodle-objects-flashlight",
+    "title": "Een lichtje na zonsondergang",
+    "art": "campfire",
+    "file": "/sketches/objects-flashlight.svg",
+    "source": "https://github.com/svatsa159/react-doodle-icons/blob/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/flashlight.svg",
+    "download": "https://raw.githubusercontent.com/svatsa159/react-doodle-icons/b51da0371e992b5d03e768fd1f570e8e9500c617/src/icons/objects/flashlight.svg",
+    "author": "Khushmeen Sidhu",
+    "license": "CC0-1.0"
+  }
+]
