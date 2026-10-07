@@ -29,4 +29,13 @@ CREATE TABLE IF NOT EXISTS set_progress (user_id text REFERENCES users(id), day 
 CREATE TABLE IF NOT EXISTS weekly_question_assignments (pair_id text REFERENCES travel_pairs(id), week text NOT NULL, question_id text NOT NULL REFERENCES questions(id), snapshot jsonb NOT NULL, PRIMARY KEY(pair_id,week));
 CREATE TABLE IF NOT EXISTS weekly_question_answers (pair_id text, week text, user_id text REFERENCES users(id), choice integer NOT NULL CHECK(choice IN (0,1)), answered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,pair_id,week), FOREIGN KEY(pair_id,week) REFERENCES weekly_question_assignments(pair_id,week));
 INSERT INTO question_sets(id,pair_id,day,ordinal,question_ids) SELECT pair_id||':'||day||':1',pair_id,day,1,jsonb_agg(question_id ORDER BY position) FROM daily_assignments GROUP BY pair_id,day ON CONFLICT DO NOTHING;
+CREATE TABLE IF NOT EXISTS ai_tasks (id text PRIMARY KEY, pair_id text NOT NULL REFERENCES travel_pairs(id), created_by text NOT NULL REFERENCES users(id), kind text NOT NULL CHECK(kind IN ('questions','system')), instruction text NOT NULL, scheduled_at timestamptz NOT NULL, status text NOT NULL DEFAULT 'queued' CHECK(status IN ('queued','running','review','published','failed','cancelled')), receipt text, claimed_at timestamptz, created_at timestamptz NOT NULL DEFAULT now(), finished_at timestamptz, result text, pr_url text);
+CREATE INDEX IF NOT EXISTS ai_tasks_due ON ai_tasks(status,kind,scheduled_at);
+ALTER TABLE ai_tasks ADD COLUMN IF NOT EXISTS repeat_weekly boolean NOT NULL DEFAULT false;
+ALTER TABLE ai_tasks ADD COLUMN IF NOT EXISTS parent_task_id text UNIQUE REFERENCES ai_tasks(id);
+CREATE TABLE IF NOT EXISTS ai_question_ownership (question_id text PRIMARY KEY REFERENCES questions(id), pair_id text NOT NULL REFERENCES travel_pairs(id), task_id text NOT NULL REFERENCES ai_tasks(id));
+CREATE TABLE IF NOT EXISTS ai_question_retirements (pair_id text NOT NULL REFERENCES travel_pairs(id), question_id text NOT NULL REFERENCES questions(id), task_id text NOT NULL REFERENCES ai_tasks(id), PRIMARY KEY(pair_id,question_id));
+CREATE TABLE IF NOT EXISTS ai_notification_deliveries (user_id text NOT NULL REFERENCES users(id), event text NOT NULL, delivered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,event));
+ALTER TABLE ai_notification_deliveries ADD COLUMN IF NOT EXISTS sent boolean NOT NULL DEFAULT false;
+ALTER TABLE ai_notification_deliveries ADD COLUMN IF NOT EXISTS claimed_at timestamptz NOT NULL DEFAULT now();
 `;

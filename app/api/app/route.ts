@@ -8,6 +8,7 @@ import { dashboard, refreshInsights } from '@/lib/service';
 import { nextSet, SetNotReadyError } from '@/lib/sets';
 import { answerWeeklyQuestion } from '@/lib/weekly-questions';
 import type { Question } from '@/lib/domain';
+import { questionId } from '@/lib/ai-contracts';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 function json(data:unknown,status=200) { return NextResponse.json(data,{status,headers:{'Cache-Control':'no-store'}}); }
@@ -49,7 +50,7 @@ export async function POST(req:NextRequest) {
     }
     if(action==='next-set') {const id=z.string().max(120).parse(body.setId);const next=await nextSet(user,id);return next?json({ok:true}):json({error:'Jullie hebben alle sets ontdekt. Tijd om de bewaarde vragen samen te bekijken.'},409);}
     if(action==='answer'||action==='save') {
-      const qid=z.string().regex(/^q\d{3}$/).parse(body.questionId);
+      const qid=questionId.parse(body.questionId);
       const accessible=await query<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM question_sets s WHERE s.pair_id=$2 AND s.question_ids @> jsonb_build_array(q.id)) OR EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2))',[qid,user.pair_id]);
       if(!accessible[0]) return json({error:'Deze vraag hoort niet bij jullie stapel.'},403);
       if(action==='save') await query('INSERT INTO saved_questions(user_id,pair_id,question_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[user.id,user.pair_id,qid]);

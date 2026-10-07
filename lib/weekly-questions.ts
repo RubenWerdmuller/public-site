@@ -2,11 +2,12 @@ import { query } from './db';
 import { weekKey, type Answer, type Question } from './domain';
 import { loadPreferences } from './sets';
 import { revealWeekly, selectWeeklyQuestion, weeklyOccurrence } from './weekly-question-domain';
+import { availableBank } from './ai-tasks';
 export async function ensureWeeklyQuestion(pairId:string,week=weekKey()){
   type Row={week:string;snapshot:Question}&Record<string,unknown>;
   let existing=await query<Row>('SELECT week,snapshot FROM weekly_question_assignments WHERE pair_id=$1 AND week=$2',[pairId,week]);
   if(!existing[0]){
-    const bank=(await query<{content:Question}&Record<string,unknown>>('SELECT content FROM questions ORDER BY id')).map(r=>r.content);
+    const bank=await availableBank(pairId);
     const previous=await query<Row>('SELECT week,snapshot FROM weekly_question_assignments WHERE pair_id=$1 AND week<$2 ORDER BY week DESC LIMIT 2',[pairId,week]);
     const context=await loadPreferences(pairId);
     const question=selectWeeklyQuestion(bank,previous.map(r=>({week:r.week,question:r.snapshot})),[],context);
