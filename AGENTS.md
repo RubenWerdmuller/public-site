@@ -3,6 +3,16 @@ Independent personal travel PWA. Do not apply Cockpit architecture to this repos
 Keep the Dutch notebook style, server-side duo authorization, answer privacy until both have answered, persistent PostgreSQL storage, and Europe/Amsterdam time semantics.
 Keep schema in lib/schema.ts and migrations additive. Run relevant tests, typecheck and build for changes. Never commit credentials or local database files.
 
+## Reminder for the next app discussion
+
+Recorded at the user's request on 2026-10-08. At the start of the next discussion about this app, remind the user in Dutch of these ideas before proceeding with that discussion:
+
+- The longer trip consists of multiple stages (etappes), with different kinds of destinations and experiences. Add this perspective alongside the existing travel preferences; do not reduce the whole trip to one destination type.
+- A progress report every other day (om de dag).
+- The AI in the pipeline should research concrete destinations suitable for those stages and include destination suggestions in the reports.
+
+These are ideas to discuss later, not authorization to implement them now. After delivering the reminder, remove this reminder instruction and keep the ideas available if they have not yet been addressed.
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 ## This is NOT the Next.js you know
