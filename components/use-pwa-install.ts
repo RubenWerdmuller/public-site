@@ -1,15 +1,17 @@
 import {useEffect,useState} from 'react';
+import {installBrowser,type InstallBrowser} from '@/lib/install-browser';
 type Choice={outcome:'accepted'|'dismissed'};
 type InstallPrompt=Event & {prompt:()=>Promise<Choice|void>;userChoice?:Promise<Choice>};
 export function usePwaInstall(demo:boolean){
  const [pending,setPending]=useState<InstallPrompt|null>(null);
  const [installed,setInstalled]=useState(false);
  const [ios,setIos]=useState(false);
+ const [browser,setBrowser]=useState<InstallBrowser>('unknown');
  const [installing,setInstalling]=useState(false);
  useEffect(()=>{
   const display=window.matchMedia('(display-mode: standalone)');
   const check=()=>setInstalled(display.matches||Boolean((navigator as Navigator & {standalone?:boolean}).standalone));
-  queueMicrotask(()=>{check();setIos(/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));});
+  queueMicrotask(()=>{check();setBrowser(installBrowser(navigator.userAgent));setIos(/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1));});
   if(demo)return;
   const capture=(event:Event)=>{event.preventDefault();setPending(event as InstallPrompt);};
   const complete=()=>{setInstalled(true);setPending(null);};
@@ -24,5 +26,5 @@ export function usePwaInstall(demo:boolean){
   try{const result=await prompt.prompt();const choice=result??await prompt.userChoice;return choice?.outcome??'dismissed';}
   finally{setInstalling(false);}
  }
- return {installed,ios,installing,canPrompt:!!pending,requestInstall};
+ return {installed,ios,browser,installing,canPrompt:!!pending,requestInstall};
 }
