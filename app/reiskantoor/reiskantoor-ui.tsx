@@ -31,7 +31,7 @@ export function Reiskantoor(){
    }catch(e){setError(e instanceof Error?e.message:'De verbinding is weg.');}
    finally{setLoading(false);}
  }
- useEffect(()=>{void load();},[]);
+ useEffect(()=>{queueMicrotask(()=>void load());},[]);
  const problems=useMemo(()=>validatePlan(plan),[plan]);
  const warnings=useMemo(()=>planWarnings(plan),[plan]);
  const proposals=useMemo(()=>dirty?createProposals(plan):status?.suggestions??createProposals(plan),[dirty,plan,status]);
