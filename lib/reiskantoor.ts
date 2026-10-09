@@ -123,6 +123,7 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
     for(const stage of plan.stages){
       const next=new Map<number,State[]>();
       for(const [sum,choices] of states){
+        if(!choices.length)continue;
         for(const weeks of Array.from({length:stage.locked?1:stage.maxWeeks-stage.minWeeks+1},(_,i)=>stage.locked?stage.idealWeeks:stage.minWeeks+i)){
           if(sum+weeks>plan.weeks)continue;
           let target=stage.idealWeeks;
@@ -148,7 +149,7 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
             const rate=mode.id==='budget'?2.5:1;
             return a.penalty+budgetPenalty(a)*rate - (b.penalty+budgetPenalty(b)*rate);
           });
-          next.set(sum+weeks,affordable.slice(0,45));
+          if(affordable.length)next.set(sum+weeks,affordable.slice(0,45));
         }
       }
       states=next;
