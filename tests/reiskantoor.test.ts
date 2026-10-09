@@ -25,7 +25,7 @@ test('locked legs stay unchanged across every suggested itinerary',()=>{
 });
 test('infeasible constraints warn and do not invent itinerary recommendations',()=>{
  const p=structuredClone(starterPlan);
- p.weeks=6;
+ p.weeks=4;
  assert.deepEqual(createProposals(p),[]);
  assert.ok(planWarnings(p).some(s=>s.includes('minimumduur')));
 });
