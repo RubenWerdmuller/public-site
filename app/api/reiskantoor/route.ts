@@ -41,6 +41,15 @@ async function getState(pairId:string,userId:string,read:Query=query) {
    suggestions:createProposals(row?.plan??starterPlan,shared),warnings:planWarnings(row?.plan??starterPlan),
    choice:current?{ordinal:latest!.ordinal,task:current,own:ownAnswer?.choice??null,partner:otherAnswer?.choice??null,complete:complete.some(r=>r.ordinal===latest!.ordinal)}:null,
    completed:complete.length,
+   lastReveal:complete.length===0||!partner?null:(()=>{
+     const r=complete.at(-1)!;
+     const task=choiceTasks.find(t=>t.id===r.task_id)!;
+     return {
+       question:task.question,
+       own:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===userId)!.choice,
+       partner:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===partner.user_id)!.choice,
+     };
+   })(),
    funFacts:{
      same:complete.filter(r=>{
        const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
