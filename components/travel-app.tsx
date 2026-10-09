@@ -72,8 +72,8 @@ export function TravelApp({demo=false}:{demo?:boolean}) {
       if(!response.ok)throw Error('Status ophalen mislukt.');
       const status=await response.json() as {subscribed:boolean;lastDelivery:{day:string;kind:string}|null};
       if(!status.subscribed){setPushCheck('Deze iPhone is niet meer gekoppeld aan je account. Kies Zet berichtjes aan.');return;}
-      if(status.lastDelivery?.day===data.day)setPushCheck('De pushprovider heeft vandaag een gepland bericht geaccepteerd. Geen melding gezien? Controleer Focus en iPhone-instellingen.');
-      else if(status.lastDelivery)setPushCheck(`Deze iPhone is gekoppeld. Laatste geplande bericht dat de pushprovider accepteerde: ${status.lastDelivery.day}. De dagelijkse taak moet nog draaien of heeft geen bericht verstuurd.`);
+      if(status.lastDelivery?.day===data.day)setPushCheck('De pushprovider heeft vandaag een gepland bericht voor je account geaccepteerd. Dit bewijst niet dat deze iPhone het ontving; controleer Focus en iPhone-instellingen.');
+      else if(status.lastDelivery)setPushCheck(`Deze iPhone is gekoppeld. Laatste geplande verzending voor je account die de pushprovider accepteerde: ${status.lastDelivery.day}. De dagelijkse taak moet nog draaien of heeft geen bericht verstuurd.`);
       else setPushCheck('Deze iPhone is gekoppeld, maar er is nog geen succesvolle dagelijkse verzending geregistreerd. De eerste taak draait doorgaans tussen 19:00 en 21:00 Nederlandse tijd.');
     } catch {setPushCheck('Kan de pushstatus niet ophalen. Probeer Stuur mij een testberichtje.');}
   }
