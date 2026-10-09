@@ -7,7 +7,7 @@ import './reiskantoor.css';
 type ChoiceView={ordinal:number;task:{id:string;question:string;a:ChoiceProfile;b:ChoiceProfile};own:0|1|null;partner:0|1|null;complete:boolean};
 type Status={
   plan:TripPlan;revision:number;paired:boolean;suggestions:Proposal[];warnings:string[];
-  choice:ChoiceView|null;completed:number;funFacts:{same:number;different:number;latestDifference:string|null};remaining:number;model:{sampleSize:number;weights:{label:string;value:number}[];label:string}|null;modelStatus:string;
+  choice:ChoiceView|null;completed:number;lastReveal:{question:string;own:0|1;partner:0|1}|null;funFacts:{same:number;different:number;latestDifference:string|null};remaining:number;model:{sampleSize:number;weights:{label:string;value:number}[];label:string}|null;modelStatus:string;
 };
 const labels:Record<StageKind,string>={outbound:'Heenreis',stay:'Verblijf',return:'Terugreis',other:'Tussenetappe'};
 const months=['Nog open','Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
@@ -131,6 +131,7 @@ export function Reiskantoor(){
          </>}
          {!choice&&<p>Jullie hebben alle experimentele vragen doorlopen.</p>}
          <div className="rk-model"><strong>{status.completed} gezamenlijk beantwoorde vergelijkingen</strong>
+         {status.lastReveal&&<div className="rk-last-reveal"><b>Laatst samen ontdekt</b><p>{status.lastReveal.question}</p><span>Jij koos {status.lastReveal.own===0?'A':'B'} · Je reisgenoot koos {status.lastReveal.partner===0?'A':'B'}</span></div>}
          {status.completed>0&&<p>Jullie kozen {status.funFacts.same} keer hetzelfde en {status.funFacts.different} keer anders.
            {status.funFacts.latestDifference&&<> Een mooi gespreksonderwerp: {choiceTasks.find(t=>t.id===status.funFacts.latestDifference)?.question}</>}
          </p>}
