@@ -115,7 +115,8 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
   const lower=plan.stages.reduce((v,s)=>v+(s.locked?s.idealWeeks:s.minWeeks),0);
   const upper=plan.stages.reduce((v,s)=>v+(s.locked?s.idealWeeks:s.maxWeeks),0);
   if(plan.weeks<lower||plan.weeks>upper)return [];
-  const modes=[{id:'balanced',title:'Dicht bij jullie wensen'},{id:'slow',title:'Meer tijd om te blijven'},{id:'budget',title:'Zuinigere verdeling'}];
+  const costKnown=plan.stages.every(stage=>stage.weeklyBudget>0);
+  const modes=[{id:'balanced',title:'Dicht bij jullie wensen'},{id:'slow',title:'Meer tijd om te blijven'},costKnown?{id:'budget',title:'Zuinigere verdeling'}:{id:'discover',title:'Meer onderweg ontdekken'}];
   return modes.map(mode=>{
     type State={weeks:number[];cost:number;penalty:number};
     let states=new Map<number,State[]>([[0,[{weeks:[],cost:0,penalty:0}]]]);
@@ -126,6 +127,7 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
           if(sum+weeks>plan.weeks)continue;
           let target=stage.idealWeeks;
           if(mode.id==='slow')target+=(stage.kind==='stay'?1.5:-0.8);
+          if(mode.id==='discover')target+=(stage.kind==='stay'?-1.5:1);
           const cost=weeks*stage.weeklyBudget;
           // Only observed explicit cost estimates are used. Zero = unspecified.
           const learned=shared && shared.count>=3 ? Math.max(-.4,Math.min(.4,shared.means[1])) : 0;
@@ -140,22 +142,23 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
             list.push({weeks:[...state.weeks,weeks],cost:state.cost+cost,penalty:state.penalty+Math.pow(weeks-target,2)*weight+preferencePenalty});
           }
           list.push(row);
-          list.sort((a,b)=>{
+          const affordable=plan.maxBudget>0&&costKnown?list.filter(candidate=>candidate.cost<=plan.maxBudget):list;
+          affordable.sort((a,b)=>{
             const budgetPenalty=(s:State)=>plan.maxBudget>0?Math.pow(Math.max(0,s.cost-plan.maxBudget)/400,2):0;
             const rate=mode.id==='budget'?2.5:1;
             return a.penalty+budgetPenalty(a)*rate - (b.penalty+budgetPenalty(b)*rate);
           });
-          next.set(sum+weeks,list.slice(0,45));
+          next.set(sum+weeks,affordable.slice(0,45));
         }
       }
       states=next;
     }
     const candidates=states.get(plan.weeks)??[];
     const ranked=candidates.map(v=>{
-      const allKnown=plan.stages.every(s=>s.weeklyBudget>0);
+      const allKnown=costKnown;
       const penalty=plan.maxBudget>0?Math.pow(Math.max(0,v.cost-plan.maxBudget)/400,2)*(mode.id==='budget'?4:1):0;
       return {...v,score:v.penalty+penalty,costKnown:allKnown};
-    }).sort((a,b)=>a.score-b.score);
+    }).filter(v=>!costKnown||plan.maxBudget===0||v.cost<=plan.maxBudget).sort((a,b)=>a.score-b.score);
     const best=ranked[0];
     if(!best)return {id:mode.id,title:mode.title,weeks:[],cost:null,warnings:['Geen haalbare verdeling.'],score:Infinity};
     const warnings:string[]=[];
@@ -163,7 +166,7 @@ export function createProposals(plan:TripPlan,shared:Posterior|null=null):Propos
     if(best.costKnown&&plan.maxBudget>0&&best.cost>plan.maxBudget)warnings.push('De raming overschrijdt het totale budget.');
     if(plan.stages.some(s=>s.travelHours>10))warnings.push('Een etappe heeft meer dan tien opgegeven reisuren; controleer de rijbelasting.');
     return {id:mode.id,title:mode.title,weeks:best.weeks,cost:best.costKnown?best.cost:null,warnings,score:best.score};
-  });
+  }).filter(p=>p.weeks.length>0);
 }
 export function planWarnings(plan:TripPlan):string[]{
   const errors=validatePlan(plan);if(errors.length)return errors;
@@ -175,5 +178,6 @@ export function planWarnings(plan:TripPlan):string[]{
   if(plan.departureMonth===0)warnings.push('Vertrekmaand is nog open: seizoen en weer kunnen nog niet worden afgewogen.');
   if(plan.stages.some(s=>s.weeklyBudget===0))warnings.push('Vul eigen budgetramingen in om totale kosten te vergelijken.');
   if(plan.stages.some(s=>s.travelHours===0))warnings.push('Verplaatsingstijden zijn nog onbekend; echte routes en afstanden worden niet berekend.');
+  if(plan.maxBudget>0&&plan.stages.every(s=>s.weeklyBudget>0)&&lo<=plan.weeks&&plan.weeks<=hi&&!createProposals(plan).length)warnings.push('Geen verdeling past binnen het opgegeven totaalbudget en de weekgrenzen.');
   return warnings;
 }
