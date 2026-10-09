@@ -40,7 +40,22 @@ async function getState(pairId:string,userId:string,read:Query=query) {
    plan:row?.plan??starterPlan,revision:row?.revision??0,paired:members.length===2,
    suggestions:createProposals(row?.plan??starterPlan,shared),warnings:planWarnings(row?.plan??starterPlan),
    choice:current?{ordinal:latest!.ordinal,task:current,own:ownAnswer?.choice??null,partner:otherAnswer?.choice??null,complete:complete.some(r=>r.ordinal===latest!.ordinal)}:null,
-   completed:complete.length,remaining:choiceTasks.length-rounds.length,model:shared&&complete.length>=3?{
+   completed:complete.length,
+   funFacts:{
+     same:complete.filter(r=>{
+       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
+       return selected[0]===selected[1];
+     }).length,
+     different:complete.filter(r=>{
+       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
+       return selected[0]!==selected[1];
+     }).length,
+     latestDifference:complete.slice().reverse().find(r=>{
+       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
+       return selected[0]!==selected[1];
+     })?.task_id??null,
+   },
+   remaining:choiceTasks.length-rounds.length,model:shared&&complete.length>=3?{
      sampleSize:complete.length,
      dimensions:['Budget','Langer blijven','Minder rijden','Natuur','Comfort','Ontmoetingen'],
      weights:shared.means.map((v,i)=>({label:['Budget','Langer blijven','Minder rijden','Natuur','Comfort','Ontmoetingen'][i],value:Math.round(v*100)/100})),
