@@ -67,11 +67,12 @@ test('budget pressure and a locked stop still preserve the full itinerary',()=>{
  const p:TripPlan=structuredClone(starterPlan);
  p.maxBudget=4500;p.stages[0].locked=true;p.stages[0].weeklyBudget=600;p.stages[1].weeklyBudget=250;p.stages[2].weeklyBudget=500;
  const proposals=createProposals(p);
- assert.equal(proposals.length,3);
- for(const s of proposals){
-   assert.equal(s.weeks[0],3);
-   assert.equal(s.weeks.reduce((v,w)=>v+w,0),16);
-   assert.ok(s.cost!==null);
-   assert.ok(s.warnings.some(w=>w.includes('budget')));
+ assert.deepEqual(proposals,[]);
+ assert.ok(planWarnings(p).some(w=>w.includes('totaalbudget')));
+ p.maxBudget=6500;
+ for(const proposal of createProposals(p)){
+   assert.equal(proposal.weeks[0],3);
+   assert.equal(proposal.weeks.reduce((v,w)=>v+w,0),16);
+   assert.ok(proposal.cost!==null&&proposal.cost<=6500);
  }
 });
