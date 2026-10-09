@@ -2,12 +2,12 @@
 import Link from 'next/link';
 import {useEffect,useMemo,useState} from 'react';
 import {ArrowLeft,ArrowDown,ArrowUp,Check,Compass,Heart,Lock,Plus,RefreshCw,Save,Trash2,Unlock,Sparkles} from 'lucide-react';
-import {createProposals,planWarnings,validatePlan,starterPlan,type TripPlan,type Stage,type StageKind,type ChoiceProfile,type Proposal} from '@/lib/reiskantoor';
+import {createProposals,planWarnings,validatePlan,starterPlan,choiceTasks,type TripPlan,type Stage,type StageKind,type ChoiceProfile,type Proposal} from '@/lib/reiskantoor';
 import './reiskantoor.css';
 type ChoiceView={ordinal:number;task:{id:string;question:string;a:ChoiceProfile;b:ChoiceProfile};own:0|1|null;partner:0|1|null;complete:boolean};
 type Status={
   plan:TripPlan;revision:number;paired:boolean;suggestions:Proposal[];warnings:string[];
-  choice:ChoiceView|null;completed:number;remaining:number;model:{sampleSize:number;weights:{label:string;value:number}[];label:string}|null;modelStatus:string;
+  choice:ChoiceView|null;completed:number;funFacts:{same:number;different:number;latestDifference:string|null};remaining:number;model:{sampleSize:number;weights:{label:string;value:number}[];label:string}|null;modelStatus:string;
 };
 const labels:Record<StageKind,string>={outbound:'Heenreis',stay:'Verblijf',return:'Terugreis',other:'Tussenetappe'};
 const months=['Nog open','Januari','Februari','Maart','April','Mei','Juni','Juli','Augustus','September','Oktober','November','December'];
@@ -130,7 +130,11 @@ export function Reiskantoor(){
            {choice.complete&&<p className="rk-success">Jullie hebben allebei gekozen. De volgende adaptieve vergelijking verschijnt zodra het Reiskantoor bijgewerkt is.</p>}
          </>}
          {!choice&&<p>Jullie hebben alle experimentele vragen doorlopen.</p>}
-         <div className="rk-model"><strong>{status.completed} gezamenlijk beantwoorde vergelijkingen</strong><p>{status.modelStatus}</p>
+         <div className="rk-model"><strong>{status.completed} gezamenlijk beantwoorde vergelijkingen</strong>
+         {status.completed>0&&<p>Jullie kozen {status.funFacts.same} keer hetzelfde en {status.funFacts.different} keer anders.
+           {status.funFacts.latestDifference&&<> Een mooi gespreksonderwerp: {choiceTasks.find(t=>t.id===status.funFacts.latestDifference)?.question}</>}
+         </p>}
+         <p>{status.modelStatus}</p>
          {status.model&&<><h3>Voorzichtige signalen</h3>{status.model.weights.map(w=><div key={w.label}><span>{w.label}</span><span>{Math.abs(w.value)<0.15?'Nog open':w.value>0?'Meer hiervan':'Minder hiervan'}</span></div>)}<small>{status.model.label}</small></>}</div>
        </section>
        <section className="rk-paper rk-info"><h3>Jullie eigen reiskantoor</h3><p>Je kunt eerst zomaar wat proberen. Elke etappe is bewerkbaar en kan worden vastgezet. Het systeem helpt bij afwegingen — de keuze blijft van jullie.</p></section>
