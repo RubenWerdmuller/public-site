@@ -53,3 +53,5 @@
 .rk-info p{line-height:1.7;font-size:13px;color:var(--rk-muted)}
 @media(max-width:950px){.rk-columns{grid-template-columns:1fr}.rk-side{position:static}}
 @media(max-width:620px){.rk-main{padding:22px 15px 70px}.rk-top{padding:18px 15px}.rk-paper{padding:20px 16px}.rk-intro{margin:12px 0 25px}.rk-plan-inputs{grid-template-columns:repeat(2,minmax(0,1fr))}.rk-plan-inputs label:last-child{grid-column:span 2}.rk-metrics strong{font-size:18px}.rk-grid2{grid-template-columns:1fr}.rk-stage-actions{max-width:123px}.rk-stage-actions button{padding:4px}.rk-save{flex-direction:column;align-items:stretch}.rk-save .rk-button{width:100%}}
+
+.rk-model > .rk-last-reveal{display:block;border:1px solid #dce6d7;background:#f3f7ed;border-radius:10px;padding:12px;margin:13px 0}.rk-last-reveal b{font-size:12px}.rk-last-reveal p{color:#394a39;margin:8px 0}.rk-last-reveal span{color:#61735e;font-size:11px}
