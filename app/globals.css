@@ -166,3 +166,15 @@
 .sidebar nav a.rk-sidebar-link{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:6px;font-size:14px;color:inherit;text-decoration:none}.sidebar nav a.rk-sidebar-link:hover{background:#e2e8d8;color:#485d3d}
 
 @media(max-width:800px){.mobile-nav a.rk-mobile-link{display:flex;flex-direction:column;align-items:center;gap:3px;min-width:58px;padding:4px;color:#949984;text-decoration:none;font-size:10px}.mobile-nav a.rk-mobile-link:hover{color:#49603d}}
+
+
+/* Questions create the trip; the office only displays its results. */
+.rk-home-questions{display:flex;gap:12px;align-items:center;background:#eaf0e2;color:#47624b;border:1px solid #c8d8c4;border-radius:10px;padding:15px 20px;margin:0 0 30px;text-decoration:none;font-size:14px;font-weight:600}
+.rk-home-questions span{margin-left:auto}
+.bottom-cards a.small-card{text-decoration:none;color:inherit}
+@media(max-width:800px){
+  .mobile-nav button,.mobile-nav a.rk-mobile-link{min-width:0;flex:1;font-size:9px;white-space:nowrap;gap:3px}
+  .mobile-nav a.rk-mobile-link{color:#84927c;text-decoration:none;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:4px}
+  .mobile-nav{gap:2px;padding-left:4px;padding-right:4px}
+  .rk-home-questions{margin:0 0 25px}
+}
