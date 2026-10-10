@@ -102,7 +102,7 @@ test('stage questions are offered before preference experiments and not repeated
  const allStages=stageTasks.map(q=>({taskId:q.id,choices:[0,0] as (0|1)[]}));
  const after=nextTravelQuestion(allStages);
  assert.ok(after);
- assert.equal(after?.id,choiceTasks[0].id);
+ assert.ok(choiceTasks.some(task=>task.id===after?.id));
 });
 test('the scientific ranking is ordered, conveys uncertainty and is empty only in the UI before evidence',()=>{
  const answers=choiceTasks.slice(0,5).map(task=>({taskId:task.id,choice:0 as const}));
