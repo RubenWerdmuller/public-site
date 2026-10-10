@@ -3,6 +3,9 @@ import {z} from 'zod';
 import {currentUser} from '@/lib/auth';
 import {query,transaction,type Query} from '@/lib/db';
 import {choiceTasks,stageTasks,learnPreferences,preferenceRanking,evaluatePreferenceModel,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
+import {studyTaskById} from '@/lib/dce-design';
+import {studyAnswers,studyModel,studyEvidence,studyRanking,studyValidation,archiveAttentionFromEvidence,legacyReportBrief} from '@/lib/dce-science';
+import {createReport,type Answer as DailyAnswer} from '@/lib/domain';
 import {inferScientificItinerary,nextScientificQuestion} from '@/lib/itinerary-science';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -10,6 +13,8 @@ const json=(value:unknown,status=200)=>NextResponse.json(value,{status,headers:{
 type Member={user_id:string;name:string;avatar:number}&Record<string,unknown>;
 type Round={ordinal:number;task_id:string}&Record<string,unknown>;
 type Answer={ordinal:number;user_id:string;choice:0|1}&Record<string,unknown>;
+type ArchiveAnswer=DailyAnswer&Record<string,unknown>;
+type SavedReport={week:string;content:ReturnType<typeof createReport>}&Record<string,unknown>;
 async function state(pairId:string,userId:string,read:Query=query){
  const members=await read<Member>('SELECT m.user_id,u.name,u.avatar FROM memberships m JOIN users u ON u.id=m.user_id WHERE m.pair_id=$1 ORDER BY m.slot',[pairId]);
  const rounds=await read<Round>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
@@ -17,37 +22,46 @@ async function state(pairId:string,userId:string,read:Query=query){
  const completed=rounds.filter(r=>members.length===2&&members.every(m=>answers.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
  const results:CompletedStage[]=completed.map(r=>({taskId:r.task_id,choices:members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)}));
  const choiceRows=completed.filter(r=>choiceTasks.some(q=>q.id===r.task_id));
+ const scientificRows=completed.filter(r=>studyTaskById(r.task_id));
+ const rawArchive=await read<ArchiveAnswer>('SELECT * FROM answers WHERE pair_id=$1 ORDER BY answered_at',[pairId]);
+ const archived=rawArchive.filter(a=>members.length===2&&members.every(m=>rawArchive.some(b=>b.question_id===a.question_id&&b.user_id===m.user_id)));
+ const [latestReport]=await read<SavedReport>('SELECT week,content FROM weekly_reports WHERE pair_id=$1 ORDER BY week DESC LIMIT 1',[pairId]);
+ const oldSummary=latestReport?.content??createReport(archived,members.map(m=>m.user_id));
+ const history=legacyReportBrief(oldSummary,latestReport?.week??null);
  const personal=members.map(m=>{
    const responses:ChoiceAnswer[]=choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}));
-   const model=learnPreferences(responses);
-   return {id:m.user_id,name:m.name,avatar:m.avatar,observations:model.count,
-     diagnostics:evaluatePreferenceModel(responses),
-     ranking:model.count>=2?preferenceRanking(model):[],
-     message:model.count<2?'Beantwoord samen meer keuzevragen om deze ranking te zien.':
-       'Verkennende Bayesiaanse schatting (MAP + Laplace). De onzekerheid is aanzienlijk; geen gevalideerde wetenschappelijke ranglijst.'};
+   const scientific:ChoiceAnswer[]=scientificRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}));
+   const model=studyModel(scientific);
+   return {id:m.user_id,name:m.name,avatar:m.avatar,observations:studyAnswers(scientific).length,
+     diagnostics:studyValidation(scientific),
+     study:studyEvidence(scientific),
+     ranking:studyRanking(scientific),
+     legacyRanking:responses.length>=2?preferenceRanking(learnPreferences(responses)):[],
+     oldDiagnostics:evaluatePreferenceModel(responses),
+     message:model.count<5?'De nieuwe gecontroleerde conjointstudie verzamelt nog antwoorden. Het oudere reisrapport blijft hieronder beschikbaar.':
+       'Een voorlopig geschat, persoonsgebonden conjointprofiel met onzekerheid en afzonderlijke controlevragen.'};
  });
- const fullyPaired=personal.length===2&&personal.every(m=>m.observations>=3);
- const personModels=members.map(m=>learnPreferences(choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}))));
- const shared=fullyPaired?{...personModels[0],count:Math.min(...personModels.map(m=>m.count)),
-   means:personModels[0].means.map((v,i)=>(v+personModels[1].means[i])/2)}:null;
+ const personModels=members.map(m=>studyModel(scientificRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}))));
  const travel=inferScientificItinerary(results,personModels);
  const proposals=travel.alternatives.map(v=>({id:v.id,title:v.title,weeks:v.plan.stages.map(s=>s.idealWeeks),cost:null,warnings:v.tradeoffs,score:v.score}));
  const last=rounds.at(-1);
- const task=last?(stageTasks.find(t=>t.id===last.task_id)??choiceTasks.find(t=>t.id===last.task_id)):null;
+ const task=last?(stageTasks.find(t=>t.id===last.task_id)??studyTaskById(last.task_id)??choiceTasks.find(t=>t.id===last.task_id)):null;
  const own=last?answers.find(a=>a.ordinal===last.ordinal&&a.user_id===userId):null;
  const latest=completed.at(-1);
- const latestTask=latest?(stageTasks.find(t=>t.id===latest.task_id)??choiceTasks.find(t=>t.id===latest.task_id)):null;
+ const latestTask=latest?(stageTasks.find(t=>t.id===latest.task_id)??studyTaskById(latest.task_id)??choiceTasks.find(t=>t.id===latest.task_id)):null;
  const latestOwn=latest?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id===userId):null;
  const latestPartner=latest?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id!==userId):null;
  return {
    paired:members.length===2,people:personal,completed:completed.length,completedStages:travel.completed,totalStageQuestions:stageTasks.length,
+   study:studyEvidence(scientificRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===userId)!.choice}))),
+   archiveReport:history,
    answeredByMe:answers.filter(a=>a.user_id===userId).length,
    choice:task&&last&&!completed.some(r=>r.ordinal===last.ordinal)?{ordinal:last.ordinal,task,own:own?.choice??null}:null,
    lastReveal:latestTask&&latestOwn&&latestPartner?{question:latestTask.question,own:latestOwn.choice,partner:latestPartner.choice}:null,
    travel:{...travel,proposals}, 
    funFacts:{same:results.filter(r=>r.choices[0]===r.choices[1]).length,
      different:results.filter(r=>r.choices[0]!==r.choices[1]).length},
-   modelStatus:'De coëfficiënten zijn voorlopige persoonlijke signalen uit een klein keuze-experiment, geen gekalibreerde kans op een geslaagde reis.',
+   modelStatus:'Nieuwe conjointtaken met onafhankelijk gehouden controlevragen. Statistische waarden blijven voorlopige onderzoeksuitkomsten, geen bewezen persoonlijkheid of reisgeluk.',
  };
 }
 async function advance(pairId:string){
@@ -66,7 +80,9 @@ async function advance(pairId:string){
      const last=rounds.at(-1)!;
      if(members.every(m=>all.some(a=>a.ordinal===last.ordinal&&a.user_id===m.user_id))){
        const both=rounds.filter(r=>members.every(m=>all.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
-       const next=nextScientificQuestion(both.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})));
+       const historical=await tx<ArchiveAnswer>('SELECT * FROM answers WHERE pair_id=$1 ORDER BY answered_at',[pairId]);
+       const attention=archiveAttentionFromEvidence(historical,members.map(m=>m.user_id));
+       const next=nextScientificQuestion(both.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})),attention);
        if(next)await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[pairId,last.ordinal+1,next.id]);
      }
    }
