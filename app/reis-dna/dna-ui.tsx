@@ -21,7 +21,7 @@ export function ReisDna(){
     <span className="rk-kicker">UIT JULLIE EERDERE REISRAPPORT</span><h2>Dit verhaal hebben jullie al samen gemaakt.</h2>
     {report?.hasData?<><div className="rk-report-prose"><p>{report.summary}</p><p>{report.discovery}</p></div>
       {report.vignette&&<div className="rk-report-vignette"><BookOpen size={20}/><p>{report.vignette}</p></div>}
-      <div className="rk-progress"><div><strong>{report.completed}</strong><span>gezamenlijke oude dilemma's</span></div><div><strong>{report.matched}</strong><span>keer hetzelfde gekozen</span></div><div><strong>{report.agreement===null?'—':report.agreement+'%'}</strong><span>speelse overeenstemming</span></div></div>
+      <div className="rk-progress"><div><strong>{report.completed}</strong><span>gezamenlijke oude dilemma’s</span></div><div><strong>{report.matched}</strong><span>keer hetzelfde gekozen</span></div><div><strong>{report.agreement===null?'—':report.agreement+'%'}</strong><span>speelse overeenstemming</span></div></div>
       <p className="rk-muted">{report.week?'Bewaard rapport van de week '+report.week+'.':'Samenvatting opnieuw opgebouwd uit jullie bestaande antwoorden.'} {report.methodologicalCaveat}</p>
      </>:<><p>Jullie oude rapport heeft nog weinig gezamenlijke antwoorden. Het nieuwe onderzoek kan onafhankelijk beginnen.</p><p className="rk-muted">Als jullie eerder een rapport hebben bewaard, verschijnt het hier zodra die gegevens beschikbaar zijn.</p></>}
    </section>
@@ -30,7 +30,7 @@ export function ReisDna(){
      <div className="rk-progress"><div><strong>{data.study.estimation}</strong><span>nieuwe schattingskeuzes</span></div><div><strong>{data.study.reserved}</strong><span>aparte controlevragen</span></div><div><strong>{data.study.total-data.study.answered}</strong><span>nieuwe vergelijkingen te gaan</span></div></div>
      <p>De nieuwe vragenbank heeft zes kenmerken, telkens drie vooraf gekozen niveaus. De alternatieven zijn zo samengesteld dat geen enkele optie overal beter is. De volgende vraag probeert onzekerheid te verkleinen; zes vragen zijn vooraf apart gezet voor een voorspellingstoets.</p>
      <div className="rk-science-stat"><span>Ontwerpversie: {data.study.version}</span><span>{data.study.design.fullRank?'Alle zes kenmerken afzonderlijk schatbaar in het totale ontwerp':'Ontwerp is nog niet identificeerbaar'}</span></div>
-     <p className="rk-muted">Dit is een reproduceerbaar onderzoeksontwerp, geen onafhankelijk gevalideerd onderzoek. Het oude rapport helpt bepalen welke thema's nog interessant zijn, maar telt niet als nieuw conjointbewijs.</p>
+     <p className="rk-muted">Dit is een reproduceerbaar onderzoeksontwerp, geen onafhankelijk gevalideerd onderzoek. Het oude rapport helpt bepalen welke thema’s nog interessant zijn, maar telt niet als nieuw conjointbewijs.</p>
    </section>
    <div className="rk-people" aria-label="Kies de reiziger">{people.map(p=><button key={p.id} aria-pressed={person?.id===p.id} className={'rk-person '+(person?.id===p.id?'rk-person-current':'')} onClick={()=>setSelected(p.id)}><Avatar id={p.avatar} size={44}/><span>{p.name}</span></button>)}</div>
    {person&&<section className="rk-paper">
@@ -53,7 +53,7 @@ export function ReisDna(){
     {data.lastReveal&&<p>Jullie laatste afweging: <strong>{data.lastReveal.question}</strong>.</p>}
    </section>
    <section className="rk-paper"><BrainCircuit size={23}/><h2>Waarom juist die volgende vraag?</h2>
-    <p>Het systeem weegt mee over welke kenmerken jullie nog weinig verteld hebben en welke vragen informatie toevoegen aan beide persoonlijke modellen. Het oude reisrapport kan thema's aanwijzen die jullie nog verder willen onderzoeken.</p>
+    <p>Het systeem weegt mee over welke kenmerken jullie nog weinig verteld hebben en welke vragen informatie toevoegen aan beide persoonlijke modellen. Het oude reisrapport kan thema’s aanwijzen die jullie nog verder willen onderzoeken.</p>
     <div className="rk-explainer"><Info size={19}/><div><strong>Wat we niet kunnen claimen</strong><p>De vragen zijn kwantitatief ontworpen en apart getest, maar gebruikersonderzoek, controle op begrijpelijkheid en een externe validatieset ontbreken nog. De gekozen kenmerken en niveaus zijn een onderzoeksaanname, geen universele waarheid over reizen.</p></div></div>
    </section>
    <div className="rk-footerlinks"><Link href="/reisvragen"><TrendingUp size={17}/> Beantwoord de volgende vraag <ArrowRight size={17}/></Link><Link href="/reiskantoor">Wat betekent dit voor jullie reis? <ArrowRight size={17}/></Link></div>
