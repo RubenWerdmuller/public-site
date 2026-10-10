@@ -1,5 +1,8 @@
 # Voorkeuren, grenzen en bewijs
 
+> **Productdoel en prioriteiten:** [PRODUCT_VISION.md](PRODUCT_VISION.md) is de enige leidende bron. Dit document beschrijft de bestaande implementatie en/of technische onderzoeksdetails. Bij een tegenstrijdigheid over toekomstige UX, vraagstromen of productdoelen geldt de productvisie. De uniforme Vragen-ervaring is nog **niet** gebouwd.
+
+
 De runtimebron is PostgreSQL: `preference_subjects`, `travel_preferences` en `preference_evidence`. `lib/preferences.ts` levert uitsluitend idempotente startdata en pure domeinfuncties. De server leest bestaande rijen, ook na aanpassingen; een volgende seed overschrijft die niet.
 
 Een subject is een duo of persoon. Expliciet genoemde Roebie/Oelie-subjecten hebben een `person_key`. Ze worden niet op basis van een avatar of membership-slot aan een willekeurig account gekoppeld. Antwoordschattingen hebben een afzonderlijk persoonlijk subject met `user_id`. Zo wordt Roebies zeildroom nooit automatisch Oelies wens of een gezamenlijke afspraak.
