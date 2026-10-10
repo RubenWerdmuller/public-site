@@ -22,7 +22,7 @@ export function Reiskantoor(){
       <Link href="/reisvragen" className="rk-button">Verder met Reisvragen <ArrowRight size={17}/></Link>
      </section>
      {plan?<section className="rk-paper"><span className="rk-kicker">02 · VOORLOPIGE REISINDELING</span><h2>Zo verdelen jullie de weken.</h2>
-       <div className="rk-metrics"><div><strong>{plan.weeks}</strong><span>weken totale reisduur</span></div><div><strong>{plan.stages.length}</strong><span>etappes</span></div><div><strong>Open</strong><span>definitieve bestemmingen</span></div></div>
+       <div className="rk-metrics"><div><strong>{plan.weeks}</strong><span>weken totale reisduur</span></div><div><strong>{plan.stages.length}</strong><span>etappes</span></div><div><strong>{plan.maxBudget?'€ '+plan.maxBudget.toLocaleString('nl-NL'):'Open'}</strong><span>{plan.maxBudget?'voorlopige budgetruimte · geen kosten':'kosten en bestemmingen'}</span></div></div>
        <div className="rk-bars">{plan.stages.map((stage,i)=><div key={stage.id} className={'rk-bar rk-tone-'+i%4} style={{flex:Math.max(1,stage.idealWeeks)}} title={stage.name+': '+stage.idealWeeks+' weken'}/>)}</div>
        <ol className="rk-result-stages">{plan.stages.map((stage,i)=><li key={stage.id}>
          <span className={'rk-stage-marker rk-tone-'+i%4}>{i+1}</span><div><strong>{stage.name}</strong><p>{stage.region}</p>
@@ -37,6 +37,7 @@ export function Reiskantoor(){
         <h3>{leg.stageName} · {leg.days} dagen</h3>
         {leg.requestedStops!==null?<p>{leg.requestedStops} gewenste tussenstops{leg.preferredStopDays!==null?', gemiddeld '+leg.preferredStopDays+' dagen per stop':''}.</p>:<p className="rk-muted">Aantal stops nog niet uit jullie gezamenlijke vragen afgeleid.</p>}
         {leg.stops.length>0&&<div className="rk-proposal-line">{leg.stops.map(stop=><div key={stop.id}><span>{stop.title}</span><strong>{stop.days} dagen</strong></div>)}</div>}
+        {leg.preferredRoadDaysPerWeek!==null&&<p>Gewenst rijritme: ongeveer {leg.preferredRoadDaysPerWeek} {leg.preferredRoadDaysPerWeek===1?'rijdag':'rijdagen'} per week. Werkelijke rijtijden nog niet bekend.</p>}
         {leg.transitAllowanceDays!==null&&<p>Minimaal {leg.transitAllowanceDays} vrije planningsdagen voor verplaatsingen. Geen berekende rijtijd.</p>}
         {leg.unallocatedDays!==null&&<p className={leg.unallocatedDays<0?'rk-error':'rk-muted'}>{leg.unallocatedDays>=0?leg.unallocatedDays+' dagen nog vrij voor andere activiteiten, extra rust of werkelijke reistijd.':Math.abs(leg.unallocatedDays)+' dagen tekort: deze stopwensen passen niet in deze etappe.'}</p>}
         {leg.openQuestions.length>0&&<p className="rk-muted">Nog te ontdekken: {leg.openQuestions.join(' ')}</p>}
