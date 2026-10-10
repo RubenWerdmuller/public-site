@@ -60,6 +60,13 @@ export async function POST(req:NextRequest) {
     }
     if(action==='profile') { const name=z.string().trim().min(1).max(40).parse(body.name); const avatar=z.number().int().min(0).max(11).parse(body.avatar); await query('UPDATE users SET name=$1,avatar=$2 WHERE id=$3',[name,avatar,user.id]); return json({ok:true}); }
     if(action==='feedback') { const reportId=z.string().parse(body.reportId); const rating=z.enum(['love','partly','no']).parse(body.rating); const exists=await query('SELECT id FROM weekly_reports WHERE id=$1 AND pair_id=$2',[reportId,user.pair_id]); if(!exists.length) return json({error:'Rapport niet gevonden.'},403); await query('INSERT INTO report_feedback(report_id,user_id,rating) VALUES($1,$2,$3) ON CONFLICT(report_id,user_id) DO UPDATE SET rating=excluded.rating',[reportId,user.id,rating]); return json({ok:true}); }
+    if(action==='push-diagnostics') {
+      const endpoint=z.url().max(2000).parse(body.endpoint);
+      const [subscription]=await query('SELECT 1 FROM push_subscriptions WHERE user_id=$1 AND endpoint=$2',[user.id,endpoint]);
+      const [latest]=await query<{day:string;kind:string;sent_at:string}&Record<string,unknown>>(
+        'SELECT day,kind,sent_at FROM notification_deliveries WHERE user_id=$1 AND sent=true ORDER BY sent_at DESC LIMIT 1',[user.id]);
+      return json({subscribed:!!subscription,lastDelivery:latest??null});
+    }
     if(action==='push-test') {
       const endpoint=z.url().max(2000).parse(body.endpoint);
       const own=await query<{subscription:webpush.PushSubscription}&Record<string,unknown>>('SELECT subscription FROM push_subscriptions WHERE user_id=$1 AND endpoint=$2',[user.id,endpoint]);
