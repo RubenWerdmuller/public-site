@@ -78,7 +78,7 @@ test('budget pressure and a locked stop still preserve the full itinerary',()=>{
 });
 
 
-test('stages are discovered from the question flow, not initialized as a user's itinerary',()=>{
+test("stages are discovered from the question flow, not initialized as a user's itinerary",()=>{
  const initial=inferTravelFromChoices([]);
  assert.equal(initial.plan,null);
  const onlyLength=inferTravelFromChoices([{taskId:stageTasks[0].id,choices:[0,1]}]);
