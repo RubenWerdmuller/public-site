@@ -34,7 +34,7 @@
 - Model means have strictly capped influence on the duration-optimization objective. Stage constraints still take precedence over noisy estimates.
 
 ### L3: The initial Reiskantoor output
-- Three possible **complete trip duration scenarios** (shorter / shared / longer when these lengths are distinct), each with its own consistent set of phases and transparent trade-offs.
+- Several possible **complete trip scenarios**: shorter / shared / longer duration when distinct, plus separate one-base and two-base variants when the partners disagree. Each has its own consistent set of phases and explicit trade-offs.
 - Nested day-by-day stop *allocations* within outbound and return, never marketed as a specific real driving itinerary.
 - Qualitative stay/activity **types**, only when supported by an answer (e.g., nature/slow vs learning/community); disagreement results in multiple alternatives, not a forced "winner."
 - Clear “not yet verified” status for destinations, routes, costs and availability.
