@@ -1,4 +1,4 @@
-import {choiceTasks,featureKeys,learnPreferences,predictChoiceProbability,
+import {featureKeys,learnPreferences,predictChoiceProbability,
  type ChoiceAnswer,type Posterior,type FeatureKey} from './reiskantoor';
 import {scientificChoiceTasks,studyTaskById,studyQuality,DCE_DESIGN_VERSION,
  type StudyTask} from './dce-design';
