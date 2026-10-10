@@ -31,10 +31,11 @@ export function Reisvragen(){
    {'kind' in q.task?<p className="rk-muted">{q.task.description}</p>:<p className="rk-muted">Beide opties zijn denkbeeldig. De <strong>gemarkeerde kenmerken</strong> verschillen, de andere zijn gelijk. Vergelijk het geheel, niet één cijfer. Er is geen goed of fout antwoord.</p>}
    <div className="rk-answer-pair">{([0,1] as const).map(which=>{
      const opt=which===0?q.task.a:q.task.b;
+     const other=which===0?q.task.b:q.task.a;
      const chosen=q.own===which;
      return <button key={which} className={'rk-answer-tile '+(chosen?'rk-answer-chosen':'')} disabled={busy||q.own!==null} onClick={()=>void answer(q.ordinal,which)}>
        <span className="rk-answer-label">{which===0?'A':'B'}{chosen?' · jouw keuze ✓':''}</span>
-       {'label' in opt?<><strong>{opt.label}</strong><span>{opt.detail}</span></>:<><strong>{which===0?'Reis A':'Reis B'}</strong><ChoiceDetails values={opt} other={which===0?q.task.b:q.task.a}/></>}
+       {'label' in opt?<><strong>{opt.label}</strong><span>{opt.detail}</span></>:<><strong>{which===0?'Reis A':'Reis B'}</strong>{'label' in other?null:<ChoiceDetails values={opt} other={other}/>}</>}
      </button>;
    })}</div>
    {q.own!==null?<p className="rk-wait">Je keuze is opgeslagen. Je reisgenoot ziet jouw antwoord pas nadat die zelf gekozen heeft.</p>:<p className="rk-muted"><HelpCircle size={15} style={{verticalAlign:'middle'}}/> Je kunt ieder op een eigen telefoon antwoorden.</p>}
