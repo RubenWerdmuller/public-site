@@ -1,5 +1,8 @@
 # Reis-DNA v3 — onderzoeksprotocol vooraf
 
+> **Productdoel en prioriteiten:** [PRODUCT_VISION.md](PRODUCT_VISION.md) is de enige leidende bron. Dit document beschrijft de bestaande implementatie en/of technische onderzoeksdetails. Bij een tegenstrijdigheid over toekomstige UX, vraagstromen of productdoelen geldt de productvisie. De uniforme Vragen-ervaring is nog **niet** gebouwd.
+
+
 Status: **reproduceerbare technische pilot; nog niet extern gevalideerd**. Gericht op twee reizigers, niet op een representatieve populatie.
 
 ## Onderzoeksvraag
