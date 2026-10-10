@@ -182,3 +182,90 @@ export function planWarnings(plan:TripPlan):string[]{
   if(plan.maxBudget>0&&plan.stages.every(s=>s.weeklyBudget>0)&&lo<=plan.weeks&&plan.weeks<=hi&&!createProposals(plan).length)warnings.push('Geen verdeling past binnen het opgegeven totaalbudget en de weekgrenzen.');
   return warnings;
 }
+
+/** Real itinerary stages are discovered through the couple's answers, never from a manual form. */
+export type StageValue={
+  totalWeeks?:number;outboundWeeks?:number;returnWeeks?:number;
+  stayCount?:number;otherStops?:number;route?:'west'|'east';
+};
+export type StageQuestion={id:string;kind:'stage';question:string;description:string;
+  a:{label:string;detail:string;value:StageValue};
+  b:{label:string;detail:string;value:StageValue}};
+export const stageTasks:StageQuestion[]=[
+ {id:'stage-duration-v1',kind:'stage',question:'Hoe lang mag jullie grote avontuur duren?',description:'De totale duur bepaalt hoeveel ruimte alle etappes samen krijgen.',
+  a:{label:'Drie maanden',detail:'Circa 12 weken weg, met duidelijke keuzes over waar je blijft.',value:{totalWeeks:12}},
+  b:{label:'Zes maanden',detail:'Circa 24 weken, dus meer ruimte om ergens écht te landen.',value:{totalWeeks:24}}},
+ {id:'stage-outbound-v1',kind:'stage',question:'Hoe voelt de heenreis het fijnst?',description:'Meer tijd voor de heenreis betekent minder weken op de uiteindelijke verblijfsplekken.',
+  a:{label:'In twee weken ergens aankomen',detail:'Een paar mooie tussenstops, daarna langer op de plek.',value:{outboundWeeks:2}},
+  b:{label:'Vier weken zwerven',detail:'De reis ernaartoe is zelf een heel avontuur.',value:{outboundWeeks:4}}},
+ {id:'stage-return-v1',kind:'stage',question:'Hoe willen jullie thuiskomen?',description:'Een lange terugreis moet ook in de totale tijd passen.',
+  a:{label:'Rustig maar direct',detail:'Reken ongeveer twee weken voor terugreizen.',value:{returnWeeks:2}},
+  b:{label:'Van de terugreis een hoofdstuk maken',detail:'Vier weken om ook onderweg nog nieuwe plekken te zien.',value:{returnWeeks:4}}},
+ {id:'stage-bases-v1',kind:'stage',question:'Hoeveel echte thuisbasissen willen jullie?',description:'Een thuisbasis is een plek om langer te wonen in plaats van alleen te passeren.',
+  a:{label:'Eén lange thuisbasis',detail:'Lang landen, mensen leren kennen en een eigen ritme vinden.',value:{stayCount:1}},
+  b:{label:'Twee verschillende thuisbasissen',detail:'Bijvoorbeeld natuur én cultuur, ieder met voldoende tijd.',value:{stayCount:2}}},
+ {id:'stage-extra-v1',kind:'stage',question:'Een beetje extra verdwalen?',description:'Korte etappes kosten tijd van de lange verblijven.',
+  a:{label:'Liever minder schakelen',detail:'Heenreis, verblijf en terugreis zijn al avontuur genoeg.',value:{otherStops:0}},
+  b:{label:'Twee extra tussenhoofdstukken',detail:'Een week hier en een week daar, als het onderweg past.',value:{otherStops:2}}},
+ {id:'stage-direction-v1',kind:'stage',question:'Welke autoroute trekt meer?',description:'Dit is een eerste richting, geen uitgezochte of geboekte route.',
+  a:{label:'Via Frankrijk richting Spanje',detail:'Denk aan Bourgogne, Provence en verder richting de Spaanse kust.',value:{route:'west'}},
+  b:{label:'Via de Alpen richting Italië',detail:'Denk aan Zuid-Duitsland, Oostenrijk en Noord-Italië.',value:{route:'east'}}},
+];
+export type CompletedStage={taskId:string;choices:(0|1)[]};
+export function nextTravelQuestion(completed:CompletedStage[]):StageQuestion|ChoiceTask|null{
+ const asked=new Set(completed.map(q=>q.taskId));
+ const pendingStage=stageTasks.find(task=>!asked.has(task.id));
+ if(pendingStage)return pendingStage;
+ return nextChoiceTask(completed);
+}
+export type TravelInference={plan:TripPlan|null;completed:number;disagreements:string[];routeIdeas:string[];confidenceLabel:string};
+const meanAnswer=(rows:CompletedStage[],taskId:string,key:Exclude<keyof StageValue,'route'>,fallback:number)=>{
+ const row=rows.find(q=>q.taskId===taskId);
+ if(!row)return fallback;
+ const task=stageTasks.find(t=>t.id===taskId)!;
+ const n=row.choices.map(ch=>task[ch===0?'a':'b'].value[key]).filter((v):v is number=>typeof v==='number');
+ return n.length?Math.round(n.reduce((a,b)=>a+b,0)/n.length):fallback;
+};
+export function inferTravelFromChoices(completed:CompletedStage[]):TravelInference{
+ const stageRows=completed.filter(r=>stageTasks.some(q=>q.id===r.taskId)&&r.choices.length===2);
+ const disagreements=stageRows.filter(r=>r.choices[0]!==r.choices[1]).map(r=>stageTasks.find(q=>q.id===r.taskId)!.question);
+ const direction=stageRows.find(r=>r.taskId==='stage-direction-v1');
+ const routeIdeas=direction?(direction.choices[0]===direction.choices[1]?
+    [direction.choices[0]===0?'Bourgogne → Provence → Spanje':'Zuid-Duitsland → Oostenrijk → Noord-Italië']:
+    ['Bourgogne → Provence → Spanje','Zuid-Duitsland → Oostenrijk → Noord-Italië']):[];
+ if(!stageRows.some(r=>r.taskId==='stage-duration-v1'))return {plan:null,completed:stageRows.length,disagreements,routeIdeas,confidenceLabel:'Nog geen gezamenlijk beantwoorde duurvraag.'};
+ const totalWeeks=meanAnswer(stageRows,'stage-duration-v1','totalWeeks',16);
+ const outbound=meanAnswer(stageRows,'stage-outbound-v1','outboundWeeks',Math.max(2,Math.round(totalWeeks/6)));
+ const returning=meanAnswer(stageRows,'stage-return-v1','returnWeeks',Math.max(2,Math.round(totalWeeks/6)));
+ const stayCount=meanAnswer(stageRows,'stage-bases-v1','stayCount',1);
+ const otherStops=meanAnswer(stageRows,'stage-extra-v1','otherStops',0);
+ // All time is allocated without inventing a travel destination or price.
+ const transit=Math.min(Math.max(0,totalWeeks-outbound-returning-2),otherStops);
+ const core=Math.max(stayCount,totalWeeks-outbound-returning-transit);
+ const components:number[]=[];
+ for(let i=0;i<stayCount;i++)components.push(Math.floor(core/stayCount)+(i<core%stayCount?1:0));
+ const region=direction&&direction.choices[0]===direction.choices[1]?
+    (direction.choices[0]===0?'Westelijke route (nog te verifiëren)':'Alpenroute (nog te verifiëren)'):'Bestemming nog onbekend';
+ const asStage=(id:string,name:string,kind:StageKind,weeks:number,regionLabel:string):Stage=>({
+    id,name,kind,region:regionLabel,minWeeks:Math.max(1,weeks-2),idealWeeks:weeks,
+    maxWeeks:Math.min(52,weeks+2),locked:false,weeklyBudget:0,travelHours:0,
+    notes:'Afgeleid uit gezamenlijke antwoorden · nog geen bevestigde bestemming of boeking',
+ });
+ const stages:Stage[]=[asStage('answer-out','Heenreis','outbound',outbound,region)];
+ for(let i=0;i<stayCount;i++){
+   stages.push(asStage('answer-stay-'+i,stayCount===1?'Lang verblijf':'Verblijf '+(i+1),'stay',components[i],'Te ontdekken via volgende vragen'));
+   if(i===0)for(let j=0;j<transit;j++)stages.push(asStage('answer-stop-'+j,'Tussenstop '+(j+1),'other',1,'Onderweg · nog onbekend'));
+ }
+ stages.push(asStage('answer-return','Terugreis','return',returning,'Terug naar huis'));
+ const plan={weeks:totalWeeks,maxBudget:0,departureMonth:0,stages};
+ return {plan,completed:stageRows.length,disagreements,routeIdeas,
+   confidenceLabel:stageRows.length===stageTasks.length?'Eerste scenario op basis van jullie keuzes. Route, weer en prijzen ontbreken nog.':'Voorlopige schets; nog niet alle etappevragen zijn door jullie allebei beantwoord.'};
+}
+export type RankingItem={key:FeatureKey;label:string;weight:number;uncertainty:number;signal:'voorlopig'|'onduidelijk'};
+export function preferenceRanking(model:Posterior):RankingItem[]{
+ const label:Record<FeatureKey,string>={budget:'Budgetbewust reizen',dwell:'Lang op één plek',drive:'Weinig rijden',nature:'Veel natuur',comfort:'Comfort',community:'Ontmoetingen'};
+ return featureKeys.map((key,i)=>({
+   key,label:label[key],weight:model.means[i],uncertainty:model.uncertainty[i],
+   signal:model.count>=4&&Math.abs(model.means[i])>model.uncertainty[i]?'voorlopig' as const:'onduidelijk' as const,
+ })).sort((a,b)=>b.weight-a.weight);
+}
