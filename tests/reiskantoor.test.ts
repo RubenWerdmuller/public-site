@@ -190,8 +190,8 @@ test('the evidence-first questions prioritise missing long-stay and nested stop 
  assert.equal(next?.id,'stage-stay-min-v2');
  const all=stageTasks.map(q=>response(q.id,0));
  const dce=nextScientificQuestion(all);
- assert.ok(dce&&choiceTasks.some(c=>c.id===dce.id));
- const finished=[...all,...choiceTasks.map(q=>response(q.id,0))];
+ assert.ok(dce&&scientificChoiceTasks.some(c=>c.id===dce.id));
+ const finished=[...all,...scientificChoiceTasks.map(q=>response(q.id,0))];
  assert.equal(nextScientificQuestion(finished),null);
 });
 test('ideas are conditional on the couple actually answering a stay-style question together',()=>{
@@ -250,4 +250,85 @@ test('one-base and two-base interpretations remain available when the travellers
  const counts=new Set(result.alternatives.filter(a=>a.plan.weeks===18).map(a=>a.plan.stages.filter(s=>s.kind==='stay').length));
  assert.deepEqual([...counts].sort(),[1,2]);
  assert.ok(result.alternatives.some(a=>a.tradeoffs.some(x=>x.includes('aantal lange verblijven'))));
+});
+
+
+import {scientificChoiceTasks,studyQuality,studyTaskById} from '../lib/dce-design';
+import {studyAnswers,studyModel,studyEvidence,studyRanking,studyValidation,
+ nextStudyTask,archiveAttentionFromEvidence,legacyReportBrief} from '../lib/dce-science';
+test('the new study is versioned and has no dominated alternatives',()=>{
+ const q=studyQuality();
+ assert.equal(q.count,48);
+ assert.equal(q.holdout,6);
+ assert.equal(q.dominated,0);
+ assert.equal(q.rank,6);
+ assert.equal(new Set(scientificChoiceTasks.map(t=>t.id)).size,48);
+ assert.ok(q.frequency.every(n=>n>8));
+ const first=studyTaskById('dce3-001');
+ assert.equal(first?.id,'dce3-001');
+ assert.deepEqual(studyQuality(),q);
+});
+test('holdouts are reserved at predeclared intervals independent from partner answers',()=>{
+ const training=scientificChoiceTasks.filter(t=>t.studyRole==='estimate');
+ const chosen=training.slice(0,7).map(t=>({taskId:t.id,choices:[0,1] as (0|1)[]}));
+ const next=nextStudyTask(chosen);
+ assert.equal(next?.studyRole,'holdout');
+ const post=nextStudyTask([...chosen,{taskId:next!.id,choices:[1,0]}]);
+ assert.equal(post?.studyRole,'estimate');
+ const old=nextStudyTask([]);
+ assert.equal(old?.studyRole,'estimate');
+ const completed=scientificChoiceTasks.map(t=>({taskId:t.id,choices:[0,1] as (0|1)[]}));
+ assert.equal(nextStudyTask(completed),null);
+});
+test('hidden holdout answers are not counted toward fitting the personal Bayesian model',()=>{
+ const est=scientificChoiceTasks.filter(t=>t.studyRole==='estimate').slice(0,8).map(t=>({taskId:t.id,choice:0 as const}));
+ const hold=scientificChoiceTasks.find(t=>t.studyRole==='holdout')!;
+ const baseline=studyModel(est);
+ const withHold=studyModel([...est,{taskId:hold.id,choice:1}]);
+ assert.equal(studyAnswers([...est,{taskId:hold.id,choice:1}]).length,8);
+ assert.deepEqual(withHold.means,baseline.means);
+ assert.deepEqual(withHold.covariance,baseline.covariance);
+ const model=studyRanking([...est,{taskId:hold.id,choice:1}]);
+ assert.equal(model.length,6);
+ assert.ok(model.every(x=>x.lower<x.upper));
+});
+test('genuinely separate holdout checks are absent until both fit and test choices exist',()=>{
+ const estimated=scientificChoiceTasks.filter(t=>t.studyRole==='estimate').slice(0,8).map(t=>({taskId:t.id,choice:0 as const}));
+ assert.equal(studyValidation(estimated).brier,null);
+ const held=scientificChoiceTasks.find(t=>t.studyRole==='holdout')!;
+ const report=studyValidation([...estimated,{taskId:held.id,choice:1}]);
+ assert.equal(report.count,8);
+ assert.equal(report.heldOut,1);
+ assert.ok(report.brier!==null&&report.brier>=0&&report.brier<=1);
+ assert.equal(report.chanceBrier,.25);
+ assert.ok(report.label.includes('voorzichtig'));
+});
+test('legacy report topics guide what we explore, never become new observations',()=>{
+ const oldQuestion={options:[
+  {attributes:{nature:1,comfort:5,budget:1800}},
+  {attributes:{nature:5,comfort:1,budget:1400}},
+ ]};
+ const archive=[
+  {question_id:'old-q',user_id:'traveller-a',choice:0,snapshot:oldQuestion},
+  {question_id:'old-q',user_id:'traveller-b',choice:1,snapshot:oldQuestion},
+ ];
+ const attention=archiveAttentionFromEvidence(archive,['traveller-a','traveller-b']);
+ assert.ok(attention.some(t=>t.key==='nature'&&t.unresolved===1));
+ const secret=archiveAttentionFromEvidence(archive.slice(0,1),['traveller-a','traveller-b']);
+ assert.ok(secret.every(t=>t.observed===0));
+ const starting=nextStudyTask([],attention);
+ assert.ok(starting);
+ assert.equal(studyEvidence([]).estimation,0);
+ const retrospective=legacyReportBrief({dna:'Samen lekker op pad',discovery:'Meer natuur',fantasy:'Een langzaam avontuur',complete:8,same:4,match:50},'2026-10-05');
+ assert.equal(retrospective.matched,4);
+ assert.equal(retrospective.agreement,50);
+ assert.equal(retrospective.hasData,true);
+ assert.ok(retrospective.methodologicalCaveat.includes('niet'));
+});
+test('the new study keeps old and scientific answer IDs disjoint',()=>{
+ assert.ok(scientificChoiceTasks.every(t=>!choiceTasks.some(q=>q.id===t.id)&&!stageTasks.some(q=>q.id===t.id)));
+ const first=studyEvidence([{taskId:scientificChoiceTasks[0].id,choice:0}]);
+ assert.equal(first.answered,1);
+ assert.equal(first.coverage.length,6);
+ assert.equal(first.version,'dce-v3.1');
 });
