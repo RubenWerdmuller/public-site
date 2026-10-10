@@ -27,6 +27,9 @@ export function ReisDna(){
             <small>Geschat relatief gewicht: {item.weight.toFixed(2)} · onzekerheid (≈1 SD): ±{item.uncertainty.toFixed(2)}</small>
           </div>
         </li>)}</ol>:<p className="rk-wait">Nog niet genoeg dubbel beantwoorde afwegingsvragen. Beantwoord eerst de etappevragen en daarna een paar voorkeurdilemma’s, samen met je reisgenoot.</p>}
+        <div className="rk-explainer"><Info size={19}/><div><strong>Controle van de voorspellingen</strong>
+         {person.diagnostics.looBrier!==null?<p>Leave-one-out Brier-score: {person.diagnostics.looBrier.toFixed(3)} (blind kansniveau: 0,250; lager is beter). {person.diagnostics.label}</p>:<p>{person.diagnostics.label}</p>}
+         <p>De vraagkeuze is adaptief en de steekproef klein. Deze interne score bewijst geen wetenschappelijke kalibratie of generaliseerbaarheid.</p></div></div>
         <div className="rk-explainer"><Info size={19}/><div><strong>Hoe wetenschappelijk is dit?</strong><p>De app gebruikt voorlopig een geregulariseerd binair-logitmodel met een Bayesiaanse prior en Laplace-onzekerheidsbenadering. Dit is een eerste schatting, geen gevalideerd DCE of definitieve uitspraak over iemands karakter. Een hoge plaats betekent relatief sterker positief gewicht binnen deze zes kenmerken; een negatieve waarde kan een afkeer uitdrukken. Vergelijk de absolute waardes niet zomaar met andere studies.</p></div></div>
       </section>}
       <section className="rk-paper"><span className="rk-kicker">WAT JULLIE SAMEN ONTDEKKEN</span><h2>De overeenkomsten en verschillen.</h2>
