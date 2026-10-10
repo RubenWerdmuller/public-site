@@ -109,7 +109,7 @@ export function studyQuality(){
    for(let j=0;j<6;j++)matrix[i][j]+=diff[i]*diff[j];
   }
  }
- let rank=0,work=matrix.map(row=>[...row]);
+ let rank=0;const work=matrix.map(row=>[...row]);
  for(let j=0;j<6;j++){
   let pivot=rank;for(let r=rank+1;r<6;r++)if(Math.abs(work[r][j])>Math.abs(work[pivot][j]))pivot=r;
   if(Math.abs(work[pivot][j])<1e-8)continue;
