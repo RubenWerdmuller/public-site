@@ -203,3 +203,42 @@ test('ideas are conditional on the couple actually answering a stay-style questi
  assert.ok(learning.ideas.some(x=>x.includes('workshopgemeenschap')));
  assert.ok(!learning.ideas.some(x=>x.includes('natuurplek')));
 });
+
+
+import {predictChoiceProbability,evaluatePreferenceModel} from '../lib/reiskantoor';
+import {verifyTripOffer,onlyVerifiedOffers,type VerifiedTripOffer} from '../lib/destination-research';
+test('posterior predictive check requires data and uses an explicit chance baseline',()=>{
+ const small=evaluatePreferenceModel(choiceTasks.slice(0,4).map(q=>({taskId:q.id,choice:0 as const})));
+ assert.equal(small.looBrier,null);
+ const answers=choiceTasks.slice(0,10).map(q=>({taskId:q.id,choice:0 as const}));
+ const large=evaluatePreferenceModel(answers);
+ assert.equal(large.observations,10);
+ assert.ok(large.looBrier!==null&&large.looBrier>=0&&large.looBrier<=1);
+ assert.equal(large.baselineBrier,.25);
+ const p=predictChoiceProbability(learnPreferences(answers),choiceTasks[0]);
+ assert.ok(p>0&&p<1);
+});
+test('unverified AI output cannot masquerade as bookable destination plan',()=>{
+ const moment='2026-10-10T12:00:00Z';
+ const source={sourceUrl:'https://example.org/itinerary-reference',checkedAt:moment,provider:'Test provider'};
+ const base:VerifiedTripOffer={
+  id:'scenario-a',name:'Synthetisch testscenario',createdByAi:true,sourceType:'connected_provider',
+  places:[
+   {id:'a',name:'Sample A',country:'NL',lat:52.09,lon:5.12,evidence:source},
+   {id:'b',name:'Sample B',country:'BE',lat:50.85,lon:4.35,evidence:source},
+  ],
+  legs:[{fromId:'a',toId:'b',estimatedMinutes:140,travelMode:'car',evidence:source}],
+  stays:[{placeId:'b',startDate:'2027-04-01',endDate:'2027-04-07',available:null,priceEuro:null,priceEvidence:null,availabilityEvidence:null}],
+ };
+ assert.equal(verifyTripOffer(base,moment).valid,true);
+ assert.equal(verifyTripOffer(base,moment).isBookable,false);
+ const outdated=structuredClone(base);
+ outdated.legs[0].evidence.checkedAt='2025-01-01';
+ assert.equal(verifyTripOffer(outdated,moment).valid,false);
+ const broken=structuredClone(base);
+ broken.legs[0].toId='a';
+ assert.equal(onlyVerifiedOffers([broken],moment).length,0);
+ const invented=structuredClone(base);
+ invented.places[0].evidence.sourceUrl='not-a-url';
+ assert.ok(verifyTripOffer(invented,moment).issues.some(issue=>issue.includes('https')));
+});
