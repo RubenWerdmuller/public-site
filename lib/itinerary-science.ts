@@ -61,7 +61,7 @@ function desired(rows:CompletedStage[],totalOverride?:number):Settings{
   desiredOut:out,desiredBack:back,desiredStay:minStay,desiredBuffer:buffers,
   minOutboundWeeks:minLegWeeks(outStops),minReturnWeeks:minLegWeeks(returnStops),
   focus,roadDays:numeric(rows,'stage-driving-v2','roadDaysPerWeek').length?numberMean(numeric(rows,'stage-driving-v2','roadDaysPerWeek'),1):null,
-  month:numberMean(numeric(rows,'stage-departure-v2','departureMonth'),0),
+  month:(()=>{const months=numeric(rows,'stage-departure-v2','departureMonth');return months.length===2&&months[0]===months[1]?months[0]:0;})(),
   monthlyBudget:numberMean(numeric(rows,'stage-budget-v2','budgetMonthly'),0),
  };
 }
@@ -160,7 +160,9 @@ function resultFor(rows:CompletedStage[],setting:Settings,sol:Solution):{plan:Tr
  if(w.extras>0)for(let i=0;i<w.extras;i++)stages.push(makeStage('answer-extra-'+i,'Extra tussenhoofdstuk '+(i+1),'other',1,'Nog te ontdekken'));
  if(setting.bases===2)stages.push(makeStage('answer-stay-1','Tweede lange verblijf','stay',w.stay[1]));
  stages.push(makeStage('answer-return','Terugreis','return',w.back,'Terug naar huis'));
- const plan:TripPlan={weeks:setting.total,maxBudget:0,departureMonth:setting.month,stages};
+ // This is a *stated spending envelope*, never a prediction of market prices.
+ const available=setting.monthlyBudget?Math.round(setting.monthlyBudget*setting.total*7/30.44):0;
+ const plan:TripPlan={weeks:setting.total,maxBudget:available,departureMonth:setting.month,stages};
  const outbound=numeric(rows,'stage-outbound-stops-v2','outboundStops');
  const returning=numeric(rows,'stage-return-stops-v2','returnStops');
  const stopDays=numeric(rows,'stage-stop-days-v2','stopDays');
@@ -170,6 +172,8 @@ function resultFor(rows:CompletedStage[],setting:Settings,sol:Solution):{plan:Tr
  const legs=[subStops(stages[0],countOut,days,setting.roadDays),
   subStops(stages.at(-1)!,countBack,days,setting.roadDays)];
  const warnings:string[]=[];
+ if(setting.monthlyBudget>0)warnings.push('Maximale uitgavenruimte is afgeleid van het gekozen maandbudget. Er zijn nog geen actuele kosten per bestemming geverifieerd.');
+ if(setting.month===0)warnings.push('Vertrekperiode is nog niet door beiden gekozen of verschilt: klimaat en seizoen zijn niet beoordeeld.');
  for(const leg of legs){
   if(leg.unallocatedDays!==null&&leg.unallocatedDays<0)
    warnings.push(leg.stageName+': '+Math.abs(leg.unallocatedDays)+' planningsdagen tekort voor stops en minimumverplaatsingen. Stopduur/-aantal of reisfase moet worden aangepast.');
