@@ -17,12 +17,15 @@ export function Reisvragen(){
  {error&&<p className="rk-error" role="alert">{error}</p>}
  {loading?<section className="rk-paper">Jullie volgende vraag ophalen…</section>:!data?<section className="rk-paper"><p>Log in via jullie reisboekje om samen te kiezen.</p><Link className="rk-button" href="/">Naar inloggen <ArrowRight size={17}/></Link></section>:
  <>
- <div className="rk-progress"><div><strong>{data.completedStages}/{data.totalStageQuestions}</strong><span>etappevragen samen beantwoord</span></div><div><strong>{data.completed}</strong><span>alle gezamenlijke vergelijkingen</span></div><div><strong>{data.funFacts.same}</strong><span>keer dezelfde keuze</span></div></div>
+ <div className="rk-progress"><div><strong>{data.completedStages}/{data.totalStageQuestions}</strong><span>etappevragen samen beantwoord</span></div><div><strong>{data.study.answered}/{data.study.total}</strong><span>wetenschappelijk ontworpen vergelijkingen</span></div><div><strong>{data.funFacts.same}</strong><span>keer dezelfde keuze</span></div></div>
+ <section className="rk-study-explainer"><strong>{data.study.answered===0?'Jullie wetenschappelijke vragen beginnen na de etappes.':'Het model wordt steeds specifieker.'}</strong><p>We vergelijken vooraf ontworpen reisprofielen met verschillende kosten, rijtijd, verblijfsduur, natuur, comfort en ontmoetingen. Niet zomaar leuke dilemma’s: sommige antwoorden schatten jullie voorkeuren, andere controleren of we echt iets hebben geleerd.</p>
+ {data.archiveReport.hasData&&<p>Uit jullie eerdere reisrapport nemen we mee welke onderwerpen extra aandacht verdienen. Oudere antwoorden worden niet hergebruikt als nieuwe studiemetingen.</p>}
+ <Link href="/reis-dna">Zo groeit jullie Reis-DNA <ArrowRight size={15}/></Link></section>
  {!data.paired&&<p className="rk-wait">Nodig eerst je reisgenoot uit via het reisboekje. De etappes worden pas op basis van beide keuzes afgeleid.</p>}
  {q?<section className="rk-paper rk-main-question">
    <span className="rk-kicker">{'kind' in q.task?'ETAPPEVRAAG':'ADAPTIEVE VOORKEURVRAAG'} · VRAAG {q.ordinal+1}</span>
    <h2>{q.task.question}</h2>
-   {'kind' in q.task?<p className="rk-muted">{q.task.description}</p>:<p className="rk-muted">Welke combinatie voelt voor jou beter? Denk aan de afweging, niet aan een concrete boeking.</p>}
+   {'kind' in q.task?<p className="rk-muted">{q.task.description}</p>:<p className="rk-muted">Beide opties zijn denkbeeldige combinaties met bewust verschillende eigenschappen. Kies intuïtief de optie die jij liever zou doen, ook als het lastig is. Er is geen goed of fout antwoord.</p>}
    <div className="rk-answer-pair">{([0,1] as const).map(which=>{
      const opt=which===0?q.task.a:q.task.b;
      const chosen=q.own===which;
