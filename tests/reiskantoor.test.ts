@@ -112,3 +112,94 @@ test('the scientific ranking is ordered, conveys uncertainty and is empty only i
  for(let i=1;i<ranks.length;i++)assert.ok(ranks[i-1].weight>=ranks[i].weight);
  assert.ok(ranks.every(r=>r.uncertainty>0&&Number.isFinite(r.weight)));
 });
+
+
+import {inferScientificItinerary,nextScientificQuestion} from '../lib/itinerary-science';
+const response=(taskId:string,a:0|1,b:0|1=a)=>({taskId,choices:[a,b] as (0|1)[]});
+const essential=[
+ response('stage-duration-v1',0,1),
+ response('stage-outbound-v1',0,1),
+ response('stage-return-v1',0,1),
+ response('stage-bases-v1',0,1),
+];
+test('scientific plan requires jointly answered core stages',()=>{
+ const incomplete=inferScientificItinerary(essential.slice(0,3));
+ assert.equal(incomplete.plan,null);
+ assert.ok(incomplete.evidence.unanswered.includes('stage-bases-v1'));
+ const complete=inferScientificItinerary(essential);
+ assert.ok(complete.plan);
+ assert.equal(complete.plan.weeks,18);
+ assert.equal(complete.plan.stages.reduce((sum,s)=>sum+s.idealWeeks,0),18);
+ assert.deepEqual(validatePlan(complete.plan),[]);
+ assert.ok(complete.plan.stages.filter(s=>s.kind==='stay').every(s=>s.idealWeeks>=2));
+});
+test('four stops of five days are constrained by the outbound leg, not added on top',()=>{
+ const rows=[
+  ...essential,
+  response('stage-outbound-stops-v2',1),
+  response('stage-return-stops-v2',1),
+  response('stage-stop-days-v2',1),
+  response('stage-stay-min-v2',0),
+ ];
+ const result=inferScientificItinerary(rows);
+ assert.ok(result.plan);
+ const outbound=result.legs.find(l=>l.stageId==='answer-out')!;
+ const returning=result.legs.find(l=>l.stageId==='answer-return')!;
+ assert.equal(outbound.requestedStops,4);
+ assert.equal(outbound.stops.length,4);
+ assert.ok(outbound.days>=4*5+5);
+ assert.ok(returning.days>=3*5+4);
+ assert.ok(outbound.unallocatedDays!==null&&outbound.unallocatedDays>=0);
+ assert.equal(result.plan.stages.reduce((n,s)=>n+s.idealWeeks,0),result.plan.weeks);
+});
+test('if chosen stop durations and long stays cannot fit, no fake feasible plan is returned',()=>{
+ const rows=[
+  response('stage-duration-v1',0),response('stage-outbound-v1',1),
+  response('stage-return-v1',1),response('stage-bases-v1',1),
+  response('stage-stay-min-v2',1),response('stage-outbound-stops-v2',1),
+  response('stage-return-stops-v2',1),response('stage-stop-days-v2',1),
+ ];
+ const result=inferScientificItinerary(rows);
+ assert.equal(result.plan,null);
+ assert.ok(result.conflicts.some(c=>c.includes('niet samen')));
+ assert.deepEqual(result.alternatives,[]);
+});
+test('different departure seasons stay unresolved, monthly spending is not presented as a cost quote',()=>{
+ const rows=[...essential,response('stage-departure-v2',0,1),response('stage-budget-v2',0,1)];
+ const result=inferScientificItinerary(rows);
+ assert.equal(result.plan?.departureMonth,0);
+ assert.ok(result.plan?.maxBudget);
+ assert.ok(result.warnings.some(w=>w.includes('geen actuele kosten')));
+});
+test('the optimiser creates distinct full-trip alternatives with exact budgets and minimum long stays',()=>{
+ const rows=[...essential,response('stage-stay-min-v2',1),response('stage-buffer-v2',1),response('stage-extra-v1',1)];
+ const result=inferScientificItinerary(rows);
+ assert.ok(result.plan);
+ const durations=new Set(result.alternatives.map(a=>a.plan.weeks));
+ assert.equal(durations.size,result.alternatives.length);
+ assert.ok(result.alternatives.length>=2);
+ for(const option of result.alternatives){
+  assert.equal(option.plan.stages.reduce((n,s)=>n+s.idealWeeks,0),option.plan.weeks);
+  assert.ok(option.plan.stages.filter(s=>s.kind==='stay').every(s=>s.idealWeeks>=4));
+  assert.deepEqual(validatePlan(option.plan),[]);
+  assert.equal(option.verifiedDestination,false);
+ }
+});
+test('the evidence-first questions prioritise missing long-stay and nested stop constraints',()=>{
+ const next=nextScientificQuestion(essential);
+ assert.equal(next?.id,'stage-stay-min-v2');
+ const all=stageTasks.map(q=>response(q.id,0));
+ const dce=nextScientificQuestion(all);
+ assert.ok(dce&&choiceTasks.some(c=>c.id===dce.id));
+ const finished=[...all,...choiceTasks.map(q=>response(q.id,0))];
+ assert.equal(nextScientificQuestion(finished),null);
+});
+test('ideas are conditional on the couple actually answering a stay-style question together',()=>{
+ const unknown=inferScientificItinerary(essential);
+ assert.ok(unknown.ideas.some(x=>x.includes('Vergelijk')));
+ const nature=inferScientificItinerary([...essential,response('stage-stay-focus-v2',0)]);
+ const learning=inferScientificItinerary([...essential,response('stage-stay-focus-v2',1)]);
+ assert.ok(nature.ideas.some(x=>x.includes('natuurplek')));
+ assert.ok(learning.ideas.some(x=>x.includes('workshopgemeenschap')));
+ assert.ok(!learning.ideas.some(x=>x.includes('natuurplek')));
+});
