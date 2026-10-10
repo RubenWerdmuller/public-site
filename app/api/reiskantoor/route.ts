@@ -2,133 +2,97 @@ import {NextRequest,NextResponse} from 'next/server';
 import {z} from 'zod';
 import {currentUser} from '@/lib/auth';
 import {query,transaction,type Query} from '@/lib/db';
-import {starterPlan,validatePlan,learnPreferences,nextChoiceTask,choiceTasks,createProposals,planWarnings,type ChoiceAnswer,type TripPlan} from '@/lib/reiskantoor';
+import {choiceTasks,stageTasks,nextTravelQuestion,learnPreferences,preferenceRanking,inferTravelFromChoices,createProposals,planWarnings,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
-const json=(data:unknown,status=200)=>NextResponse.json(data,{status,headers:{'Cache-Control':'no-store'}});
-type Member={user_id:string}&Record<string,unknown>;
-type PlanRow={plan:TripPlan;revision:number}&Record<string,unknown>;
-type RoundRow={ordinal:number;task_id:string}&Record<string,unknown>;
-type AnswerRow={ordinal:number;user_id:string;choice:0|1}&Record<string,unknown>;
-const stage=z.object({
- id:z.string().regex(/^[a-zA-Z0-9-]{1,70}$/),
- name:z.string().trim().min(1).max(70), region:z.string().max(100),
- kind:z.enum(['outbound','stay','return','other']),
- minWeeks:z.number().int().min(1).max(52),idealWeeks:z.number().int().min(1).max(52),maxWeeks:z.number().int().min(1).max(52),
- locked:z.boolean(),weeklyBudget:z.number().int().min(0).max(20000),travelHours:z.number().min(0).max(240),notes:z.string().max(400),
-});
-const planSchema=z.object({weeks:z.number().int().min(2).max(52),maxBudget:z.number().int().min(0).max(1000000),departureMonth:z.number().int().min(0).max(12),stages:z.array(stage).min(1).max(12)}).strict();
-async function getState(pairId:string,userId:string,read:Query=query) {
- const members=await read<Member>('SELECT user_id FROM memberships WHERE pair_id=$1 ORDER BY slot',[pairId]);
- const [row]=await read<PlanRow>('SELECT plan,revision FROM trip_workspaces WHERE pair_id=$1',[pairId]);
- const rounds=await read<RoundRow>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
- const answers=await read<AnswerRow>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
- const complete=rounds.filter(r=>members.length===2&&members.every(m=>answers.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
- const answerList=(uid:string):ChoiceAnswer[]=>complete.flatMap(r=>{
-   const answer=answers.find(a=>a.ordinal===r.ordinal&&a.user_id===uid);
-   return answer?[{taskId:r.task_id,choice:answer.choice}]:[];
+const json=(value:unknown,status=200)=>NextResponse.json(value,{status,headers:{'Cache-Control':'no-store'}});
+type Member={user_id:string;name:string;avatar:number}&Record<string,unknown>;
+type Round={ordinal:number;task_id:string}&Record<string,unknown>;
+type Answer={ordinal:number;user_id:string;choice:0|1}&Record<string,unknown>;
+async function state(pairId:string,userId:string,read:Query=query){
+ const members=await read<Member>('SELECT m.user_id,u.name,u.avatar FROM memberships m JOIN users u ON u.id=m.user_id WHERE m.pair_id=$1 ORDER BY m.slot',[pairId]);
+ const rounds=await read<Round>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
+ const answers=await read<Answer>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
+ const completed=rounds.filter(r=>members.length===2&&members.every(m=>answers.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
+ const results:CompletedStage[]=completed.map(r=>({taskId:r.task_id,choices:members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)}));
+ const travel=inferTravelFromChoices(results);
+ const choiceRows=completed.filter(r=>choiceTasks.some(q=>q.id===r.task_id));
+ const personal=members.map(m=>{
+   const responses:ChoiceAnswer[]=choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}));
+   const model=learnPreferences(responses);
+   return {id:m.user_id,name:m.name,avatar:m.avatar,observations:model.count,
+     ranking:model.count>=2?preferenceRanking(model):[],
+     message:model.count<2?'Beantwoord samen meer keuzevragen om deze ranking te zien.':
+       'Verkennende Bayesiaanse schatting (MAP + Laplace). De onzekerheid is aanzienlijk; geen gevalideerde wetenschappelijke ranglijst.'};
  });
- const mine=learnPreferences(answerList(userId));
- const partner=members.find(m=>m.user_id!==userId);
- const other=partner?learnPreferences(answerList(partner.user_id)):null;
- const shared=other?{...mine,means:mine.means.map((v,i)=>(v+other.means[i])/2),count:Math.min(mine.count,other.count)}:null;
- const latest=rounds.at(-1);
- const current=latest?choiceTasks.find(t=>t.id===latest.task_id):null;
- const ownAnswer=latest?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id===userId):null;
- const otherAnswer=latest&&complete.some(r=>r.ordinal===latest.ordinal)&&partner?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id===partner.user_id):null;
+ const fullyPaired=personal.length===2&&personal.every(m=>m.observations>=3);
+ const personModels=members.map(m=>learnPreferences(choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}))));
+ const shared=fullyPaired?{...personModels[0],count:Math.min(...personModels.map(m=>m.count)),
+   means:personModels[0].means.map((v,i)=>(v+personModels[1].means[i])/2)}:null;
+ const proposals=travel.plan?createProposals(travel.plan,shared):[];
+ const last=rounds.at(-1);
+ const task=last?(stageTasks.find(t=>t.id===last.task_id)??choiceTasks.find(t=>t.id===last.task_id)):null;
+ const own=last?answers.find(a=>a.ordinal===last.ordinal&&a.user_id===userId):null;
+ const latest=completed.at(-1);
+ const latestTask=latest?(stageTasks.find(t=>t.id===latest.task_id)??choiceTasks.find(t=>t.id===latest.task_id)):null;
+ const latestOwn=latest?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id===userId):null;
+ const latestPartner=latest?answers.find(a=>a.ordinal===latest.ordinal&&a.user_id!==userId):null;
  return {
-   plan:row?.plan??starterPlan,revision:row?.revision??0,paired:members.length===2,
-   suggestions:createProposals(row?.plan??starterPlan,shared),warnings:planWarnings(row?.plan??starterPlan),
-   choice:current?{ordinal:latest!.ordinal,task:current,own:ownAnswer?.choice??null,partner:otherAnswer?.choice??null,complete:complete.some(r=>r.ordinal===latest!.ordinal)}:null,
-   completed:complete.length,
-   lastReveal:complete.length===0||!partner?null:(()=>{
-     const r=complete.at(-1)!;
-     const task=choiceTasks.find(t=>t.id===r.task_id)!;
-     return {
-       question:task.question,
-       own:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===userId)!.choice,
-       partner:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===partner.user_id)!.choice,
-     };
-   })(),
-   funFacts:{
-     same:complete.filter(r=>{
-       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
-       return selected[0]===selected[1];
-     }).length,
-     different:complete.filter(r=>{
-       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
-       return selected[0]!==selected[1];
-     }).length,
-     latestDifference:complete.slice().reverse().find(r=>{
-       const selected=members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice);
-       return selected[0]!==selected[1];
-     })?.task_id??null,
-   },
-   remaining:choiceTasks.length-rounds.length,model:shared&&complete.length>=3?{
-     sampleSize:complete.length,
-     dimensions:['Budget','Langer blijven','Minder rijden','Natuur','Comfort','Ontmoetingen'],
-     weights:shared.means.map((v,i)=>({label:['Budget','Langer blijven','Minder rijden','Natuur','Comfort','Ontmoetingen'][i],value:Math.round(v*100)/100})),
-     label:'Verkennende statistische schatting, geen gevalideerd persoonlijk profiel of betrouwbaarheidspercentage.',
-   }:null,
-   modelStatus:complete.length<3?'Beantwoord samen minimaal drie vergelijkingen voor het eerste voorlopige model.':'Dit is een experimentele, sterk geregulariseerde Bayesian/MAP benadering. Meer verschillende keuzes zijn nodig voor stabiele uitspraken.',
+   paired:members.length===2,people:personal,completed:completed.length,completedStages:travel.completed,totalStageQuestions:stageTasks.length,
+   answeredByMe:answers.filter(a=>a.user_id===userId).length,
+   choice:task&&last&&!completed.some(r=>r.ordinal===last.ordinal)?{ordinal:last.ordinal,task,own:own?.choice??null}:null,
+   lastReveal:latestTask&&latestOwn&&latestPartner?{question:latestTask.question,own:latestOwn.choice,partner:latestPartner.choice}:null,
+   travel:{...travel,proposals,warnings:travel.plan?planWarnings(travel.plan):[]},
+   funFacts:{same:results.filter(r=>r.choices[0]===r.choices[1]).length,
+     different:results.filter(r=>r.choices[0]!==r.choices[1]).length},
+   modelStatus:'De coëfficiënten zijn voorlopige persoonlijke signalen uit een klein keuze-experiment, geen gekalibreerde kans op een geslaagde reis.',
  };
 }
-async function ensureWorkspaceAndRound(pairId:string) {
- return transaction(async tx=>{
+async function advance(pairId:string){
+ await transaction(async tx=>{
    await tx('SELECT pg_advisory_xact_lock(hashtext($1))',['reiskantoor:'+pairId]);
-   await tx('INSERT INTO trip_workspaces(pair_id,plan) VALUES($1,$2::jsonb) ON CONFLICT DO NOTHING',[pairId,JSON.stringify(starterPlan)]);
-   const rounds=await tx<RoundRow>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
-   const members=await tx<Member>('SELECT user_id FROM memberships WHERE pair_id=$1 ORDER BY slot',[pairId]);
-   if(!rounds.length) {
-     await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,0,$2)',[pairId,choiceTasks[0].id]);
-   } else if(members.length===2&&rounds.length<choiceTasks.length) {
-     const all=await tx<AnswerRow>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1',[pairId]);
+   const members=await tx<Member>('SELECT m.user_id,u.name,u.avatar FROM memberships m JOIN users u ON u.id=m.user_id WHERE m.pair_id=$1 ORDER BY m.slot',[pairId]);
+   const rounds=await tx<Round>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
+   const all=await tx<Answer>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1',[pairId]);
+   if(!rounds.length){
+     await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,0,$2)',[pairId,stageTasks[0].id]);
+   }else if(members.length===2){
      const last=rounds.at(-1)!;
-     if(members.every(m=>all.some(a=>a.ordinal===last.ordinal&&a.user_id===m.user_id))) {
-       const complete=rounds.filter(r=>members.every(m=>all.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
-       const next=nextChoiceTask(complete.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})));
+     if(members.every(m=>all.some(a=>a.ordinal===last.ordinal&&a.user_id===m.user_id))){
+       const both=rounds.filter(r=>members.every(m=>all.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
+       const next=nextTravelQuestion(both.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})));
        if(next)await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[pairId,last.ordinal+1,next.id]);
      }
    }
  });
 }
 export async function GET(){
- const user=await currentUser();if(!user)return json({error:'Log in om het Reiskantoor te openen.'},401);
- await ensureWorkspaceAndRound(user.pair_id);
- return json(await getState(user.pair_id,user.id));
+ const user=await currentUser();if(!user)return json({error:'Log eerst in om jullie reisvragen te bekijken.'},401);
+ await advance(user.pair_id);
+ return json(await state(user.pair_id,user.id));
 }
 export async function POST(req:NextRequest){
  const origin=req.headers.get('origin');
  if(!origin||!URL.canParse(origin)||new URL(origin).host!==req.headers.get('host'))return json({error:'Deze aanvraag komt niet uit de app.'},403);
- const user=await currentUser();if(!user)return json({error:'Log in om jullie reisplan te bewerken.'},401);
+ const user=await currentUser();if(!user)return json({error:'Log eerst in.'},401);
  try{
-   const raw=await req.text();if(raw.length>24000)return json({error:'De aanvraag is te groot.'},413);
-   const input=z.record(z.string(),z.unknown()).parse(JSON.parse(raw));
-   const action=z.enum(['save-plan','answer']).parse(input.action);
-   if(action==='save-plan'){
-     const plan=planSchema.parse(input.plan) as TripPlan;
-     const invalid=validatePlan(plan);
-     if(invalid.length)return json({error:invalid.join(' ')},400);
-     const revision=z.number().int().min(0).parse(input.revision);
-     const edited=await query<PlanRow>('UPDATE trip_workspaces SET plan=$1::jsonb,revision=revision+1,updated_at=now() WHERE pair_id=$2 AND revision=$3 RETURNING plan,revision',[JSON.stringify(plan),user.pair_id,revision]);
-     if(!edited.length)return json({error:'Jullie reisplan is op een ander toestel veranderd. Vernieuw om die aanpassingen te zien.'},409);
-   } else {
-     const ordinal=z.number().int().min(0).max(100).parse(input.ordinal);
-     const choice=z.number().int().min(0).max(1).parse(input.choice);
-     await transaction(async tx=>{
-       await tx('SELECT pg_advisory_xact_lock(hashtext($1))',['reiskantoor:'+user.pair_id]);
-       const [last]=await tx<RoundRow>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal DESC LIMIT 1',[user.pair_id]);
-       if(!last||last.ordinal!==ordinal)throw Error('ROUND_STALE');
-       const existing=await tx<AnswerRow>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 AND ordinal=$2 AND user_id=$3',[user.pair_id,ordinal,user.id]);
-       if(!existing.length)await tx('INSERT INTO trip_choice_answers(pair_id,ordinal,user_id,choice) VALUES($1,$2,$3,$4)',[user.pair_id,ordinal,user.id,choice]);
-     });
-   }
-   await ensureWorkspaceAndRound(user.pair_id);
-   return json({ok:true,...await getState(user.pair_id,user.id)});
+   const raw=await req.text();if(raw.length>4000)return json({error:'Aanvraag te groot.'},413);
+   const input=z.object({action:z.literal('answer'),ordinal:z.number().int().min(0).max(100),choice:z.number().int().min(0).max(1)}).strict().parse(JSON.parse(raw));
+   await transaction(async tx=>{
+     await tx('SELECT pg_advisory_xact_lock(hashtext($1))',['reiskantoor:'+user.pair_id]);
+     const [last]=await tx<Round>('SELECT ordinal,task_id FROM trip_choice_rounds WHERE pair_id=$1 ORDER BY ordinal DESC LIMIT 1',[user.pair_id]);
+     if(!last||last.ordinal!==input.ordinal)throw Error('ROUND_STALE');
+     const existing=await tx<Answer>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 AND ordinal=$2 AND user_id=$3',[user.pair_id,input.ordinal,user.id]);
+     if(existing.length)throw Error('ANSWER_ALREADY_SAVED');
+     await tx('INSERT INTO trip_choice_answers(pair_id,ordinal,user_id,choice) VALUES($1,$2,$3,$4)',[user.pair_id,input.ordinal,user.id,input.choice]);
+   });
+   await advance(user.pair_id);
+   return json({ok:true,...await state(user.pair_id,user.id)});
  }catch(error){
-   if(error instanceof SyntaxError||error instanceof z.ZodError)return json({error:'Controleer de ingevulde reisgegevens.'},400);
-   if(error instanceof Error&&error.message==='ROUND_STALE')return json({error:'Deze vraag is al opgevolgd. Open het Reiskantoor opnieuw.'},409);
-   console.error('Reiskantoor request failed',error instanceof Error?error.message:'unknown');
-   return json({error:'Opslaan lukte niet. Probeer opnieuw.'},500);
+   if(error instanceof SyntaxError||error instanceof z.ZodError)return json({error:'Controleer de keuze.'},400);
+   if(error instanceof Error&&error.message==='ROUND_STALE')return json({error:'Deze vraag is inmiddels voorbij. Open Reisvragen opnieuw.'},409);
+   if(error instanceof Error&&error.message==='ANSWER_ALREADY_SAVED')return json({error:'Je hebt deze vraag al beantwoord.'},409);
+   console.error('Reisvragen request failed:',error instanceof Error?error.message:'onbekend');
+   return json({error:'Opslaan lukte niet.'},500);
  }
 }
