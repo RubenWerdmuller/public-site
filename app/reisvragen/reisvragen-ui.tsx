@@ -4,9 +4,12 @@ import {ArrowLeft,ArrowRight,RefreshCw,CheckCircle2,HelpCircle} from 'lucide-rea
 import {useTripExperience} from '@/components/trip-experience';
 import type {ChoiceProfile} from '@/lib/reiskantoor';
 import '../reiskantoor/reiskantoor.css';
-const attributes:Record<keyof ChoiceProfile,string>={budget:'Weekbudget voor twee',dwell:'Weken op één plek',drive:'Rijuren onderweg',nature:'Natuur',comfort:'Comfort',community:'Ontmoetingen'};
-function ChoiceDetails({values}:{values:ChoiceProfile}){
- return <div className="rk-choice-attributes">{Object.entries(values).map(([k,v])=><div key={k}><span>{attributes[k as keyof ChoiceProfile]}</span><strong>{k==='budget'?'€ ':''}{v}{k==='budget'?'/wk':''}{['nature','comfort','community'].includes(k)?' / 5':''}</strong></div>)}</div>;
+const attributes:Record<keyof ChoiceProfile,string>={budget:'Kosten samen per week',dwell:'Weken op één plek',drive:'Rijuren op een reisdag',nature:'Natuur (1 weinig · 5 veel)',comfort:'Comfort (1 basic · 5 luxe)',community:'Ontmoetingen (1 weinig · 5 veel)'};
+function ChoiceDetails({values,other}:{values:ChoiceProfile;other:ChoiceProfile}){
+ return <div className="rk-choice-attributes">{Object.entries(values).map(([k,v])=><div key={k} className={v!==other[k as keyof ChoiceProfile]?'rk-attr-difference':''}>
+  <span>{attributes[k as keyof ChoiceProfile]}</span>
+  <strong>{k==='budget'?'€ ':''}{v}{k==='budget'?'/week':''}{['nature','comfort','community'].includes(k)?' / 5':''}</strong>
+ </div>)}</div>;
 }
 export function Reisvragen(){
  const {data,loading,error,busy,refresh,answer}=useTripExperience();
@@ -25,13 +28,13 @@ export function Reisvragen(){
  {q?<section className="rk-paper rk-main-question">
    <span className="rk-kicker">{'kind' in q.task?'ETAPPEVRAAG':'ADAPTIEVE VOORKEURVRAAG'} · VRAAG {q.ordinal+1}</span>
    <h2>{q.task.question}</h2>
-   {'kind' in q.task?<p className="rk-muted">{q.task.description}</p>:<p className="rk-muted">Beide opties zijn denkbeeldige combinaties met bewust verschillende eigenschappen. Kies intuïtief de optie die jij liever zou doen, ook als het lastig is. Er is geen goed of fout antwoord.</p>}
+   {'kind' in q.task?<p className="rk-muted">{q.task.description}</p>:<p className="rk-muted">Beide opties zijn denkbeeldig. De <strong>gemarkeerde kenmerken</strong> verschillen, de andere zijn gelijk. Vergelijk het geheel, niet één cijfer. Er is geen goed of fout antwoord.</p>}
    <div className="rk-answer-pair">{([0,1] as const).map(which=>{
      const opt=which===0?q.task.a:q.task.b;
      const chosen=q.own===which;
      return <button key={which} className={'rk-answer-tile '+(chosen?'rk-answer-chosen':'')} disabled={busy||q.own!==null} onClick={()=>void answer(q.ordinal,which)}>
        <span className="rk-answer-label">{which===0?'A':'B'}{chosen?' · jouw keuze ✓':''}</span>
-       {'label' in opt?<><strong>{opt.label}</strong><span>{opt.detail}</span></>:<><strong>{which===0?'Reis A':'Reis B'}</strong><ChoiceDetails values={opt}/></>}
+       {'label' in opt?<><strong>{opt.label}</strong><span>{opt.detail}</span></>:<><strong>{which===0?'Reis A':'Reis B'}</strong><ChoiceDetails values={opt} other={which===0?q.task.b:q.task.a}/></>}
      </button>;
    })}</div>
    {q.own!==null?<p className="rk-wait">Je keuze is opgeslagen. Je reisgenoot ziet jouw antwoord pas nadat die zelf gekozen heeft.</p>:<p className="rk-muted"><HelpCircle size={15} style={{verticalAlign:'middle'}}/> Je kunt ieder op een eigen telefoon antwoorden.</p>}
