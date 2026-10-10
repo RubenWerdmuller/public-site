@@ -1,5 +1,5 @@
 import {
- stageTasks,choiceTasks,learnPreferences,createProposals,type Stage,type TripPlan,type Posterior,
+ stageTasks,choiceTasks,nextChoiceTask,type Stage,type TripPlan,type Posterior,
  type CompletedStage,type ChoiceTask,type StageQuestion,type StageValue,
 } from './reiskantoor';
 
@@ -34,6 +34,7 @@ const makeStage=(id:string,name:string,kind:Stage['kind'],weeks:number,region='B
 });
 type Settings={total:number;out:number;back:number;bases:number;extras:number;minStay:number;buffer:number;
  desiredOut:number[];desiredBack:number[];desiredStay:number[];desiredBuffer:number[];
+ minOutboundWeeks:number;minReturnWeeks:number;
  focus:'nature'|'learning'|null;roadDays:number|null;month:number;monthlyBudget:number};
 function desired(rows:CompletedStage[],totalOverride?:number):Settings{
  const totalPreferences=numeric(rows,'stage-duration-v1','totalWeeks');
@@ -43,6 +44,11 @@ function desired(rows:CompletedStage[],totalOverride?:number):Settings{
  const extra=numeric(rows,'stage-extra-v1','otherStops');
  const minStay=numeric(rows,'stage-stay-min-v2','minStayWeeks');
  const buffers=numeric(rows,'stage-buffer-v2','bufferWeeks');
+ const stopDays=numeric(rows,'stage-stop-days-v2','stopDays');
+ const outStops=numeric(rows,'stage-outbound-stops-v2','outboundStops');
+ const returnStops=numeric(rows,'stage-return-stops-v2','returnStops');
+ const minLegWeeks=(stops:number[])=>stops.length&&stopDays.length?
+    Math.ceil((numberMean(stops,1)*numberMean(stopDays,2)+numberMean(stops,1)+1)/7):1;
  const focusRow=rows.find(r=>r.taskId==='stage-stay-focus-v2');
  const focusTask=stageTasks.find(t=>t.id==='stage-stay-focus-v2');
  const focus=focusRow&&focusTask&&focusRow.choices[0]===focusRow.choices[1]?
@@ -53,6 +59,7 @@ function desired(rows:CompletedStage[],totalOverride?:number):Settings{
   bases:numberMean(stays,1),extras:numberMean(extra,0),
   minStay:numberMean(minStay,2),buffer:numberMean(buffers,0),
   desiredOut:out,desiredBack:back,desiredStay:minStay,desiredBuffer:buffers,
+  minOutboundWeeks:minLegWeeks(outStops),minReturnWeeks:minLegWeeks(returnStops),
   focus,roadDays:numeric(rows,'stage-driving-v2','roadDaysPerWeek').length?numberMean(numeric(rows,'stage-driving-v2','roadDaysPerWeek'),1):null,
   month:numberMean(numeric(rows,'stage-departure-v2','departureMonth'),0),
   monthlyBudget:numberMean(numeric(rows,'stage-budget-v2','budgetMonthly'),0),
@@ -71,7 +78,7 @@ function solve(settings:Settings,models:Posterior[]):Solution|null{
   ...s.desiredStay.map((v,i)=>({kind:'stay',i,value:v})),
   ...s.desiredBuffer.map((v,i)=>({kind:'buffer',i,value:v})),
  ];
- for(let out=1;out<=maxTravel;out++)for(let back=1;back<=maxTravel;back++){
+ for(let out=s.minOutboundWeeks;out<=maxTravel;out++)for(let back=s.minReturnWeeks;back<=maxTravel;back++){ 
   // Optional short chapters and blank time count against the same total.
   for(let extra=0;extra<=Math.min(s.extras,2);extra++)for(let buffer=0;buffer<=Math.min(s.buffer,2);buffer++){
    const core=T-out-back-extra-buffer;
@@ -191,7 +198,7 @@ export function inferScientificItinerary(completed:CompletedStage[],models:Poste
  const setting=desired(rows);
  const sol=solve(setting,models);
  if(!sol)return {...base,plan:null,legs:[],alternatives:[],ideas:ideas(setting),
-  warnings:[],conflicts:['Met '+setting.total+' weken passen de voorkeursminima voor de lange verblijven en de reisfasen niet samen. Herbespreek reisduur, minimale verblijfsduur of aantal verblijven.'],
+  warnings:[],conflicts:['Met '+setting.total+' weken passen de minimale lange verblijven en de tijd voor gewenste tussenstops (inclusief minstens één planningsdag per verplaatsing) niet samen. Vergelijk een langere reis, minder stops of kortere verblijven.'],
   confidenceLabel:'De antwoorden spreken elkaar tegen. Daarom toont de planner geen schijnbaar haalbaar reisplan.'};
  const primary=resultFor(rows,setting,sol);
  const conflicts=[...primary.warnings.filter(w=>w.includes('tekort'))];
@@ -232,7 +239,6 @@ export function nextScientificQuestion(completed:CompletedStage[]):StageQuestion
   const done=new Set(history.map(r=>r.taskId)),available=choiceTasks.filter(t=>!done.has(t.id));
   if(!available.length)return null;
   // Original Bayesian expected-information heuristic is preserved for complete DCE rounds.
-  const {nextChoiceTask}=requireChoiceSelector();
   return nextChoiceTask(history);
  }
  const rows=completed.filter(r=>stageTasks.some(q=>q.id===r.taskId));
@@ -250,6 +256,3 @@ export function nextScientificQuestion(completed:CompletedStage[]):StageQuestion
   return {task,score:score-i*.001};
  }).sort((a,b)=>b.score-a.score)[0].task;
 }
-// Reuse the shared, tested Bayesian DCE selector without introducing a second model.
-import {nextChoiceTask as existingNextChoiceTask} from './reiskantoor';
-function requireChoiceSelector(){return {nextChoiceTask:existingNextChoiceTask};}
