@@ -6,7 +6,7 @@ import {
 export type SubStop={id:string;title:string;days:number;purpose:string;status:'placeholder'};
 export type LegSchedule={
  stageId:string;stageName:string;days:number;requestedStops:number|null;
- preferredStopDays:number|null;transitAllowanceDays:number|null;
+ preferredStopDays:number|null;preferredRoadDaysPerWeek:number|null;transitAllowanceDays:number|null;
  unallocatedDays:number|null;stops:SubStop[];openQuestions:string[];
 };
 export type ScienceAlternative={
@@ -128,7 +128,7 @@ function subStops(stage:Stage,count:number|null,daysPerStop:number|null,roadDays
   status:'placeholder' as const,
  }));
  return {stageId:stage.id,stageName:stage.name,days:total,requestedStops:count,
-  preferredStopDays:daysPerStop,transitAllowanceDays:transit,unallocatedDays:remaining,
+  preferredStopDays:daysPerStop,preferredRoadDaysPerWeek:roadDays,transitAllowanceDays:transit,unallocatedDays:remaining,
   stops,openQuestions};
 }
 function ideas(settings:Settings):string[]{
