@@ -210,20 +210,31 @@ export function inferScientificItinerary(completed:CompletedStage[],models:Poste
   conflicts.push('Reistijd heen/terug is verschoven om voldoende ruimte voor lange verblijven te houden.');
  if(sol.weeks.extras!==setting.extras)conflicts.push('Niet alle gewenste tussenhoofdstukken passen binnen de totale duur.');
  if(sol.weeks.buffer!==setting.buffer)conflicts.push('De gewenste vrije buffer past niet volledig binnen de totale duur.');
- const candidates:{id:string;title:string;weeks:number}[]=[
+ const candidates:{id:string;title:string;weeks:number;bases?:number}[]=[
   {id:'short',title:'Korter en compacter',weeks:Math.min(...numeric(rows,'stage-duration-v1','totalWeeks'))},
   {id:'shared',title:'Gezamenlijk compromis',weeks:setting.total},
   {id:'long',title:'Ruimer en langzamer',weeks:Math.max(...numeric(rows,'stage-duration-v1','totalWeeks'))},
  ];
- const seen=new Set<number>();
+ const basePreferences=numeric(rows,'stage-bases-v1','stayCount');
+ if(basePreferences.length===2&&basePreferences[0]!==basePreferences[1]){
+  for(const base of [...new Set(basePreferences)])candidates.push({
+   id:'bases-'+base,title:base===1?'Eén lange thuisbasis':'Twee verschillende thuisbasissen',
+   weeks:setting.total,bases:base,
+  });
+ }
+ const seen=new Set<string>();
  const alternatives:ScienceAlternative[]=candidates.flatMap(candidate=>{
-  if(seen.has(candidate.weeks))return[];seen.add(candidate.weeks);
-  const specific=desired(rows,candidate.weeks),option=solve(specific,models);
+  const key=candidate.weeks+':'+(candidate.bases??setting.bases);
+  if(seen.has(key))return[];seen.add(key);
+  const specific=desired(rows,candidate.weeks);
+  if(candidate.bases)specific.bases=candidate.bases;
+  const option=solve(specific,models);
   if(!option)return[];
   const inferred=resultFor(rows,specific,option);
   const tradeoffs:string[]=[];
   if(option.weeks.out!==setting.out)tradeoffs.push('Heenreis '+(option.weeks.out>setting.out?'langer':'korter')+' dan de gezamenlijke wens.');
   if(option.weeks.back!==setting.back)tradeoffs.push('Terugreis '+(option.weeks.back>setting.back?'langer':'korter')+' dan de gezamenlijke wens.');
+  if(specific.bases!==setting.bases)tradeoffs.push('Ander aantal lange verblijven, omdat jullie daar afzonderlijk iets anders kozen.');
   if(option.weeks.extras<setting.extras)tradeoffs.push('Minder extra tussenhoofdstukken om de lange verblijven te beschermen.');
   if(inferred.warnings.some(w=>w.includes('tekort')))tradeoffs.push('Reisdagen en tussenstops vragen nog aanpassing.');
   return [{id:candidate.id,title:candidate.title,plan:inferred.plan,reason:'Alle fases tellen op tot '+candidate.weeks+' weken; de minimale lange verblijven worden beschermd.',
