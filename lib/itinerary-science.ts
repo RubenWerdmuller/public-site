@@ -257,6 +257,26 @@ export function nextScientificQuestion(completed:CompletedStage[]):StageQuestion
   let score=keys[task.id]??1;
   if(disagreements>0&&['stage-buffer-v2','stage-stay-min-v2'].includes(task.id))score+=disagreements*.8;
   if(task.id==='stage-stop-days-v2'&&rows.some(r=>r.taskId==='stage-outbound-stops-v2'))score+=3;
+  // One-step lookahead: simulate both users choosing A/B, and measure how much
+  // this answer could affect the actual feasible trip. This is a deterministic
+  // scenario-sensitivity proxy, NOT formal Bayesian expected information gain.
+  const scenarios=([ [0,0],[0,1],[1,0],[1,1] ] as (0|1)[][]).map(choices=>{
+   const settings=desired([...rows,{taskId:task.id,choices}]);
+   const solved=solve(settings,[]);
+   if(!solved)return null;
+   return [solved.weeks.out,solved.weeks.back,solved.weeks.stay.length*2,
+     solved.weeks.extras,solved.weeks.buffer,
+     settings.minStay,settings.month/4,settings.monthlyBudget/1000,
+     settings.minOutboundWeeks,settings.minReturnWeeks];
+  });
+  let impact=0;
+  for(let a=0;a<scenarios.length;a++)for(let b=a+1;b<scenarios.length;b++){
+   const A=scenarios[a],B=scenarios[b];
+   if(!A||!B){if(Boolean(A)!==Boolean(B))impact+=12;continue;}
+   impact+=A.reduce((total,value,k)=>total+(value-B[k])**2,0);
+  }
+  if(task.id==='stage-stay-focus-v2')impact+=12;
+  score+=Math.min(3,Math.sqrt(impact/6)*.8);
   return {task,score:score-i*.001};
  }).sort((a,b)=>b.score-a.score)[0].task;
 }
