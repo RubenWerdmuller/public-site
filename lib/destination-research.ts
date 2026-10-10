@@ -15,11 +15,11 @@ export type VerifiedTripOffer={
  legs:GroundedTravelLeg[];stays:GroundedStay[];
  sourceType:'connected_provider';createdByAi:boolean;
 };
-export type Validation={valid:boolean;issues:string[];isBookable:boolean};
+export type Validation={valid:boolean;issues:string[];isBookable:boolean;providerConfirmed:boolean};
 export function verifyTripOffer(offer:VerifiedTripOffer,checkedOn:string,maxAgeDays=60):Validation{
  const issues:string[]=[];
  const now=Date.parse(checkedOn);
- if(!Number.isFinite(now))return {valid:false,issues:['Ongeldige evaluatiedatum.'],isBookable:false};
+ if(!Number.isFinite(now))return {valid:false,issues:['Ongeldige evaluatiedatum.'],isBookable:false,providerConfirmed:false};
  const validEvidence=(item:Evidence|null|undefined,label:string)=>{
   if(!item||!item.provider.trim()||!/^https:\/\//i.test(item.sourceUrl)){issues.push(label+' heeft geen herleidbare https-bron.');return false;}
   const date=Date.parse(item.checkedAt);
@@ -52,8 +52,9 @@ export function verifyTripOffer(offer:VerifiedTripOffer,checkedOn:string,maxAgeD
   if(stay.priceEuro!==null)validEvidence(stay.priceEvidence,'Verblijfskosten');
   if(stay.available!==null)validEvidence(stay.availabilityEvidence,'Beschikbaarheid');
  }
- const isBookable=issues.length===0&&offer.stays.length>0&&offer.stays.every(s=>s.available===true&&s.priceEuro!==null&&s.priceEvidence&&s.availabilityEvidence);
- return {valid:issues.length===0,issues,isBookable:Boolean(isBookable)};
+ // The present validator checks structure, time freshness and evidence *claims* only.
+ // It cannot fetch records from providers and must never assert a bookable offer.
+ return {valid:issues.length===0,issues,isBookable:false,providerConfirmed:false};
 }
 export function onlyVerifiedOffers(offers:VerifiedTripOffer[],checkedOn:string):VerifiedTripOffer[]{
  return offers.filter(offer=>verifyTripOffer(offer,checkedOn).valid);
