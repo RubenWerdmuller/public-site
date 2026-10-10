@@ -1,5 +1,8 @@
 # Breedte, diepte en sets
 
+> **Productdoel en prioriteiten:** [PRODUCT_VISION.md](PRODUCT_VISION.md) is de enige leidende bron. Dit document beschrijft de bestaande implementatie en/of technische onderzoeksdetails. Bij een tegenstrijdigheid over toekomstige UX, vraagstromen of productdoelen geldt de productvisie. De uniforme Vragen-ervaring is nog **niet** gebouwd.
+
+
 De bank bevat 124 handgeschreven dilemma’s: 60 bestaande vragen blijven voor opgeslagen snapshots en geschiedenis beschikbaar; 64 nieuwe vragen zijn gericht op de langere autoreis. Nieuwe sets selecteren uit deze 64 vragen. Dit voorkomt terugkerende vliegvakanties en korte luxeweekjes die niet bij de uitgangssituatie passen.
 
 Een set heeft normaal vier rollen: kernvraag, grens/verfijning, persoonlijk/samen en speelse wildcard. Het is geen dagelijkse blokkade: na antwoord of bewaren volgt direct de volgende vraag; na de set kiest iemand vrijwillig Nog een set. Beide personen krijgen dezelfde set per dag/volgnummer, maar hebben een eigen voortgang. Een tweede persoon hoeft niet te wachten en wordt niet doorgestuurd naar de set van de eerste. Bij uitputting stopt de flow met een duidelijke melding; een laatste set kan minder vragen bevatten als grenzen de beschikbare bank beperken.
