@@ -306,3 +306,36 @@ stageTasks.push(
   a:{label:'Richtbedrag € 2.000 / maand',detail:'Eenvoudig, veel eigen oplossingen, kosten nog te onderzoeken.',value:{budgetMonthly:2000}},
   b:{label:'Richtbedrag € 3.500 / maand',detail:'Meer ruimte voor betaalde plekken en ervaringen.',value:{budgetMonthly:3500}}},
 );
+
+
+export type ModelDiagnostics={
+ observations:number;looBrier:number|null;baselineBrier:number;looLogLoss:number|null;
+ betterThanBaseline:boolean|null;label:string;
+};
+export function predictChoiceProbability(model:Posterior,task:ChoiceTask):number{
+ const delta=x(task);
+ const mean=delta.reduce((sum,d,i)=>sum+d*model.means[i],0);
+ const variance=Math.max(0,delta.reduce((sum,d,i)=>sum+d*delta.reduce((v,e,j)=>v+e*model.covariance[i][j],0),0));
+ // Logistic-normal moment approximation: propagates approximate parameter uncertainty.
+ return logistic(mean/Math.sqrt(1+Math.PI*variance/8));
+}
+export function evaluatePreferenceModel(answers:ChoiceAnswer[]):ModelDiagnostics{
+ const valid=answers.filter(a=>choiceTasks.some(t=>t.id===a.taskId)&&(a.choice===0||a.choice===1));
+ const base={observations:valid.length,looBrier:null,baselineBrier:0.25,looLogLoss:null,
+  betterThanBaseline:null,label:'Nog onvoldoende onafhankelijke keuzetaken voor een leave-one-out controle.'};
+ if(valid.length<8)return base;
+ let brier=0,logloss=0;
+ for(let i=0;i<valid.length;i++){
+  const held=valid[i],task=choiceTasks.find(t=>t.id===held.taskId)!;
+  const train=valid.filter((_,j)=>j!==i),pred=predictChoiceProbability(learnPreferences(train),task);
+  const actual=held.choice===0?1:0,p=boundedProbability(pred);
+  brier+=(p-actual)**2;
+  logloss-=actual*Math.log(p)+(1-actual)*Math.log(1-p);
+ }
+ const score=brier/valid.length,loss=logloss/valid.length;
+ return {...base,looBrier:score,looLogLoss:loss,
+  betterThanBaseline:score<.25,
+  label:score<.25?'Leave-one-out keuzevoorspelling beter dan kansniveau; dit is nog geen externe validatie.':
+  'Leave-one-out voorspelling is nog niet beter dan kansniveau. De ranglijst is voorlopig.'};
+}
+function boundedProbability(p:number){return Math.min(.999999,Math.max(.000001,p));}
