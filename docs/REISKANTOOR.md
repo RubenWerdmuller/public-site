@@ -1,5 +1,8 @@
 # Oelie en Roebie — eerst vragen, dan een reis
 
+> **Productdoel en prioriteiten:** [PRODUCT_VISION.md](PRODUCT_VISION.md) is de enige leidende bron. Dit document beschrijft de bestaande implementatie en/of technische onderzoeksdetails. Bij een tegenstrijdigheid over toekomstige UX, vraagstromen of productdoelen geldt de productvisie. De uniforme Vragen-ervaring is nog **niet** gebouwd.
+
+
 De hoofdregel: **het Reiskantoor is alleen het resultaat** van antwoorden van beide reizigers. Geen invoerformulier voor etappes, weken, kosten of bestemming.
 
 ## Flow
