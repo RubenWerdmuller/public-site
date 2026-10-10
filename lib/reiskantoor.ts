@@ -233,7 +233,8 @@ export function inferTravelFromChoices(completed:CompletedStage[]):TravelInferen
  const routeIdeas=direction?(direction.choices[0]===direction.choices[1]?
     [direction.choices[0]===0?'Bourgogne → Provence → Spanje':'Zuid-Duitsland → Oostenrijk → Noord-Italië']:
     ['Bourgogne → Provence → Spanje','Zuid-Duitsland → Oostenrijk → Noord-Italië']):[];
- if(!stageRows.some(r=>r.taskId==='stage-duration-v1'))return {plan:null,completed:stageRows.length,disagreements,routeIdeas,confidenceLabel:'Nog geen gezamenlijk beantwoorde duurvraag.'};
+ const essential=['stage-duration-v1','stage-outbound-v1','stage-return-v1','stage-bases-v1'];
+ if(!essential.every(id=>stageRows.some(r=>r.taskId===id)))return {plan:null,completed:stageRows.length,disagreements,routeIdeas,confidenceLabel:'Eerst samen de duur, heenreis, terugreis en verblijven ontdekken; geen etappes ingevuld of verzonnen.'};
  const totalWeeks=meanAnswer(stageRows,'stage-duration-v1','totalWeeks',16);
  const outbound=meanAnswer(stageRows,'stage-outbound-v1','outboundWeeks',Math.max(2,Math.round(totalWeeks/6)));
  const returning=meanAnswer(stageRows,'stage-return-v1','returnWeeks',Math.max(2,Math.round(totalWeeks/6)));
