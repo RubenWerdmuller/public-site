@@ -2,7 +2,7 @@ import {NextRequest,NextResponse} from 'next/server';
 import {z} from 'zod';
 import {currentUser} from '@/lib/auth';
 import {query,transaction,type Query} from '@/lib/db';
-import {choiceTasks,stageTasks,learnPreferences,preferenceRanking,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
+import {choiceTasks,stageTasks,learnPreferences,preferenceRanking,evaluatePreferenceModel,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
 import {inferScientificItinerary,nextScientificQuestion} from '@/lib/itinerary-science';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
@@ -21,6 +21,7 @@ async function state(pairId:string,userId:string,read:Query=query){
    const responses:ChoiceAnswer[]=choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}));
    const model=learnPreferences(responses);
    return {id:m.user_id,name:m.name,avatar:m.avatar,observations:model.count,
+     diagnostics:evaluatePreferenceModel(responses),
      ranking:model.count>=2?preferenceRanking(model):[],
      message:model.count<2?'Beantwoord samen meer keuzevragen om deze ranking te zien.':
        'Verkennende Bayesiaanse schatting (MAP + Laplace). De onzekerheid is aanzienlijk; geen gevalideerde wetenschappelijke ranglijst.'};
