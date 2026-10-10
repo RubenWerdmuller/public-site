@@ -187,6 +187,9 @@ export function planWarnings(plan:TripPlan):string[]{
 export type StageValue={
   totalWeeks?:number;outboundWeeks?:number;returnWeeks?:number;
   stayCount?:number;otherStops?:number;route?:'west'|'east';
+  minStayWeeks?:number;outboundStops?:number;returnStops?:number;stopDays?:number;
+  bufferWeeks?:number;roadDaysPerWeek?:number;stayFocus?:'nature'|'learning';
+  budgetMonthly?:number;departureMonth?:number;
 };
 export type StageQuestion={id:string;kind:'stage';question:string;description:string;
   a:{label:string;detail:string;value:StageValue};
@@ -270,3 +273,36 @@ export function preferenceRanking(model:Posterior):RankingItem[]{
    signal:model.count>=4&&Math.abs(model.means[i])>model.uncertainty[i]?'voorlopig' as const:'onduidelijk' as const,
  })).sort((a,b)=>b.weight-a.weight);
 }
+
+
+// Version 2: all new IDs are immutable so existing rounds retain their meaning.
+// These are preference-elicitation questions, NOT a randomized or validated DCE design.
+stageTasks.push(
+ {id:'stage-stay-min-v2',kind:'stage',question:'Hoe lang wil je minimaal écht ergens landen?',description:'Een lange thuisbasis heeft tijd nodig; dat gaat af van de heen- of terugweg.',
+  a:{label:'Twee weken',detail:'Nog wel beweging, met ruimte om een plek te leren kennen.',value:{minStayWeeks:2}},
+  b:{label:'Vier weken',detail:'Een maand wonen, ritme opbouwen en een cursus volgen.',value:{minStayWeeks:4}}},
+ {id:'stage-outbound-stops-v2',kind:'stage',question:'Hoeveel tussenstops op de heenweg?',description:'Deze stops horen binnen de heenreisweken, niet erbovenop.',
+  a:{label:'Twee fijne plekken',detail:'Minder uitpakken, langere stops tussen de reisdagen.',value:{outboundStops:2}},
+  b:{label:'Vier kleinere plekken',detail:'Meer afwisseling onderweg en vaker weer door.',value:{outboundStops:4}}},
+ {id:'stage-return-stops-v2',kind:'stage',question:'Hoe ziet de laatste reisweek eruit?',description:'Ook terugrijden kost reistijd. Hoe vaak wil je onderweg nog landen?',
+  a:{label:'Eén langere tussenstop',detail:'Vooral rustig weer naar huis komen.',value:{returnStops:1}},
+  b:{label:'Drie kleine tussenstops',detail:'De laatste weken blijven een ontdekkingsreis.',value:{returnStops:3}}},
+ {id:'stage-stop-days-v2',kind:'stage',question:'Hoeveel dagen op een fijne tussenstop?',description:'Het aantal dagen moet binnen de heen- en terugreis passen.',
+  a:{label:'Twee dagen',detail:'Even rondlopen en daarna weer verder.',value:{stopDays:2}},
+  b:{label:'Vijf dagen',detail:'Ontspannen landen, in plaats van snel afvinken.',value:{stopDays:5}}},
+ {id:'stage-buffer-v2',kind:'stage',question:'Hoeveel speelruimte willen jullie onderweg?',description:'Vrije weken zijn onderdeel van de totale reis, niet extra tijd.',
+  a:{label:'Geen aparte reserveweken',detail:'We kunnen de route vooraf wat gedetailleerder maken.',value:{bufferWeeks:0}},
+  b:{label:'Twee weken zonder plan',detail:'Tijd om te blijven waar het onverwacht heel leuk is.',value:{bufferWeeks:2}}},
+ {id:'stage-stay-focus-v2',kind:'stage',question:'Wat voor langer verblijf trekt je het meest?',description:'Dit geeft ideeën voor het soort plek; er wordt nog niets geboekt.',
+  a:{label:'Natuur en vertragen',detail:'Wandelen, ontdekken, kleine gemeenschap, rustig ritme.',value:{stayFocus:'nature'}},
+  b:{label:'Leren en meedoen',detail:'Workshops, vrijwilligerswerk, makers en ontmoetingen.',value:{stayFocus:'learning'}}},
+ {id:'stage-driving-v2',kind:'stage',question:'Hoe vaak wil je op een reisweek echt de auto in?',description:'Een ritfrequentie is nog géén schatting van kilometers of daadwerkelijke rijtijd.',
+  a:{label:'Hooguit één rijdag',detail:'Langer blijven op de tussenstops.',value:{roadDaysPerWeek:1}},
+  b:{label:'Twee à drie rijdagen',detail:'De route mag wat meer in beweging blijven.',value:{roadDaysPerWeek:3}}},
+ {id:'stage-departure-v2',kind:'stage',question:'Wanneer voelt vertrekken aantrekkelijk?',description:'Een voorlopig seizoen, geen vastgelegde vertrekdatum.',
+  a:{label:'Rond april',detail:'Voorjaar; weer en omstandigheden nog te controleren.',value:{departureMonth:4}},
+  b:{label:'Rond september',detail:'Najaar; weer en omstandigheden nog te controleren.',value:{departureMonth:9}}},
+ {id:'stage-budget-v2',kind:'stage',question:'Welke maandelijkse uitgavenrange past eerder?',description:'Een grove haalbaarheidsvraag voor twee, geen offerte of marktprijs.',
+  a:{label:'Richtbedrag € 2.000 / maand',detail:'Eenvoudig, veel eigen oplossingen, kosten nog te onderzoeken.',value:{budgetMonthly:2000}},
+  b:{label:'Richtbedrag € 3.500 / maand',detail:'Meer ruimte voor betaalde plekken en ervaringen.',value:{budgetMonthly:3500}}},
+);
