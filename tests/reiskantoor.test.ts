@@ -175,8 +175,8 @@ test('the optimiser creates distinct full-trip alternatives with exact budgets a
  const rows=[...essential,response('stage-stay-min-v2',1),response('stage-buffer-v2',1),response('stage-extra-v1',1)];
  const result=inferScientificItinerary(rows);
  assert.ok(result.plan);
- const durations=new Set(result.alternatives.map(a=>a.plan.weeks));
- assert.equal(durations.size,result.alternatives.length);
+ const signatures=new Set(result.alternatives.map(a=>a.plan.weeks+':'+a.plan.stages.filter(s=>s.kind==='stay').length));
+ assert.equal(signatures.size,result.alternatives.length);
  assert.ok(result.alternatives.length>=2);
  for(const option of result.alternatives){
   assert.equal(option.plan.stages.reduce((n,s)=>n+s.idealWeeks,0),option.plan.weeks);
@@ -241,4 +241,13 @@ test('unverified AI output cannot masquerade as bookable destination plan',()=>{
  const invented=structuredClone(base);
  invented.places[0].evidence.sourceUrl='not-a-url';
  assert.ok(verifyTripOffer(invented,moment).issues.some(issue=>issue.includes('https')));
+});
+
+
+test('one-base and two-base interpretations remain available when the travellers disagree',()=>{
+ const result=inferScientificItinerary(essential);
+ assert.ok(result.plan);
+ const counts=new Set(result.alternatives.filter(a=>a.plan.weeks===18).map(a=>a.plan.stages.filter(s=>s.kind==='stay').length));
+ assert.deepEqual([...counts].sort(),[1,2]);
+ assert.ok(result.alternatives.some(a=>a.tradeoffs.some(x=>x.includes('aantal lange verblijven'))));
 });
