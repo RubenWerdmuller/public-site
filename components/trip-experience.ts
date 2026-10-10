@@ -1,12 +1,13 @@
 'use client';
 import {useCallback,useEffect,useState} from 'react';
-import type {ChoiceTask,StageQuestion,TravelInference,Proposal,RankingItem} from '@/lib/reiskantoor';
+import type {ChoiceTask,StageQuestion,Proposal,RankingItem,ModelDiagnostics} from '@/lib/reiskantoor';
+import type {ScienceTravel} from '@/lib/itinerary-science';
 export type TripExperience={
  paired:boolean;completed:number;completedStages:number;totalStageQuestions:number;answeredByMe:number;
- people:{id:string;name:string;avatar:number;observations:number;ranking:RankingItem[];message:string}[];
+ people:{id:string;name:string;avatar:number;observations:number;ranking:RankingItem[];diagnostics:ModelDiagnostics;message:string}[];
  choice:{ordinal:number;task:StageQuestion|ChoiceTask;own:0|1|null}|null;
  lastReveal:{question:string;own:0|1;partner:0|1}|null;
- travel:TravelInference & {proposals:Proposal[];warnings:string[]};
+ travel:ScienceTravel & {proposals:Proposal[]};
  funFacts:{same:number;different:number};
  modelStatus:string;
 };
