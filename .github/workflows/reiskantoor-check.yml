@@ -1,0 +1,37 @@
+name: Reiskantoor checks
+on:
+  pull_request:
+    paths:
+      - 'app/reiskantoor/**'
+      - 'app/api/reiskantoor/**'
+      - 'lib/reiskantoor.ts'
+      - 'lib/schema.ts'
+      - 'tests/reiskantoor.test.ts'
+      - 'components/travel-app.tsx'
+      - 'app/globals.css'
+  push:
+    branches:
+      - feat/reiskantoor-itinerary-planner
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        with:
+          node-version: 24
+          cache: npm
+      - name: Install dependencies
+        # Existing package-lock.json is missing two optional dependency entries.
+        # Run checks without rewriting it; repair the lockfile separately.
+        run: npm install --no-save --package-lock=false
+      - name: Typecheck
+        run: npm run typecheck
+      - name: Lint
+        run: npm run lint
+      - name: Reiskantoor unit tests
+        run: npx tsx --test tests/reiskantoor.test.ts

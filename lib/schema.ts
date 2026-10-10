@@ -40,4 +40,26 @@ CREATE TABLE IF NOT EXISTS ai_question_retirements (pair_id text NOT NULL REFERE
 CREATE TABLE IF NOT EXISTS ai_notification_deliveries (user_id text NOT NULL REFERENCES users(id), event text NOT NULL, delivered_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,event));
 ALTER TABLE ai_notification_deliveries ADD COLUMN IF NOT EXISTS sent boolean NOT NULL DEFAULT false;
 ALTER TABLE ai_notification_deliveries ADD COLUMN IF NOT EXISTS claimed_at timestamptz NOT NULL DEFAULT now();
+CREATE TABLE IF NOT EXISTS trip_workspaces (
+  pair_id text PRIMARY KEY REFERENCES travel_pairs(id) ON DELETE CASCADE,
+  plan jsonb NOT NULL,
+  revision integer NOT NULL DEFAULT 0 CHECK(revision >= 0),
+  updated_at timestamptz NOT NULL DEFAULT now()
+);
+CREATE TABLE IF NOT EXISTS trip_choice_rounds (
+  pair_id text NOT NULL REFERENCES travel_pairs(id) ON DELETE CASCADE,
+  ordinal integer NOT NULL CHECK(ordinal >= 0),
+  task_id text NOT NULL,
+  PRIMARY KEY(pair_id,ordinal),
+  UNIQUE(pair_id,task_id)
+);
+CREATE TABLE IF NOT EXISTS trip_choice_answers (
+  pair_id text NOT NULL,
+  ordinal integer NOT NULL,
+  user_id text NOT NULL REFERENCES users(id),
+  choice integer NOT NULL CHECK(choice IN (0,1)),
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(pair_id,ordinal,user_id),
+  FOREIGN KEY(pair_id,ordinal) REFERENCES trip_choice_rounds(pair_id,ordinal) ON DELETE CASCADE
+);
 `;
