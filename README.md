@@ -1,5 +1,9 @@
 # Samen op reis
 
+> **Productvisie / single source of truth:** [Oelie en Roebie — PRODUCT_VISION](docs/PRODUCT_VISION.md). Hier staan de missie, de besloten samenvoeging van **Sets + Reisvragen** tot één vragenstroom, de wetenschappelijke principes, het gewenste Reis-DNA, het Reiskantoor en de roadmap. **Lees dit document eerst bij iedere productwijziging.**
+>
+> **Status:** de uniforme Vragen-ervaring is een **vastgesteld toekomstig ontwerp**, nog **niet** geïmplementeerd. De README hieronder beschrijft grotendeels de bestaande techniek en functies.
+
 Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 124 dilemma’s (64 nieuwe voor de langere autoreis) en een rustige getekende notitieboekstijl.
 
 ## Lokaal starten
