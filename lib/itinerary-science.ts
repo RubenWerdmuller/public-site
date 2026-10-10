@@ -1,5 +1,6 @@
+import {nextStudyTask,type ArchiveSignal} from './dce-science';
 import {
- stageTasks,choiceTasks,nextChoiceTask,type Stage,type TripPlan,type Posterior,
+ stageTasks,type Stage,type TripPlan,type Posterior,
  type CompletedStage,type ChoiceTask,type StageQuestion,type StageValue,
 } from './reiskantoor';
 
@@ -244,17 +245,15 @@ export function inferScientificItinerary(completed:CompletedStage[],models:Poste
   warnings:primary.warnings,conflicts,
   confidenceLabel:'Voorlopig, gekoppeld reisontwerp uit '+rows.length+' gezamenlijke etappe-antwoorden. Afstanden, echte bestemmingen en actuele prijzen ontbreken.'};
 }
-export function nextScientificQuestion(completed:CompletedStage[]):StageQuestion|ChoiceTask|null{
+export function nextScientificQuestion(completed:CompletedStage[],archive:ArchiveSignal[]=[]):StageQuestion|ChoiceTask|null{
  const asked=new Set(completed.map(r=>r.taskId));
  const core=['stage-duration-v1','stage-outbound-v1','stage-return-v1','stage-bases-v1'];
  for(const id of core)if(!asked.has(id))return stageTasks.find(s=>s.id===id)!;
  const outstanding=stageTasks.filter(t=>!asked.has(t.id));
  if(!outstanding.length){
-  const history=completed.filter(r=>choiceTasks.some(t=>t.id===r.taskId));
-  const done=new Set(history.map(r=>r.taskId)),available=choiceTasks.filter(t=>!done.has(t.id));
-  if(!available.length)return null;
-  // Original Bayesian expected-information heuristic is preserved for complete DCE rounds.
-  return nextChoiceTask(history);
+  // A new experimental version starts after the stage phase. Historical DCE
+  // answers are preserved but never silently treated as v3 calibration data.
+  return nextStudyTask(completed,archive);
  }
  const rows=completed.filter(r=>stageTasks.some(q=>q.id===r.taskId));
  const keys:Record<string,number>={

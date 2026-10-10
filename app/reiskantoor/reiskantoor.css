@@ -92,3 +92,24 @@
 .rk-home-questions{display:flex;gap:10px;align-items:center;padding:17px 21px;margin:0 0 30px;background:#eef1e5;border:1px solid #d8e1cc;border-radius:12px;color:#4b694f;text-decoration:none;font-size:14px;font-weight:600}
 .rk-home-questions span{margin-left:auto}
 @media(max-width:650px){.rk-answer-pair{grid-template-columns:1fr}.rk-progress strong{font-size:22px}.rk-people>.rk-person{flex:1;min-width:120px}.rk-home-questions{margin:12px 20px 22px}.rk-footerlinks{flex-direction:column}}
+
+
+/* Reis-DNA / versioned study with historical report and uncertainty */
+.rk-report-prose{font-size:15px;line-height:1.8;color:#425b46}
+.rk-report-prose p{margin:12px 0}
+.rk-report-vignette{display:flex;align-items:flex-start;gap:15px;background:#f0f4e9;padding:18px;border-radius:12px;color:#536a52;margin:19px 0}
+.rk-report-vignette svg{flex-shrink:0;margin-top:4px}
+.rk-report-vignette p{margin:0;line-height:1.8;font-family:"Playfair Display",Georgia,serif;font-size:17px}
+.rk-science-stat{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;font-size:12px;color:#5a725b;border-top:1px solid #e5e8df;border-bottom:1px solid #e5e8df;padding:11px 0;margin:16px 0}
+.rk-legacy-profile{margin-top:27px;border-top:1px solid #e5e9de;padding-top:18px}
+.rk-legacy-tags{display:flex;flex-wrap:wrap;gap:8px}.rk-legacy-tags span{padding:8px 10px;border-radius:20px;background:#edf2e8;color:#557052;font-size:11px}
+.rk-rank-zero{position:relative}
+.rk-rank-zero:before{content:'';position:absolute;left:50%;top:-3px;bottom:-3px;width:1px;background:#677367;z-index:1}
+.rk-study-explainer{background:#f0f4e9;border:1px solid #dce7d3;border-radius:13px;padding:18px 21px;margin:0 0 22px;font-size:13px;color:#536951;line-height:1.7}
+.rk-study-explainer strong{color:#37583b}
+.rk-study-explainer p{margin:8px 0}.rk-study-explainer a{display:inline-flex;align-items:center;gap:6px;color:#4d6e55;text-decoration:none;font-weight:600;margin-top:5px}
+@media(max-width:650px){.rk-report-vignette p{font-size:15px}.rk-science-stat{flex-direction:column;gap:5px}}
+
+/* Differing dimensions are highlighted equally in both experimental alternatives. */
+.rk-choice-attributes>.rk-attr-difference{background:#edf4e9;border-radius:6px;padding:6px 7px;margin:-3px -7px;color:#34583f}
+.rk-choice-attributes>.rk-attr-difference span{color:#4f7158}

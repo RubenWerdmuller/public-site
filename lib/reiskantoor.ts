@@ -1,3 +1,4 @@
+import {studyTaskById} from './dce-design';
 export type StageKind = 'outbound' | 'stay' | 'return' | 'other';
 export type Stage = {
   id: string; name: string; region: string; kind: StageKind;
@@ -77,7 +78,7 @@ function solve(a:number[][],b:number[]):number[]{
 export type Posterior = {means:number[];uncertainty:number[];covariance:number[][];count:number};
 export function learnPreferences(answers:ChoiceAnswer[]):Posterior{
   const n=featureKeys.length,prior=1.5;let beta=Array(n).fill(0);
-  const observations=answers.map(a=>({task:choiceTasks.find(q=>q.id===a.taskId),choice:a.choice})).filter((a):a is {task:ChoiceTask;choice:0|1}=>!!a.task);
+  const observations=answers.map(a=>({task:choiceTasks.find(q=>q.id===a.taskId)??(studyTaskById(a.taskId)?.studyRole==='estimate'?studyTaskById(a.taskId):undefined),choice:a.choice})).filter((a):a is {task:ChoiceTask;choice:0|1}=>!!a.task);
   function hessianAndGradient(values:number[]) {
     const H=Array.from({length:n},(_,i)=>Array.from({length:n},(_,j)=>i===j?prior:0));
     const g=values.map(v=>-prior*v);
