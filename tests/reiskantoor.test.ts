@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {starterPlan,validatePlan,createProposals,planWarnings,learnPreferences,nextChoiceTask,choiceTasks,type TripPlan} from '../lib/reiskantoor';
+import {starterPlan,validatePlan,createProposals,planWarnings,learnPreferences,nextChoiceTask,choiceTasks,stageTasks,nextTravelQuestion,inferTravelFromChoices,preferenceRanking,type TripPlan} from '../lib/reiskantoor';
 
 test('default itinerary is feasible and spans exactly the requested duration',()=>{
  const p=structuredClone(starterPlan);
@@ -75,4 +75,40 @@ test('budget pressure and a locked stop still preserve the full itinerary',()=>{
    assert.equal(proposal.weeks.reduce((v,w)=>v+w,0),16);
    assert.ok(proposal.cost!==null&&proposal.cost<=6500);
  }
+});
+
+
+test("stages are discovered from the question flow, not initialized as a user's itinerary",()=>{
+ const initial=inferTravelFromChoices([]);
+ assert.equal(initial.plan,null);
+ const onlyLength=inferTravelFromChoices([{taskId:stageTasks[0].id,choices:[0,1]}]);
+ assert.equal(onlyLength.plan,null);
+ assert.equal(onlyLength.completed,1);
+});
+test('a joint set of stage answers yields a complete trip whose weeks add up exactly',()=>{
+ const ids=['stage-duration-v1','stage-outbound-v1','stage-return-v1','stage-bases-v1','stage-extra-v1','stage-direction-v1'];
+ const completed=ids.map(taskId=>({taskId,choices:[0,1] as (0|1)[]}));
+ const result=inferTravelFromChoices(completed);
+ assert.ok(result.plan);
+ assert.equal(result.plan.weeks,18);
+ assert.equal(result.plan.stages.reduce((sum,stage)=>sum+stage.idealWeeks,0),18);
+ assert.deepEqual(validatePlan(result.plan),[]);
+ assert.equal(result.disagreements.length,6);
+ assert.equal(result.routeIdeas.length,2);
+});
+test('stage questions are offered before preference experiments and not repeated',()=>{
+ const first=nextTravelQuestion([]);
+ assert.equal(first?.id,'stage-duration-v1');
+ const allStages=stageTasks.map(q=>({taskId:q.id,choices:[0,0] as (0|1)[]}));
+ const after=nextTravelQuestion(allStages);
+ assert.ok(after);
+ assert.ok(choiceTasks.some(task=>task.id===after?.id));
+});
+test('the scientific ranking is ordered, conveys uncertainty and is empty only in the UI before evidence',()=>{
+ const answers=choiceTasks.slice(0,5).map(task=>({taskId:task.id,choice:0 as const}));
+ const result=learnPreferences(answers);
+ const ranks=preferenceRanking(result);
+ assert.equal(ranks.length,6);
+ for(let i=1;i<ranks.length;i++)assert.ok(ranks[i-1].weight>=ranks[i].weight);
+ assert.ok(ranks.every(r=>r.uncertainty>0&&Number.isFinite(r.weight)));
 });
