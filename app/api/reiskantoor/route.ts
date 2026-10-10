@@ -56,6 +56,10 @@ async function advance(pairId:string){
    const all=await tx<Answer>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1',[pairId]);
    if(!rounds.length){
      await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,0,$2)',[pairId,stageTasks[0].id]);
+   }else if(rounds.length===1&&rounds[0].task_id.startsWith('dce')&&!all.length){
+     // Older versions created an initial conjoint question on visiting Reiskantoor.
+     // Replace it only when *nobody* has answered; preserve every real response.
+     await tx('UPDATE trip_choice_rounds SET task_id=$1 WHERE pair_id=$2 AND ordinal=$3',[stageTasks[0].id,pairId,rounds[0].ordinal]);
    }else if(members.length===2){
      const last=rounds.at(-1)!;
      if(members.every(m=>all.some(a=>a.ordinal===last.ordinal&&a.user_id===m.user_id))){
