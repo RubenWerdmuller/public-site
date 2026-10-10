@@ -109,3 +109,7 @@
 .rk-study-explainer strong{color:#37583b}
 .rk-study-explainer p{margin:8px 0}.rk-study-explainer a{display:inline-flex;align-items:center;gap:6px;color:#4d6e55;text-decoration:none;font-weight:600;margin-top:5px}
 @media(max-width:650px){.rk-report-vignette p{font-size:15px}.rk-science-stat{flex-direction:column;gap:5px}}
+
+/* Differing dimensions are highlighted equally in both experimental alternatives. */
+.rk-choice-attributes>.rk-attr-difference{background:#edf4e9;border-radius:6px;padding:6px 7px;margin:-3px -7px;color:#34583f}
+.rk-choice-attributes>.rk-attr-difference span{color:#4f7158}
