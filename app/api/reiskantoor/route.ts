@@ -2,7 +2,8 @@ import {NextRequest,NextResponse} from 'next/server';
 import {z} from 'zod';
 import {currentUser} from '@/lib/auth';
 import {query,transaction,type Query} from '@/lib/db';
-import {choiceTasks,stageTasks,nextTravelQuestion,learnPreferences,preferenceRanking,inferTravelFromChoices,createProposals,planWarnings,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
+import {choiceTasks,stageTasks,learnPreferences,preferenceRanking,type CompletedStage,type ChoiceAnswer} from '@/lib/reiskantoor';
+import {inferScientificItinerary,nextScientificQuestion} from '@/lib/itinerary-science';
 export const runtime='nodejs';
 export const dynamic='force-dynamic';
 const json=(value:unknown,status=200)=>NextResponse.json(value,{status,headers:{'Cache-Control':'no-store'}});
@@ -15,7 +16,6 @@ async function state(pairId:string,userId:string,read:Query=query){
  const answers=await read<Answer>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 ORDER BY ordinal',[pairId]);
  const completed=rounds.filter(r=>members.length===2&&members.every(m=>answers.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
  const results:CompletedStage[]=completed.map(r=>({taskId:r.task_id,choices:members.map(m=>answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)}));
- const travel=inferTravelFromChoices(results);
  const choiceRows=completed.filter(r=>choiceTasks.some(q=>q.id===r.task_id));
  const personal=members.map(m=>{
    const responses:ChoiceAnswer[]=choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}));
@@ -29,7 +29,8 @@ async function state(pairId:string,userId:string,read:Query=query){
  const personModels=members.map(m=>learnPreferences(choiceRows.map(r=>({taskId:r.task_id,choice:answers.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice}))));
  const shared=fullyPaired?{...personModels[0],count:Math.min(...personModels.map(m=>m.count)),
    means:personModels[0].means.map((v,i)=>(v+personModels[1].means[i])/2)}:null;
- const proposals=travel.plan?createProposals(travel.plan,shared):[];
+ const travel=inferScientificItinerary(results,personModels);
+ const proposals=travel.alternatives.map(v=>({id:v.id,title:v.title,weeks:v.plan.stages.map(s=>s.idealWeeks),cost:null,warnings:v.tradeoffs,score:v.score}));
  const last=rounds.at(-1);
  const task=last?(stageTasks.find(t=>t.id===last.task_id)??choiceTasks.find(t=>t.id===last.task_id)):null;
  const own=last?answers.find(a=>a.ordinal===last.ordinal&&a.user_id===userId):null;
@@ -42,7 +43,7 @@ async function state(pairId:string,userId:string,read:Query=query){
    answeredByMe:answers.filter(a=>a.user_id===userId).length,
    choice:task&&last&&!completed.some(r=>r.ordinal===last.ordinal)?{ordinal:last.ordinal,task,own:own?.choice??null}:null,
    lastReveal:latestTask&&latestOwn&&latestPartner?{question:latestTask.question,own:latestOwn.choice,partner:latestPartner.choice}:null,
-   travel:{...travel,proposals,warnings:travel.plan?planWarnings(travel.plan):[]},
+   travel:{...travel,proposals}, 
    funFacts:{same:results.filter(r=>r.choices[0]===r.choices[1]).length,
      different:results.filter(r=>r.choices[0]!==r.choices[1]).length},
    modelStatus:'De coëfficiënten zijn voorlopige persoonlijke signalen uit een klein keuze-experiment, geen gekalibreerde kans op een geslaagde reis.',
@@ -64,7 +65,7 @@ async function advance(pairId:string){
      const last=rounds.at(-1)!;
      if(members.every(m=>all.some(a=>a.ordinal===last.ordinal&&a.user_id===m.user_id))){
        const both=rounds.filter(r=>members.every(m=>all.some(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)));
-       const next=nextTravelQuestion(both.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})));
+       const next=nextScientificQuestion(both.map(r=>({taskId:r.task_id,choices:members.map(m=>all.find(a=>a.ordinal===r.ordinal&&a.user_id===m.user_id)!.choice)})));
        if(next)await tx('INSERT INTO trip_choice_rounds(pair_id,ordinal,task_id) VALUES($1,$2,$3) ON CONFLICT DO NOTHING',[pairId,last.ordinal+1,next.id]);
      }
    }
