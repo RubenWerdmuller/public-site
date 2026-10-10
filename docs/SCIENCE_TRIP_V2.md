@@ -1,5 +1,8 @@
 # Scientific Trip Engine v2 — research protocol and engineering contract
 
+> **Productdoel en prioriteiten:** [PRODUCT_VISION.md](PRODUCT_VISION.md) is de enige leidende bron. Dit document beschrijft de bestaande implementatie en/of technische onderzoeksdetails. Bij een tegenstrijdigheid over toekomstige UX, vraagstromen of productdoelen geldt de productvisie. De uniforme Vragen-ervaring is nog **niet** gebouwd.
+
+
 **Goal:** Couple-specific, questions-first long-trip design. The app asks about overall length, outbound/return legs, nested stops, minimum long stays, flexibility and activity style, and then **computes a coherent itinerary**. The Reiskantoor remains read-only. The later AI destination engine must work *within* these constraints using verified travel data.
 
 ## Five non-negotiable invariants
