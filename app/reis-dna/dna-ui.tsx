@@ -1,8 +1,9 @@
 'use client';
 import Link from 'next/link';
-import {SiteNavigation} from '@/components/site-navigation';
+import {SiteNavigation,SectionHeader} from '@/components/site-navigation';
+import {AppAction} from '@/components/ui';
 import {useState} from 'react';
-import {ArrowLeft,ArrowRight,BrainCircuit,TrendingUp,Info,BookOpen,BarChart3} from 'lucide-react';
+import {ArrowRight,BrainCircuit,TrendingUp,Info,BookOpen,BarChart3} from 'lucide-react';
 import {Avatar} from '@/components/illustrations';
 import {useTripExperience} from '@/components/trip-experience';
 import '../reiskantoor/reiskantoor.css';
@@ -11,12 +12,12 @@ export function ReisDna({embedded=false}:{embedded?:boolean}){
  const [selected,setSelected]=useState<string|null>(null);
  const people=data?.people??[],person=people.find(p=>p.id===selected)??people[0];
  const report=data?.archiveReport;
- return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>{!embedded&&<SiteNavigation current="/reis-dna"/>}{!embedded&&<header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>}
+ return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>{!embedded&&<SectionHeader/>}
  <main className="rk-main rk-readable">
   <div className="rk-intro"><span className="rk-kicker">SAMEN ONTDEKKEN · REIS-DNA</span><h1>Een reis die op jullie lijkt<span>.</span></h1>
    <p>Jullie eerdere reisverhaal én een nieuw, beter gecontroleerd keuzeonderzoek. Kies iemand om te ontdekken wat de afwegingen zeggen — en wat we nog niet weten.</p></div>
   {error&&<p className="rk-error" role="alert">{error}</p>}
-  {loading?<section className="rk-paper">Jullie antwoorden en rapport worden opgehaald…</section>:!data?<section className="rk-paper"><p>Log in met je bestaande account.</p><Link href="/" className="rk-button">Naar het reisboekje</Link></section>:
+  {loading?<section className="rk-paper">Jullie antwoorden en rapport worden opgehaald…</section>:!data?<section className="rk-paper"><p>Log in met je bestaande account.</p><AppAction href="/" variant="primary">Naar het reisboekje</AppAction></section>:
   <>
    <section className="rk-paper">
     <span className="rk-kicker">UIT JULLIE EERDERE REISRAPPORT</span><h2>Dit verhaal hebben jullie al samen gemaakt.</h2>
@@ -59,5 +60,7 @@ export function ReisDna({embedded=false}:{embedded?:boolean}){
    </section>
    <div className="rk-footerlinks"><Link href="/vragen"><TrendingUp size={17}/> Beantwoord de volgende vraag <ArrowRight size={17}/></Link><Link href="/reiskantoor">Wat betekent dit voor jullie reis? <ArrowRight size={17}/></Link></div>
   </>}
- </main></div>;
+ </main>
+ {!embedded&&<SiteNavigation current="/reis-dna"/>}
+ </div>;
 }

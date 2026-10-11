@@ -94,9 +94,6 @@
 /* Vragen: the three primary destinations belong at the bottom, not above the set. */
 .rk-questions.rk-overview-mode{display:flex;flex-direction:column;min-height:100dvh}
 .rk-questions.rk-overview-mode .rk-main{width:100%;flex:1}
-.rk-questions.rk-overview-mode .site-nav{width:100%;max-width:none;justify-content:center;border-top:1px solid #e2e6dd;border-bottom:0;background:#f7f5ed}
-.rk-questions.rk-overview-mode .site-nav-brand{display:none}
-.rk-questions.rk-overview-mode .site-nav-links{justify-content:center}
 
 /* Slightly more comfortable typography across the set overview. */
 .rk-questions.rk-overview-mode .rk-set-step strong{font-size:14px}
@@ -105,10 +102,6 @@
 .rk-questions.rk-overview-mode .rk-outcome-list>div{font-size:14px}
 
 @media(max-width:650px){
- .rk-questions.rk-overview-mode .site-nav{position:fixed;inset:auto 0 0;z-index:20;padding:7px 10px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -2px 15px #28392d0a}
- .rk-questions.rk-overview-mode .site-nav-links{display:flex;width:100%;max-width:540px;margin:auto;justify-content:space-around;gap:5px;overflow:visible;padding:0}
- .rk-questions.rk-overview-mode .site-nav-links>a{display:flex;flex:1;flex-direction:column;justify-content:center;align-items:center;gap:3px;min-height:49px;padding:5px 8px;font-size:12px;text-align:center}
- .rk-questions.rk-overview-mode .site-nav-links>a svg{width:19px;height:19px}
  .rk-questions.rk-overview-mode .rk-main{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
  /* Answer view: prioritise slightly bigger copy without adding empty space. */
  .rk-questions.rk-focus-mode .rk-main-question h1{font-size:clamp(27px,7vw,37px)}
@@ -129,4 +122,28 @@
  .rk-questions.rk-focus-mode .rk-answer-tile>span:not(.rk-answer-label){font-size:12px}
  .rk-questions.rk-focus-mode .rk-choice-attributes>div span{font-size:10px}
  .rk-questions.rk-focus-mode .rk-choice-attributes>div strong{font-size:12px}
+}
+
+/* A single navigation contract, reused on Home, Vragen, Buzzer and research pages. */
+.app-primary-nav--sidebar .app-primary-nav-links{display:grid;gap:10px}
+.app-primary-nav--sidebar .app-primary-nav-link{display:flex;align-items:center;gap:14px;padding:13px 15px;border-radius:6px;font-size:14px;color:#596b56;text-decoration:none}
+.app-primary-nav--sidebar .app-primary-nav-link--active{background:#e2e8d8;color:#485d3d}
+.app-primary-nav--sidebar .app-primary-nav-link:hover{background:#e8eddf}
+.app-primary-nav--mobile{display:none}
+.app-primary-nav--footer.site-nav{display:flex;align-items:center;justify-content:center;max-width:none;border-top:1px solid #e2e6dd;border-bottom:0;background:#f7f5ed}
+.app-primary-nav--footer.site-nav .site-nav-links{display:flex;align-items:center;justify-content:center;gap:15px}
+.app-primary-nav--footer.site-nav .app-primary-nav-link{display:flex;align-items:center;gap:7px;color:#647263;padding:9px 13px;border-radius:8px;text-decoration:none}
+.app-primary-nav--footer.site-nav .app-primary-nav-link--active{color:#405f46;background:#e7eee2}
+@media(max-width:800px){
+ .app-primary-nav--mobile.mobile-nav{display:flex}
+ .app-primary-nav--mobile .app-primary-nav-links,
+ .app-primary-nav--footer.site-nav .site-nav-links{display:flex;align-items:center;justify-content:space-around;gap:4px;width:100%;max-width:540px;margin:auto;padding:0;overflow:visible}
+ .app-primary-nav--mobile .app-primary-nav-link,
+ .app-primary-nav--footer.site-nav .app-primary-nav-link{display:flex;flex:1;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-width:0;min-height:51px;padding:5px 8px;font-size:12px;line-height:1.3;text-align:center;border-radius:8px;color:#7d8b77;white-space:nowrap}
+ .app-primary-nav--mobile .app-primary-nav-link--active,
+ .app-primary-nav--footer.site-nav .app-primary-nav-link--active{color:#405f46;background:#e7eee2}
+ .app-primary-nav--mobile .app-primary-nav-link svg,
+ .app-primary-nav--footer.site-nav .app-primary-nav-link svg{width:20px;height:20px}
+ .app-primary-nav--footer.site-nav{position:fixed;inset:auto 0 0;z-index:20;padding:7px 10px calc(7px + env(safe-area-inset-bottom));box-shadow:0 -2px 15px #28392d0a}
+ .rk-shell:not(.rk-embedded):not(.rk-focus-mode) > .rk-main{padding-bottom:calc(110px + env(safe-area-inset-bottom))}
 }

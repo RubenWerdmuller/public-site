@@ -19,7 +19,7 @@ export function Buzzer({embedded=false}:{embedded?:boolean}){
   finally{setSending(false);}
  }
  return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>
-  {!embedded&&<SiteNavigation current="/buzzer"/>}
+
   <main className="rk-main rk-buzzer-page">
    <button type="button" disabled={sending} className="rk-buzzer-button" onClick={()=>void buzz()}
     aria-label="Stuur Buzzer naar je reisgenoot">
@@ -29,5 +29,6 @@ export function Buzzer({embedded=false}:{embedded?:boolean}){
    {feedback&&<p className="rk-buzzer-feedback" role="status">{feedback}</p>}
    {error&&<p className="rk-error" role="alert">{error}</p>}
   </main>
+  {!embedded&&<SiteNavigation current="/buzzer"/>}
  </div>;
 }

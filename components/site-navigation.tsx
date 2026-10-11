@@ -1,18 +1,15 @@
 'use client';
 import Link from 'next/link';
-import {BookOpen,Compass,Home,Settings} from 'lucide-react';
-/** The three primary destinations; extra actions live on Home. */
-const destinations=[
- {href:'/',label:'Home',Icon:Home},
- {href:'/vragen',label:'Vragen',Icon:BookOpen},
- {href:'/?screen=settings',label:'Instellingen',Icon:Settings},
-];
+import {ArrowLeft} from 'lucide-react';
+import {PrimaryNavigation,type PrimaryDestination} from './primary-navigation';
+
+/** All stand-alone app pages share the same three-destination navigation. */
 export function SiteNavigation({current}:{current?:string}){
- return <nav className="site-nav" aria-label="Hoofdnavigatie">
-  <span className="site-nav-brand"><Compass size={18}/> Oelie & Roebie</span>
-  <div className="site-nav-links">{destinations.map(({href,label,Icon})=><Link key={href} href={href}
-   aria-current={current===href?'page':undefined} className={current===href?'site-nav-selected':''}>
-   <Icon size={16}/><span>{label}</span>
-  </Link>)}</div>
- </nav>;
+ const destination:PrimaryDestination|null=current==='/vragen'?'vragen':current==='/'?'today':current==='/?screen=settings'?'settings':null;
+ return <PrimaryNavigation variant="footer" current={destination}/>;
+}
+
+/** Reusable non-navigation heading for stand-alone report/legacy pages. */
+export function SectionHeader(){
+ return <header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>;
 }

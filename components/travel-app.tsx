@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useState, useRef, type FormEvent } from 'react';
-import { ArrowRight, Bookmark, Check, Compass, Home, Sofa, Sparkles, Settings, History, X, Bell, Download, Link as LinkIcon, LogOut, Sun, Heart, BellRing } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, Compass, Sofa, Sparkles, History, X, Bell, Download, Link as LinkIcon, LogOut, Sun, Heart, BellRing } from 'lucide-react';
 import { Avatar, Landscape } from './illustrations';
 import { SketchButton } from './sketch-button';
 import { Travelers } from './travelers';
@@ -17,13 +17,15 @@ import type { Question } from '@/lib/domain';
 import { questionLabel } from '@/lib/question-labels';
 import { usePwaInstall } from './use-pwa-install';
 import {HomeModal} from './home-modal';
+import {PrimaryNavigation} from './primary-navigation';
+import {QuickAction} from './ui';
 import { IosInstallSteps } from './ios-install-steps';
 import {appScreen,isAppScreen} from '@/lib/navigation';
 const exampleQuestion=bank.find(q=>q.role)!;
 const guestMembers=[{id:'guest-me',name:'Jij',avatar:CHARACTERS.oelie.avatar},{id:'guest-companion',name:'Maatje',avatar:CHARACTERS.roebie.avatar}];
 type Data=Awaited<ReturnType<typeof dashboard>>;
 type CardQuestion=Question & {own:number|null;partner:number|null;same:boolean|null};
-const nav=[{id:'today',label:'Home',icon:Home}];
+
 const types:Record<string,string>={'trade-off':'De afweging',extreme:'Het grote dilemma',scenario:'Twee mini-reizen','one-change':'Eén verschil',wildcard:'De wildcard',boundary:'Waar ligt jouw grens?',refinement:'Even scherper',conditional:'Als dit, dan…',conflict:'Ruimte voor elkaar','personal-dream':'Jouw eigen droom',bundle:'Een pakketje mogelijkheden'};
 const LazyBuzzer=dynamic(()=>import('../app/buzzer/buzzer-ui').then(m=>m.Buzzer),{ssr:false});
 const LazyReisDna=dynamic(()=>import('../app/reis-dna/dna-ui').then(m=>m.ReisDna),{ssr:false});
@@ -102,7 +104,7 @@ export function TravelApp({demo=false}:{demo?:boolean}) {
   function weeklyCard(){const weekly=data?.weeklyQuestion;if(!weekly)return null;return <button className="weekly-card paper" onClick={()=>go(weekly.own===null?'weekly-question':'weekly-reveal')}><span className="eyebrow">HOOFDVRAAG VAN DE WEEK · {weekly.week}</span><strong>{weekly.question.title}</strong><span>{weekly.own===null?'Even uitzoomen: wat willen we echt?':weekly.same===null?'Jouw keuze staat vast · nog even geheim':'Jullie hebben allebei gekozen'} <ArrowRight size={16}/></span></button>;}
   function questionCards(q:CardQuestion,interactive=true) {return <div className="battle">{q.options.map((option,i)=><article className={`option option-${i} ${selected===i?'chosen':''}`} key={i}><div className="option-top"><span className="letter">{i===0?'A':'B'}</span><span className="hand">{i===0?'dit trekt me':'of toch dit…'}</span></div><TravelSketch option={option} questionId={q.id} index={i}/><div className="option-copy"><h3>{option.title}</h3><p>{option.subtitle}</p><ul>{option.details.map(d=><li key={d}><Check size={15}/>{d}</li>)}</ul></div>{interactive&&<button className="choice" aria-label={q.own===null?`Ik kies ${i===0?'A':'B'}: ${option.title}`:q.own===i?'Jouw keuze':'Keuze opgeslagen'} disabled={busy||q.own!==null} onClick={()=>void choose(i,q)}>{q.own===i?<><Check size={18}/> Jouw keuze</>:q.own!==null?'Keuze opgeslagen':<>Ik kies {i===0?'A':'B'} <ArrowRight size={18}/></>}</button>}</article>)}<span className="or hand">of</span></div>;}
 
-  return <div className={`app ${demo?'is-demo':''} ${questionScreen?'daily-flow':''}`}><aside className="sidebar"><Link href={demo?'/test':'/'} className="brand"><Compass size={29}/><span>samen<br/><b>op reis.</b></span></Link><p className="brand-note hand">kleine keuzes, groot avontuur</p><nav aria-label="Hoofdnavigatie">{nav.map(item=><button key={item.id} className={screen===item.id?'active':''} onClick={()=>go(item.id)}><item.icon size={20}/>{item.label}</button>)}{!demo&&<Link href="/vragen" className="rk-sidebar-link"><Sparkles size={20}/>Vragen</Link>}<button className={screen==='settings'?'active':''} onClick={()=>go('settings')}><Settings size={20}/>Instellingen</button></nav><div className="sidebar-bottom"><p className="hand">Nog niet weten waar.<br/>Wel weten met wie.</p><div className="pair-mini"><Travelers members={data?.members??guestMembers} size={38}/></div></div></aside>
+  return <div className={`app ${demo?'is-demo':''} ${questionScreen?'daily-flow':''}`}><aside className="sidebar"><Link href={demo?'/test':'/'} className="brand"><Compass size={29}/><span>samen<br/><b>op reis.</b></span></Link><p className="brand-note hand">kleine keuzes, groot avontuur</p><PrimaryNavigation variant="sidebar" demo={demo} current={screen==='today'?'today':screen==='settings'?'settings':null} onNavigate={destination=>go(destination)}/><div className="sidebar-bottom"><p className="hand">Nog niet weten waar.<br/>Wel weten met wie.</p><div className="pair-mini"><Travelers members={data?.members??guestMembers} size={38}/></div></div></aside>
     <main>{demo&&<section className="test-mode-banner" aria-label="Testmodus"><div><strong>Testmodus</strong><span>Je probeert de app. Niets wordt opgeslagen.</span></div><button onClick={()=>{setPreview(state=>({...state,roebieCap:!state.roebieCap}));setAvatar(null);}} aria-pressed={preview.roebieCap}>{preview.roebieCap?'Pet af':'Pet op'}</button><Link href="/">Uit testmodus</Link></section>}{!questionScreen&&<header className="topbar"><span className="date"><Sun size={17}/>{new Intl.DateTimeFormat('nl-NL',{day:'numeric',month:'long',timeZone:'Europe/Amsterdam'}).format(new Date())}<span className="desktop-only"> · een beetje voorpret</span></span><div className="header-actions">{!demo&&<Link href="/test" className="quiet">Testflow</Link>}{data?<button className="user-chip" onClick={()=>go('settings')}>{screen!=='today'&&<Avatar id={data.user.avatar} size={30}/>}{data.user.name}</button>:<button className="quiet" onClick={()=>setAuth('login')}>Inloggen <ArrowRight size={16}/></button>}</div></header>}
     {notice&&<div className="notice" role="status">{notice}<button aria-label="Melding sluiten" onClick={()=>setNotice('')}><X size={16}/></button></div>}
     <div className="content">
@@ -115,9 +117,9 @@ export function TravelApp({demo=false}:{demo?:boolean}) {
      <div className="welcome"><div><span className="eyebrow">JULLIE VOLGENDE REIS BEGINT HIER</span><h1>Waar dromen<br/>we vandaag van<span className="question-mark">?</span></h1><p>Kleine keuzes die jullie dichter bij jullie grote avontuur brengen. Allebei op je eigen tempo.</p></div><div className="welcome-art"><Landscape/><span className="hand">ergens, samen.</span></div></div>
      <section className="daily-strip"><div><span className="sun-disc"><Sun size={24}/></span><div><h2>{data?'Zin in nog een vraag?':'Een kleine keuze. Een groot avontuur.'}</h2><p>{data?'Jullie volgende set staat klaar.':'Begin jullie reisboekje met een paar mooie keuzes.'}</p></div></div><SketchButton onClick={()=>data?window.location.assign('/vragen'):setAuth('register')}>{data?'Verder met Vragen':'Begin samen'} <ArrowRight size={18}/></SketchButton></section>
      {!demo&&<><div className="home-quick-actions" aria-label="Meer in ons reisboekje">
-      <button className="home-action" type="button" onClick={()=>openHomeModal('buzzer')}><BellRing size={25}/><strong>Buzzer</strong><span>Een seintje voor je reisgenoot</span></button>
-      <button className="home-action" type="button" onClick={()=>openHomeModal('history')}><History size={25}/><strong>Geschiedenis</strong><span>Terug naar jullie keuzes</span></button>
-      <button className="home-action" type="button" onClick={()=>openHomeModal('onderzoek')}><Compass size={25}/><strong>Onderzoek</strong><span>Resultaten en conclusies</span></button>
+      <QuickAction icon={<BellRing size={25}/>} title="Buzzer" description="Een seintje voor je reisgenoot" onClick={()=>openHomeModal('buzzer')}/>
+      <QuickAction icon={<History size={25}/>} title="Geschiedenis" description="Terug naar jullie keuzes" onClick={()=>openHomeModal('history')}/>
+      <QuickAction icon={<Compass size={25}/>} title="Onderzoek" description="Resultaten en conclusies" onClick={()=>openHomeModal('onderzoek')}/>
      </div><div className="home-after-actions"><p>Een rustig reisboekje, met ruimte voor nieuwe ideeën.</p><button type="button" onClick={()=>openHomeModal('saved')}>Voor later bewaarde vragen ({data?.saved.length??0})</button></div></>}
      {demo&&<>{weeklyCard()}<section className="sample"><span className="eyebrow">EEN VOORPROEFJE</span><h2>{exampleQuestion.title}</h2>{questionCards({...exampleQuestion,own:null,partner:null,same:null},false)}</section></>}
      {data&&setTotals()}
@@ -134,7 +136,7 @@ export function TravelApp({demo=false}:{demo?:boolean}) {
     {screen!=='install'&&!pwa.installed&&<div className="install-shortcut">{installButton()}<p>Ontvang je dagelijkse vragen via pushnotificaties. Zet na installatie berichtjes aan.</p></div>}
     {demo&&<PreviewToolbar state={preview} onSwitch={id=>{const nextState={...preview,active:id};setPreview(nextState);setAvatar(null);setNotice('');setSelected(null);if(['weekly-question','weekly-reveal'].includes(screen)){const weekly=previewDashboard(nextState).weeklyQuestion;go(weekly?.own===null?'weekly-question':'weekly-reveal');}if(['reveal','question','done'].includes(screen)){const next=previewDashboard(nextState).questions.find(q=>q.own===null&&!preview.saved.includes(q.id));go(next?'question':'done',next?.id);}}} onReset={()=>{setPreview(initialPreview());setAvatar(null);setSelected(null);setNotice('');go('question',previewQuestions[0].id);}} onNotification={()=>go('notification')} onReport={()=>{setPreview(previewWeek);go('weekly-question');}} onNextWeek={()=>{setPreview(previewNextWeek);go('weekly-question');}}/>}
     {!loaded&&<p className="loading-status" role="status">Je boekje openen…</p>}
-    </div></main><nav className="mobile-nav" aria-label="Mobiele navigatie">{nav.map(item=><button className={screen===item.id?'active':''} key={item.id} onClick={()=>go(item.id)}><item.icon size={21}/><span>{item.label}</span></button>)}{!demo&&<Link href="/vragen" className="rk-mobile-link"><Sparkles size={21}/><span>Vragen</span></Link>}<button className={screen==='settings'?'active':''} onClick={()=>go('settings')}><Settings size={21}/><span>Instellingen</span></button></nav>
+    </div></main><PrimaryNavigation variant="mobile" demo={demo} current={screen==='today'?'today':screen==='settings'?'settings':null} onNavigate={destination=>go(destination)}/>
     {!demo&&<HomeModal open={homeModal!==null} title={homeModal==='buzzer'?'Buzzer':homeModal==='history'?'Jullie geschiedenis':homeModal==='saved'?'Voor later':'Onderzoek & conclusies'} onClose={closeHomeModal} wide={homeModal==='onderzoek'}>
  {homeModal==='buzzer'&&(data?<LazyBuzzer embedded/>:<p>Log in om je reisgenoot een Buzzer te sturen. <button className="quiet" onClick={()=>{closeHomeModal();setAuth('login');}}>Inloggen</button></p>)}
  {(homeModal==='history'||homeModal==='saved')&&(!data?<p>Log in om jullie bewaarde keuzes te zien. <button className="quiet" onClick={()=>{closeHomeModal();setAuth('login');}}>Inloggen</button></p>:<div className="list">

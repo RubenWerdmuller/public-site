@@ -1,26 +1,27 @@
 'use client';
 import Link from 'next/link';
-import {SiteNavigation} from '@/components/site-navigation';
-import {ArrowLeft,ArrowRight,Compass,Route,RefreshCw,MapPin,Clock3} from 'lucide-react';
+import {SiteNavigation,SectionHeader} from '@/components/site-navigation';
+import {AppAction} from '@/components/ui';
+import {ArrowRight,Compass,Route,RefreshCw,MapPin,Clock3} from 'lucide-react';
 import {useTripExperience} from '@/components/trip-experience';
 import './reiskantoor.css';
 export function Reiskantoor({embedded=false}:{embedded?:boolean}){
  const {data,loading,error,refresh}=useTripExperience();
  const travel=data?.travel;
  const plan=travel?.plan;
- return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>{!embedded&&<SiteNavigation current="/reiskantoor"/>}
-  {!embedded&&<header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>}
+ return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>
+  {!embedded&&<SectionHeader/>}
   <main className="rk-main">
    <div className="rk-intro"><span className="rk-kicker">HET RESULTAAT VAN JULLIE KEUZES</span><h1>Het Reiskantoor<span>.</span></h1>
      <p>Jullie hoeven hier niets in te vullen. De reis groeit uit de antwoorden van jullie allebei. Wat nog onzeker is, blijft open.</p></div>
    {error&&<p className="rk-error" role="alert">{error}</p>}
-   {loading?<section className="rk-paper">Jullie gezamenlijke reis ophalen…</section>:!data?<section className="rk-paper"><h2>Open jullie gezamenlijke reisboekje</h2><p>Log in om jullie gedeelde resultaten te zien.</p><Link href="/" className="rk-button">Naar het reisboekje</Link></section>:
+   {loading?<section className="rk-paper">Jullie gezamenlijke reis ophalen…</section>:!data?<section className="rk-paper"><h2>Open jullie gezamenlijke reisboekje</h2><p>Log in om jullie gedeelde resultaten te zien.</p><AppAction href="/" variant="primary">Naar het reisboekje</AppAction></section>:
     <div className="rk-results">
      <section className="rk-paper">
-      <div className="rk-section-head"><div><span className="rk-kicker">01 · WAAR STAAN WE?</span><h2>Een reis in wording.</h2></div><button className="rk-quiet" onClick={()=>void refresh()}><RefreshCw size={15}/> Vernieuw</button></div>
+      <div className="rk-section-head"><div><span className="rk-kicker">01 · WAAR STAAN WE?</span><h2>Een reis in wording.</h2></div><AppAction variant="quiet" onClick={()=>void refresh()}><RefreshCw size={15}/> Vernieuw</AppAction></div>
       <p>{travel?.confidenceLabel}</p>
       <div className="rk-progress"><div><strong>{data.completedStages} / {data.totalStageQuestions}</strong><span>etappevragen</span></div><div><strong>{data.completed}</strong><span>gezamenlijke keuzes</span></div></div>
-      <Link href="/vragen" className="rk-button">Verder met Vragen <ArrowRight size={17}/></Link>
+      <AppAction href="/vragen" variant="primary">Verder met Vragen <ArrowRight size={17}/></AppAction>
      </section>
      {plan?<section className="rk-paper"><span className="rk-kicker">02 · VOORLOPIGE REISINDELING</span><h2>Zo verdelen jullie de weken.</h2>
        <div className="rk-metrics"><div><strong>{plan.weeks}</strong><span>weken totale reisduur</span></div><div><strong>{plan.stages.length}</strong><span>etappes</span></div><div><strong>{plan.maxBudget?'€ '+plan.maxBudget.toLocaleString('nl-NL'):'Open'}</strong><span>{plan.maxBudget?'voorlopige budgetruimte · geen kosten':'kosten en bestemmingen'}</span></div></div>
@@ -67,5 +68,6 @@ export function Reiskantoor({embedded=false}:{embedded?:boolean}){
      <div className="rk-footerlinks"><Link href="/vragen">Beantwoord meer reisvragen <ArrowRight size={17}/></Link><Link href="/reis-dna">Bekijk wie wat belangrijk vindt <ArrowRight size={17}/></Link></div>
     </div>}
   </main>
+  {!embedded&&<SiteNavigation current="/reiskantoor"/>}
  </div>;
 }

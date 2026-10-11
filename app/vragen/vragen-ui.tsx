@@ -3,6 +3,7 @@ import Link from 'next/link';
 import {useCallback,useEffect,useState} from 'react';
 import {ArrowLeft,ArrowRight,BookOpen,BrainCircuit,Check,Compass,Heart,RefreshCw,Route,Sparkles} from 'lucide-react';
 import {SiteNavigation} from '@/components/site-navigation';
+import {AnswerChoice,ChoiceAttributes,AppAction} from '@/components/ui';
 import '../reiskantoor/reiskantoor.css';
 type Slot={
  key:string;kind:'story'|'stage'|'dce'|'legacy';role:string;title:string;intro:string;
@@ -12,12 +13,6 @@ type Slot={
 };
 type Data={set:{ordinal:number;theme:string;slots:Slot[];completed:number;bothCompleted:boolean;waiting:boolean}|null;
  members:number;totalCompleted:number;scienceCount:number;lastDiscovery:string|null};
-const units:Record<string,string>={budget:'Kosten samen per week',dwell:'Weken op één plek',drive:'Rijuren per reisdag',nature:'Natuur',comfort:'Comfort',community:'Ontmoetingen'};
-function Values({attributes,other}:{attributes:Record<string,number|string>;other:Record<string,number|string>}){
- return <div className="rk-choice-attributes">{Object.entries(attributes).map(([key,value])=><div className={value!==other[key]?'rk-attr-difference':''} key={key}>
-  <span>{units[key]??key}</span><strong>{key==='budget'?'€ ':''}{value}{key==='budget'?'/week':''}{['nature','comfort','community'].includes(key)?' / 5':''}</strong>
- </div>)}</div>;
-}
 export function UnifiedQuestions(){
  const [data,setData]=useState<Data|null>(null);
  const [loading,setLoading]=useState(true),[busy,setBusy]=useState(false);
@@ -51,30 +46,30 @@ export function UnifiedQuestions(){
  const personalDone=slots.length===4&&slots.every(slot=>slot.ready&&slot.own!==null);
  const answering=!!current&&current.ready&&current.own===null;
  return <div className={'rk-shell rk-questions '+(answering?'rk-focus-mode':'rk-overview-mode')}>
- {answering&&<div className="rk-question-exit"><button className="rk-quiet" onClick={()=>setFocus(null)}><ArrowLeft size={16}/> Terug naar jullie set</button><span>Set {set?.ordinal} · {focus!+1} van 4</span></div>}
+ {answering&&<div className="rk-question-exit"><AppAction variant="quiet" onClick={()=>setFocus(null)}><ArrowLeft size={16}/> Terug naar jullie set</AppAction><span>Set {set?.ordinal} · {focus!+1} van 4</span></div>}
  <main className="rk-main rk-readable">
  {error&&<p className="rk-error" role="alert">{error}</p>}
  {notice&&<p className="rk-success" role="status">{notice}</p>}
  {current?<section className="rk-paper rk-main-question">
   <span className="rk-kicker">VRAAG {focus!+1} / 4 · {current.role}</span><h1>{current.title}</h1><p className="rk-muted">{current.intro}</p>
-  {current.ready?<div className="rk-answer-pair">{current.options.map((opt,index)=><button key={index} className={'rk-answer-tile '+(current.own===index?'rk-answer-chosen':'')}
-   disabled={busy||current.own!==null} onClick={()=>void submit({action:'answer',key:current.key,choice:index})}>
-   <span className="rk-answer-label">{index===0?'A':'B'}{current.own===index?' · jouw keuze ✓':''}</span>
-   <strong>{opt.title}</strong><span>{opt.detail}</span>
-   {opt.attributes&&<Values attributes={opt.attributes} other={current.options[1-index]?.attributes??{}}/>}
-  </button>)}</div>:<div className="rk-wait">Deze wetenschappelijke vraag is nog niet beschikbaar. Je kunt gewoon een andere vraag kiezen of naar de set teruggaan.</div>}
+  {current.ready?<div className="rk-answer-pair">{current.options.map((opt,index)=><AnswerChoice
+    key={index} label={index===0?'A':'B'} title={opt.title} description={opt.detail}
+    chosen={current.own===index} disabled={busy||current.own!==null}
+    onClick={()=>void submit({action:'answer',key:current.key,choice:index})}>
+    {opt.attributes&&<ChoiceAttributes attributes={opt.attributes} other={current.options[1-index]?.attributes??{}}/>}
+   </AnswerChoice>)}</div>:<div className="rk-wait">Deze wetenschappelijke vraag is nog niet beschikbaar. Je kunt gewoon een andere vraag kiezen of naar de set teruggaan.</div>}
   {current.own!==null&&<div className="rk-discovery"><Heart size={18}/>{current.partner!==null?
    <span>Jij koos {current.options[current.own]?.title}. Je reisgenoot koos {current.options[current.partner]?.title}. {current.own===current.partner?'Jullie kozen hetzelfde!':'Een verschil om over te praten.'}</span>:
    <span>Jouw antwoord is opgeslagen. Wat je reisgenoot koos blijft geheim totdat die zelf heeft geantwoord.</span>}</div>}
-  <div className="rk-set-navigation"><button className="rk-quiet" disabled={focus===0} onClick={()=>setFocus(i=>Math.max(0,(i??0)-1))}><ArrowLeft size={16}/> Vorige</button>
-   <button className="rk-quiet" onClick={()=>focus===3?setFocus(null):setFocus(i=>Math.min(3,(i??0)+1))}>{focus===3?'Naar setoverzicht':'Volgende vraag'} <ArrowRight size={16}/></button></div>
+  <div className="rk-set-navigation"><AppAction variant="quiet" disabled={focus===0} onClick={()=>setFocus(i=>Math.max(0,(i??0)-1))}><ArrowLeft size={16}/> Vorige</AppAction>
+   <AppAction variant="quiet" onClick={()=>focus===3?setFocus(null):setFocus(i=>Math.min(3,(i??0)+1))}>{focus===3?'Naar setoverzicht':'Volgende vraag'} <ArrowRight size={16}/></AppAction></div>
  </section>:<>
  <div className="rk-intro"><span className="rk-kicker">ÉÉN SPEL · ZOVEEL VRAGEN ALS JE WILT</span><h1>Vragen<span>.</span></h1>
  <p>Ga verder wanneer je zin hebt. Vier kleine keuzes per set: bijzonder, persoonlijk en reisgericht. Ieder op je eigen tempo; jullie resultaten groeien samen.</p></div>
  {loading?<section className="rk-paper">Jullie volgende vragen ophalen…</section>:!data?
   <section className="rk-paper"><h2>Open jullie reisboekje</h2><p>Log in om de vragen te beantwoorden.</p><Link className="rk-button" href="/">Naar inloggen</Link></section>:
   <><section className="rk-paper"><div className="rk-section-head"><div><span className="rk-kicker">SET {set?.ordinal??'—'}</span><h2>{set?.theme??'Een volgende ontdekking'}</h2></div>
-   <button className="rk-quiet" onClick={()=>void refresh()} disabled={busy}><RefreshCw size={16}/> Vernieuwen</button></div>
+   <AppAction variant="quiet" onClick={()=>void refresh()} disabled={busy}><RefreshCw size={16}/> Vernieuwen</AppAction></div>
    {set?<><div className="rk-progress"><div><strong>{set.completed} / 4</strong><span>door jou gekozen</span></div>
     <div><strong>{set.bothCompleted?'4 / 4':'Apart'}</strong><span>{set.bothCompleted?'samen afgerond':'ieder eigen tempo'}</span></div>
     <div><strong>∞</strong><span>meer sets mogelijk</span></div></div>
@@ -85,10 +80,10 @@ export function UnifiedQuestions(){
    </button>)}</div>
    {personalDone?<div className="rk-set-complete"><Sparkles size={24}/><h3>Jouw set is klaar!</h3>
     <p>Je kunt meteen verder. Je reisgenoot beantwoordt de vragen op eigen tempo; daardoor blijft de wetenschap eerlijk.</p>
-    <button className="rk-button" disabled={busy} onClick={()=>void submit({action:'next-set',ordinal:set.ordinal})}>
-     Nog een set <ArrowRight size={17}/></button></div>:
-    <button className="rk-button" disabled={busy} onClick={()=>setFocus(Math.max(0,slots.findIndex(slot=>slot.own===null&&slot.ready)))}>
-     {set.completed===0?'Begin met deze set':'Verder met vragen'} <ArrowRight size={17}/></button>}
+    <AppAction variant="primary" disabled={busy} onClick={()=>void submit({action:'next-set',ordinal:set.ordinal})}>
+     Nog een set <ArrowRight size={17}/></AppAction></div>:
+    <AppAction variant="primary" disabled={busy} onClick={()=>setFocus(Math.max(0,slots.findIndex(slot=>slot.own===null&&slot.ready)))}>
+     {set.completed===0?'Begin met deze set':'Verder met vragen'} <ArrowRight size={17}/></AppAction>}
    </>:<div className="rk-set-complete"><h2>Er is meer te ontdekken.</h2><p>Vernieuw de pagina als er een vraag klaarstaat. Eerdere antwoorden blijven bewaard.</p></div>}
    </section>
    <section className="rk-paper rk-set-outcomes"><span className="rk-kicker">WAT JULLIE AAN HET ONTDEKKEN ZIJN</span>
