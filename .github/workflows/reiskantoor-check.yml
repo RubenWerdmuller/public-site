@@ -54,5 +54,5 @@ jobs:
         run: npm run typecheck
       - name: Lint
         run: npm run lint
-      - name: Reiskantoor unit tests
-        run: npx tsx --test tests/reiskantoor.test.ts tests/unified-sets.test.ts tests/push.test.ts tests/buzzer.test.ts
+      - name: Reiskantoor and shared UI component tests
+        run: npx tsx --test tests/reiskantoor.test.ts tests/unified-sets.test.ts tests/push.test.ts tests/buzzer.test.ts tests/ui-components.test.ts
