@@ -1,0 +1,43 @@
+import assert from 'node:assert/strict';
+import {chromium} from '@playwright/test';
+
+const base=process.env.APP_TEST_URL??'http://localhost:3100';
+const browser=await chromium.launch({channel:process.env.PLAYWRIGHT_CHANNEL??'msedge',headless:true});
+try{
+ const page=await browser.newPage({viewport:{width:390,height:844}});
+ const errors=[];page.on('pageerror',error=>errors.push(error.message));
+ await page.route('**/api/app',route=>route.fulfill({json:{user:null}}));
+ await page.goto(base);
+ await page.getByRole('heading',{name:/Waar dromen/}).waitFor();
+ const manifest=await page.evaluate(async()=>await (await fetch('/manifest.webmanifest')).json());
+ assert.equal(manifest.name,'Oelie en Roebie');
+ assert.equal(manifest.short_name,'Oelie en Roebie');
+ assert.equal(await page.evaluate(()=>document.querySelector('meta[name="apple-mobile-web-app-title"]')?.getAttribute('content')),'Oelie en Roebie');
+ const nav=page.getByRole('navigation',{name:'Mobiele navigatie'});
+ for(const label of ['Home','Vragen','Instellingen'])assert.ok(await nav.getByText(label,{exact:true}).count());
+ for(const removed of ['Buzzer','Geschiedenis','Reis-DNA','Reiskantoor'])assert.equal(await nav.getByText(removed,{exact:true}).count(),0);
+ await page.locator('.home-action').filter({hasText:'Buzzer'}).click();
+ assert.equal(await page.locator('dialog[open]').count(),1);
+ await page.getByRole('heading',{name:'Buzzer',exact:true}).waitFor();
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('dialog[open]').count(),0);
+ await page.locator('.home-action').filter({hasText:'Geschiedenis'}).click();
+ await page.getByRole('heading',{name:'Jullie geschiedenis'}).waitFor();
+ await page.getByRole('button',{name:'Venster sluiten'}).click();
+ assert.equal(await page.locator('dialog[open]').count(),0);
+ await page.locator('.home-action').filter({hasText:'Onderzoek'}).click();
+ await page.getByRole('heading',{name:'Onderzoek & conclusies'}).waitFor();
+ await page.getByRole('tab',{name:'Wat betekent dit voor de reis?'}).click();
+ await page.getByRole('tabpanel',{name:'Voorlopige reisindeling'}).waitFor();
+ await page.getByRole('tab',{name:'Wat leren we?'}).click();
+ await page.keyboard.press('Escape');
+ assert.equal(await page.locator('dialog[open]').count(),0);
+ assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth),true,'Home has horizontal overflow on iPhone');
+ await page.goto(base+'/vragen');
+ await page.getByRole('heading',{name:'Vragen.',exact:false}).waitFor();
+ const questionsNav=page.getByRole('navigation',{name:'Hoofdnavigatie'});
+ assert.equal(await questionsNav.getByText('Reis-DNA',{exact:true}).count(),0);
+ assert.ok(await questionsNav.getByText('Vragen',{exact:true}).count());
+ assert.deepEqual(errors,[]);
+ console.log('PASS: iPhone PWA name, quiet nav, Home dialogs and research tabs, Escape, no horizontal overflow, Vragen entry');
+}finally{await browser.close();}

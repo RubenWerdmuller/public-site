@@ -22,7 +22,19 @@ De gebruiker speelt geen eindeloze enquête en hoeft niet zelf een spreadsheet m
 4. **Één complete reis.** Heenreis, tussenstops, lange verblijven, vrije tijd en terugreis zijn onderling afhankelijk. Een week kan niet tweemaal worden uitgegeven.
 5. **Geen schijnzekerheid.** Maak onderscheid tussen een droom, een antwoord, een geschatte voorkeur, een expliciete harde grens, een modelscenario en een met bronnen geverifieerde echte mogelijkheid.
 
-## 2. De gewenste app: één ingang, twee resultaten
+## 2. De gewenste app: rustige Home, één vragenflow en resultaten in een modal
+
+### Home — een rustig vertrekpunt (besloten, gebouwd in PR)
+
+- **Home, Vragen en Instellingen** zijn de enige hoofdnavigatiebestemmingen, op mobiel en desktop. Instellingen is ondersteunend, niet een tweede productflow.
+- Home geeft één duidelijke primaire actie: **Verder met Vragen**. Geen tweede keuzescherm als teaser en geen extra hoofdvraag die naast de setflow om aandacht vraagt.
+- Drie compacte Home-acties openen een **modal**, niet een nieuwe pagina: **Buzzer**, **Geschiedenis**, **Onderzoek & conclusies**.
+- **Onderzoek & conclusies** bevat twee tabs: **Wat leren we?** (het bestaande Reis-DNA met modelbeperkingen en persoonlijke schattingen) en **Wat betekent dit voor de reis?** (het bestaande Reiskantoor met etappes en scenario's). Deze inhoud wordt niet verwijderd, niet versimpeld tot een gefingeerde score en niet opnieuw berekend vanuit speelse vragen.
+- **Voor later** blijft vanaf Home bereikbaar zonder aparte hoofdnavigatiebestemming. Eerder opgeslagen directe links naar Geschiedenis, Buzzer, Reis-DNA en Reiskantoor blijven bruikbaar, zodat meldingen en oude bookmarks niet breken.
+- Modals ondersteunen Escape, sluiten, toetsenbordfocus en interne scroll bij veel inhoud; de achtergrond kan niet tegelijk scrollen.
+- **Vraagpagina op iPhone**: streef ernaar titel, A/B-alternatieven en primaire keuze zonder verticale scroll te tonen op gangbare telefoons. Compacte spacing, respect voor veilige schermranden en sobere typografie helpen daarbij. **Nooit tekst, attributen of knoppen afsnijden om scroll kunstmatig te voorkomen**: op kleine schermen, grote tekstinstellingen of lange DCE-keuzes blijft scrollen toegestaan.
+- De bestaande notitieboekstijl blijft herkenbaar. Illustraties zijn subtiele, laag-contrast achtergrondaccenten; ze mogen tekst, keuzes en contrast niet hinderen. Geen extra foto- of kaartblokken die de focuspagina langer maken.
+- De iPhone-PWA toont als appnaam **Oelie en Roebie**. De gewone websitetitel mag de bestaande beschrijving houden.
 
 ### Vragen — de enige primaire vragenstroom
 
@@ -31,10 +43,10 @@ De gebruiker speelt geen eindeloze enquête en hoeft niet zelf een spreadsheet m
 - **Altijd kunnen doorvragen:** geen maximum aantal sets, geen kunstmatige dagelijkse limiet en niet verplicht wachten tot de ander klaar is. Ieder mag na de vier **eigen** antwoorden direct een volgende set openen. De ander loopt onafhankelijk door de gedeelde setgeschiedenis; antwoorden blijven privé totdat beiden een vraag afronden.
 - **Echt veel leuke vragen:** eerst eerder samengestelde, interessante, ongestelde vragen; daarna een open-eindige reeks unieke, stabiel opgeslagen vervolg- en reflectievragen met variatie in activiteiten, reisfases en invalshoeken. Deze latere vragen zijn nadrukkelijk **geen nieuwe gevalideerde DCE-metingen**.
 - **Onderzoek mag wel stoppen, de vragen niet:** de DCE-bank en vooraf vastgelegde holdouts blijven eindig, onveranderlijk en gescheiden. Als wetenschappelijk vragen stellen nog op een verborgen partnerantwoord wacht, mag de individuele flow met speelse vragen doorgaan zonder een DCE-ronde dubbel uit te delen.
-- **Focusnavigatie:** tijdens een **actief vraagantwoordscherm** tonen we géén globale menu’s/hoofdnavigatie. Er blijft een duidelijke knop terug naar het setoverzicht. Op de **setoverzichtspagina, Home, Reis-DNA, Reiskantoor, Geschiedenis, Voor later en Instellingen** blijft navigatie altijd beschikbaar.
+- **Focusnavigatie:** tijdens een **actief vraagantwoordscherm** tonen we géén globale menu’s/hoofdnavigatie. Er blijft een duidelijke knop terug naar het setoverzicht. Buiten het beantwoorden blijft de compacte navigatie **Home, Vragen, Instellingen** beschikbaar. Extra functies zitten op Home in modals.
 - **Home is een echte homepagina:** géén automatische doorverwijzing zodra je bent ingelogd; wel meteen een prominente knop om de enige vragenflow te starten of te hervatten. De homepage bevat geen aparte antwoordstroom naast Vragen.
 - Beide gebruikers krijgen dezelfde, onveranderlijke vraag en opties, maar ieder beheert de eigen voortgang. Antwoorden worden pas onthuld als allebei de betreffende vraag hebben beantwoord.
-- Een set mag worden bewaard, gepauzeerd en later hervat. **Voor later** is de plek voor opgeslagen vragen; **Geschiedenis** toont eerdere gezamenlijke ontdekkingen.
+- Een set mag worden bewaard, gepauzeerd en later hervat. **Voor later** toont opgeslagen vragen vanuit Home; **Geschiedenis** toont eerdere gezamenlijke ontdekkingen in een Home-modal.
 - Nieuwe sets mogen adaptief inspelen op ontbrekende kennis en verrassende verschillen, maar mogen niet halverwege worden herschreven nadat iemand begonnen is.
 - Er blijft ruimte voor de wekelijkse hoofdvraag, mits die geen verwarrende tweede verplichte vragenstroom wordt.
 
@@ -62,7 +74,7 @@ Toont:
 
 ### Buzzer — één enkel seintje aan je reisgenoot
 
-Naast de vragen bestaat er een piepkleine sociale actie: **Buzzer**. Vanaf Home en de navigatie kan een ingelogde reiziger met **één knop** de gekoppelde reisgenoot een pushnotificatie sturen. Het bericht toont **uitsluitend 'Buzzer'**: geen eigen tekst, chatgesprek, gedeeld antwoord, reisdata of naam van de afzender. De ontvanger opent desgewenst het eveneens minimale Buzzer-scherm.
+Naast de vragen bestaat er een piepkleine sociale actie: **Buzzer**. Vanaf een Home-modal kan een ingelogde reiziger met **één knop** de gekoppelde reisgenoot een pushnotificatie sturen. Het bericht toont **uitsluitend 'Buzzer'**: geen eigen tekst, chatgesprek, gedeeld antwoord, reisdata of naam van de afzender. De ontvanger opent via een bestaande pushlink desgewenst het eveneens minimale Buzzer-scherm; die directe route blijft bestaan, maar staat niet in de hoofdnavigatie.
 
 Productgrenzen:
 - Alleen naar de **andere deelnemer van hetzelfde duo**, nooit naar willekeurige accounts.
@@ -240,4 +252,5 @@ Nog te evalueren:
 | 11-10-2026 | **Focus tijdens vragen, daarbuiten overal navigatie** | Alleen bij het beantwoorden verdwijnt globale navigatie; de gebruiker kan steeds terug naar de set. Home blijft zelfstandig toegankelijk en biedt direct de enige Vragen-flow aan. |
 | 11-10-2026 | **Persoonlijk tempo en open einde** | Iedereen mag na vier eigen antwoorden naar een volgende set. Verhalende vervolgvragen blijven mogelijk zonder daglimiet en zonder op de ander te wachten; beperkte DCE/holdout-metingen worden nooit gefingeerd, hergebruikt of vermengd met speelse reflectie. |
 | 11-10-2026 | **Buzzer: één woord, geen chat** | Via één knop kan de één de ander een korte pushmelding met alleen 'Buzzer' sturen; afgeschermd tot het duo, maximaal 1/minuut, geen invloed op reis- of wetenschapsgegevens. |
+| 11-10-2026 | **Rustige Home, modals, compacte iPhone-focus en PWA-naam** | Home is centraal; Buzzer, Geschiedenis en Onderzoek met Reis-DNA/Reiskantoor verschijnen in toegankelijke modals. Navigatie beperkt tot Home, Vragen en Instellingen; antwoorden/modeldata blijven intact. De iPhone-app heet Oelie en Roebie; no-scroll is een doel, geen reden om inhoud te verbergen. |
 

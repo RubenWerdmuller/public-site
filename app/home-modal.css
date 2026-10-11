@@ -1,0 +1,82 @@
+/* Quiet Home actions and accessible, independently scrollable sheets. */
+.home-quick-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px;margin:24px 0}
+.home-action{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:10px;min-height:150px;text-align:left;border:1px solid #dce3d5;border-radius:13px;background:#fffdf8;padding:18px 17px;color:#445b44}
+.home-action svg{color:#7a967b}
+.home-action strong{font-family:'Playfair Display',Georgia,serif;font-size:21px;font-weight:500}
+.home-action span{font-size:12px;color:#778173;line-height:1.5}
+.home-action:hover{background:#f0f4e9;border-color:#adc2a9}
+.home-after-actions{display:flex;gap:14px;flex-wrap:wrap;align-items:center;justify-content:space-between;border-top:1px solid #e3e5dc;padding-top:17px;margin-bottom:25px}
+.home-after-actions p{margin:0;font-size:12px}
+.home-after-actions button{border:0;background:transparent;color:#557352;text-decoration:underline;text-underline-offset:3px;padding:8px}
+.home-dialog{width:min(720px,calc(100% - 24px));max-width:none;max-height:min(91dvh,950px);padding:0;border:1px solid #dce4d6;border-radius:18px;background:#f7f5ed;color:#354238;box-shadow:0 20px 80px #17271925;overflow:hidden}
+.home-dialog-wide{width:min(1020px,calc(100% - 24px))}
+.home-dialog::backdrop{background:rgba(31,44,33,.48);backdrop-filter:blur(3px)}
+.home-dialog-inner{display:flex;flex-direction:column;max-height:min(91dvh,950px);min-height:0}
+.home-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-shrink:0;padding:16px 24px;border-bottom:1px solid #dfe6da;background:#f7f5ed}
+.home-dialog-head h2{font-size:23px;margin:0}
+.home-dialog-close{display:grid;place-items:center;flex-shrink:0;width:38px;height:38px;border:1px solid #d9e1d4;border-radius:50%;background:#fffdf8}
+.home-dialog-body{overflow-y:auto;overscroll-behavior:contain;padding:22px 24px 30px;min-height:0;-webkit-overflow-scrolling:touch}
+.home-dialog-body .list{margin:0;display:grid;gap:10px}
+.home-dialog-body .list-item{width:100%;text-align:left}
+.home-dialog-tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.home-dialog-tabs button{border:1px solid #d0dbc9;border-radius:30px;background:#fffdf8;padding:9px 15px;font-weight:600;font-size:12px}
+.home-dialog-tabs button[aria-selected=true]{background:#e5eee0;border-color:#86a285;color:#405c43}
+.home-dialog-note{font-size:12px;line-height:1.6;color:#778173;margin:0 0 15px}
+.home-dialog .rk-embedded.rk-shell{min-height:0;background:transparent}
+.home-dialog .rk-embedded .rk-main{padding:0 0 12px;max-width:100%;margin:0}
+.home-dialog .rk-embedded .rk-intro{margin:8px 0 22px}
+.home-dialog .rk-embedded .rk-intro h1{font-size:clamp(27px,4vw,40px)}
+.home-dialog .rk-embedded .rk-intro p{font-size:13px}
+.home-dialog .rk-embedded .rk-paper{padding:20px}
+.home-dialog .rk-embedded .rk-results{max-width:none}
+.home-dialog .rk-embedded .rk-buzzer-page{min-height:340px;padding:18px 0;gap:15px}
+
+/* The sketch is only a quiet watermark, never text or a required affordance. */
+.rk-focus-mode .rk-main-question{position:relative;isolation:isolate;overflow:hidden}
+.rk-focus-mode .rk-main-question:before{content:'';position:absolute;inset:0 0 auto auto;width:min(65%,350px);height:230px;background:url('/quiet-horizon.svg') no-repeat right top/contain;opacity:.19;pointer-events:none;z-index:-1}
+@media(max-width:650px){
+ .home-quick-actions{gap:10px;grid-template-columns:repeat(3,minmax(0,1fr));margin:18px 0}
+ .home-action{padding:13px 10px;min-height:124px;gap:6px;border-radius:10px}
+ .home-action strong{font-size:16px;line-height:1.25}
+ .home-action span{font-size:10px}
+ .home-dialog-head{padding:11px 15px}.home-dialog-head h2{font-size:20px}
+ .home-dialog-body{padding:16px 13px 26px}
+ .home-dialog .rk-embedded .rk-paper{padding:15px}
+ .home-dialog .rk-embedded .rk-buzzer-page{min-height:300px}
+ .rk-focus-mode{min-height:100svh}
+ .rk-focus-mode .rk-question-exit{padding:8px 14px 2px}
+ .rk-focus-mode .rk-main{padding:4px 10px max(10px,env(safe-area-inset-bottom));max-width:100%}
+ .rk-focus-mode .rk-main-question{padding:13px 14px 10px;border-radius:12px}
+ .rk-focus-mode .rk-main-question h1{font-size:clamp(23px,6vw,32px);line-height:1.17;letter-spacing:-.5px;margin:5px 0 3px}
+ .rk-focus-mode .rk-main-question>.rk-muted{font-size:11px;line-height:1.35;margin:5px 0 6px}
+ .rk-focus-mode .rk-kicker{font-size:9px;letter-spacing:1px}
+ .rk-focus-mode .rk-answer-pair{grid-template-columns:1fr;gap:7px;margin:9px 0}
+ .rk-focus-mode .rk-answer-tile{padding:10px 12px;gap:4px;border-radius:10px}
+ .rk-focus-mode .rk-answer-tile strong{font-size:16px;line-height:1.23}
+ .rk-focus-mode .rk-answer-tile>span:not(.rk-answer-label){font-size:11px;line-height:1.35}
+ .rk-focus-mode .rk-answer-label{font-size:10px}
+ .rk-focus-mode .rk-choice-attributes{grid-template-columns:repeat(2,minmax(0,1fr));gap:3px 10px}
+ .rk-focus-mode .rk-choice-attributes>div{display:grid;gap:0;padding:1px 0;border:0;min-width:0}
+ .rk-focus-mode .rk-choice-attributes>div span{font-size:9px;line-height:1.2}
+ .rk-focus-mode .rk-choice-attributes>div strong{font-size:11px;line-height:1.25}
+ .rk-focus-mode .rk-choice-attributes>.rk-attr-difference{margin:0;padding:2px 4px}
+ .rk-focus-mode .rk-set-navigation{margin-top:8px}
+ .rk-focus-mode .rk-set-navigation button{padding:5px;font-size:11px}
+ .rk-focus-mode .rk-main-question:before{width:220px;height:130px;opacity:.12}
+}
+@media(max-width:360px){
+ .home-quick-actions{grid-template-columns:1fr}
+ .home-action{min-height:75px;display:grid;grid-template-columns:25px 1fr;gap:3px 10px}
+ .home-action span{grid-column:2}
+}
+@media(max-width:650px) and (max-height:720px){
+ .rk-focus-mode .rk-main-question{padding:8px 12px}
+ .rk-focus-mode .rk-answer-tile{padding:7px 10px;gap:3px}
+ .rk-focus-mode .rk-main-question h1{font-size:22px}
+ .rk-focus-mode .rk-answer-pair{margin:6px 0;gap:5px}
+}
+@media(prefers-reduced-motion:reduce){.home-dialog *{scroll-behavior:auto}}
+
+/* Legacy question deep-links also keep the answering surface free of global navigation. */
+.app.daily-flow:not(.is-demo) .sidebar,.app.daily-flow:not(.is-demo) .mobile-nav{display:none}
+.app.daily-flow:not(.is-demo) main{margin-left:0}

@@ -99,8 +99,7 @@ export function UnifiedQuestions(){
      <div><Route size={20}/><span><b>Reiskantoor:</b> etappekeuzes helpen de lange reis op elkaar af te stemmen.</span></div></div>
     <p className="rk-muted">Er kunnen altijd nieuwe verhalende vragen volgen. Als een vast wetenschappelijk experiment afgerond is, worden nieuwe speelse vragen niet als wetenschappelijke metingen meegerekend.</p>
    </section></>}
- <div className="rk-footerlinks"><Link href="/reis-dna"><BrainCircuit size={17}/> Reis-DNA <ArrowRight size={16}/></Link>
-  <Link href="/reiskantoor"><Compass size={17}/> Reiskantoor <ArrowRight size={16}/></Link></div>
+ <div className="rk-footerlinks"><Link href="/?screen=onderzoek"><BrainCircuit size={17}/> Wat leren we al? <ArrowRight size={16}/></Link></div>
  </>}
  </main></div>;
 }
