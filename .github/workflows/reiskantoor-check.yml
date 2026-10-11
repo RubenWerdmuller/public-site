@@ -4,6 +4,14 @@ on:
     paths:
       - 'app/reiskantoor/**'
       - 'app/vragen/**'
+      - 'app/buzzer/**'
+      - 'app/api/buzzer/**'
+      - 'lib/buzzer.ts'
+      - 'lib/push.ts'
+      - 'public/sw.js'
+      - 'tests/buzzer.test.ts'
+      - 'tests/push.test.ts'
+      - 'components/site-navigation.tsx'
       - 'app/api/vragen/**'
       - 'app/reisvragen/**'
       - 'lib/unified-sets.ts'
@@ -46,4 +54,4 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Reiskantoor unit tests
-        run: npx tsx --test tests/reiskantoor.test.ts tests/unified-sets.test.ts
+        run: npx tsx --test tests/reiskantoor.test.ts tests/unified-sets.test.ts tests/push.test.ts tests/buzzer.test.ts
