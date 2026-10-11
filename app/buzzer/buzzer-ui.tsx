@@ -3,7 +3,7 @@ import {useState} from 'react';
 import {BellRing} from 'lucide-react';
 import {SiteNavigation} from '@/components/site-navigation';
 import '../reiskantoor/reiskantoor.css';
-export function Buzzer(){
+export function Buzzer({embedded=false}:{embedded?:boolean}){
  const [sending,setSending]=useState(false);
  const [feedback,setFeedback]=useState('');
  const [error,setError]=useState('');
@@ -18,8 +18,8 @@ export function Buzzer(){
   }catch(e){setError(e instanceof Error?e.message:'Buzzer niet verzonden.');}
   finally{setSending(false);}
  }
- return <div className="rk-shell">
-  <SiteNavigation current="/buzzer"/>
+ return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>
+  {!embedded&&<SiteNavigation current="/buzzer"/>}
   <main className="rk-main rk-buzzer-page">
    <button type="button" disabled={sending} className="rk-buzzer-button" onClick={()=>void buzz()}
     aria-label="Stuur Buzzer naar je reisgenoot">
