@@ -18,3 +18,16 @@ export function canonicalSetSequence(legacyIds:string[],scienceOrdinals:(number|
  return keys.map((key,i)=>({key,kind:i%2===0?'legacy' as const:'scientific' as const,
   ref:i===0?legacyIds[0]:i===2?legacyIds[1]:scienceOrdinals[(i-1)/2]}));
 }
+
+
+/** Prefer a personal companion to the core dilemma; if possible stay on-theme. */
+export function selectStoryPair<T extends {id:string;theme:string;role?:string}>(orderedIds:string[],bank:T[]):string[]{
+ const first=bank.find(q=>q.id===orderedIds[0]);
+ if(!first)return[];
+ const candidates=orderedIds.slice(1).map(id=>bank.find(q=>q.id===id)).filter((q):q is T=>!!q);
+ const matching=candidates.find(q=>q.role==='personal'&&q.theme===first.theme)
+  ??candidates.find(q=>q.theme===first.theme)
+  ??candidates.find(q=>q.role==='personal')
+  ??candidates[0];
+ return matching?[first.id,matching.id]:[];
+}
