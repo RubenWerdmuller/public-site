@@ -1,10 +1,11 @@
 'use client';
 import Link from 'next/link';
-import {BookOpen,Compass,Home,History,Map,Settings,Bookmark,BrainCircuit} from 'lucide-react';
+import {BookOpen,Compass,Home,History,Map,Settings,Bookmark,BrainCircuit,BellRing} from 'lucide-react';
 /** Navigation is always present outside an active question. */
 const destinations=[
  {href:'/',label:'Home',Icon:Home},
  {href:'/vragen',label:'Vragen',Icon:BookOpen},
+ {href:'/buzzer',label:'Buzzer',Icon:BellRing},
  {href:'/reis-dna',label:'Reis-DNA',Icon:BrainCircuit},
  {href:'/reiskantoor',label:'Reiskantoor',Icon:Map},
  {href:'/?screen=history',label:'Geschiedenis',Icon:History},
