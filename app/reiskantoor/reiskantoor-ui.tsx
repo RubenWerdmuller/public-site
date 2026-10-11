@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {SiteNavigation} from '@/components/site-navigation';
 import {ArrowLeft,ArrowRight,Compass,Route,RefreshCw,MapPin,Clock3} from 'lucide-react';
 import {useTripExperience} from '@/components/trip-experience';
 import './reiskantoor.css';
@@ -7,7 +8,7 @@ export function Reiskantoor(){
  const {data,loading,error,refresh}=useTripExperience();
  const travel=data?.travel;
  const plan=travel?.plan;
- return <div className="rk-shell">
+ return <div className="rk-shell"><SiteNavigation current="/reiskantoor"/>
   <header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
   <main className="rk-main">
    <div className="rk-intro"><span className="rk-kicker">HET RESULTAAT VAN JULLIE KEUZES</span><h1>Het Reiskantoor<span>.</span></h1>
@@ -19,7 +20,7 @@ export function Reiskantoor(){
       <div className="rk-section-head"><div><span className="rk-kicker">01 · WAAR STAAN WE?</span><h2>Een reis in wording.</h2></div><button className="rk-quiet" onClick={()=>void refresh()}><RefreshCw size={15}/> Vernieuw</button></div>
       <p>{travel?.confidenceLabel}</p>
       <div className="rk-progress"><div><strong>{data.completedStages} / {data.totalStageQuestions}</strong><span>etappevragen</span></div><div><strong>{data.completed}</strong><span>gezamenlijke keuzes</span></div></div>
-      <Link href="/reisvragen" className="rk-button">Verder met Reisvragen <ArrowRight size={17}/></Link>
+      <Link href="/vragen" className="rk-button">Verder met Vragen <ArrowRight size={17}/></Link>
      </section>
      {plan?<section className="rk-paper"><span className="rk-kicker">02 · VOORLOPIGE REISINDELING</span><h2>Zo verdelen jullie de weken.</h2>
        <div className="rk-metrics"><div><strong>{plan.weeks}</strong><span>weken totale reisduur</span></div><div><strong>{plan.stages.length}</strong><span>etappes</span></div><div><strong>{plan.maxBudget?'€ '+plan.maxBudget.toLocaleString('nl-NL'):'Open'}</strong><span>{plan.maxBudget?'voorlopige budgetruimte · geen kosten':'kosten en bestemmingen'}</span></div></div>
@@ -29,7 +30,7 @@ export function Reiskantoor(){
            <small><Clock3 size={13}/> {stage.idealWeeks} {stage.idealWeeks===1?'week':'weken'} als voorlopig gezamenlijk compromis</small>
          </div></li>)}</ol>
        <p className="rk-muted">Deze indeling is een gezamenlijk, begrensd optimalisatiescenario. Het model beschermt de gekozen minimale lange verblijven, telt alle weken één keer en maakt afwegingen tussen de reisfasen. Het resultaat is nog niet geboekt en zegt niets over exacte rijtijden.</p>
-      </section>:<section className="rk-paper rk-skeleton-result"><Route size={31}/><h2>De etappes ontstaan vanzelf.</h2><p>Beantwoord eerst samen de vragen over totale duur, heenreis, terugreis en hoe vaak jullie ergens willen landen. Daarna verschijnt hier een verdeling, zonder dat je handmatig een reis invult.</p><Link href="/reisvragen">Verder met de reisvragen <ArrowRight size={17}/></Link></section>}
+      </section>:<section className="rk-paper rk-skeleton-result"><Route size={31}/><h2>De etappes ontstaan vanzelf.</h2><p>Beantwoord eerst samen de vragen over totale duur, heenreis, terugreis en hoe vaak jullie ergens willen landen. Daarna verschijnt hier een verdeling, zonder dat je handmatig een reis invult.</p><Link href="/vragen">Verder met de reisvragen <ArrowRight size={17}/></Link></section>}
      {travel?.disagreements.length?<section className="rk-paper"><span className="rk-kicker">03 · VERSCHILLEN TUSSEN JULLIE</span><h2>Hier is nog iets te bespreken.</h2><ul className="rk-warnings">{travel.disagreements.map(d=><li key={d}>{d}</li>)}</ul><p className="rk-muted">Een verschil is geen probleem: het helpt bepalen welke vervolgvraag nuttig is.</p></section>:null}
      {travel?.routeIdeas.length?<section className="rk-paper"><span className="rk-kicker">04 · EERSTE RICHTING</span><h2>Een mogelijke routefamilie.</h2><ul className="rk-warnings">{travel.routeIdeas.map(r=><li key={r}><MapPin size={15}/> {r}</li>)}</ul><p className="rk-muted">Dit zijn uitsluitend illustratieve corridors op basis van jullie gekozen richting. Er is nog geen controle op wegen, seizoenen, visumregels, afstanden, werkelijke kosten of beschikbaarheid.</p></section>:null}
      {travel?.legs.length?<section className="rk-paper"><span className="rk-kicker">05 · BINNEN DE HEEN- EN TERUGREIS</span><h2>Ook onderweg heb je tijd nodig.</h2>
@@ -63,7 +64,7 @@ export function Reiskantoor(){
        <p className="rk-muted">De AI kan straks bestemmingen rangschikken binnen deze randvoorwaarden, met controleerbare herkomst voor routes, prijzen en beschikbaarheid. Dat gebeurt nu nog niet.</p>
       </section>:null}
      {travel?.warnings.length?<section className="rk-paper"><Compass size={21}/><h2>Nog niet geverifieerd.</h2><ul className="rk-warnings">{travel.warnings.map(w=><li key={w}>{w}</li>)}</ul></section>:null}
-     <div className="rk-footerlinks"><Link href="/reisvragen">Beantwoord meer reisvragen <ArrowRight size={17}/></Link><Link href="/reis-dna">Bekijk wie wat belangrijk vindt <ArrowRight size={17}/></Link></div>
+     <div className="rk-footerlinks"><Link href="/vragen">Beantwoord meer reisvragen <ArrowRight size={17}/></Link><Link href="/reis-dna">Bekijk wie wat belangrijk vindt <ArrowRight size={17}/></Link></div>
     </div>}
   </main>
  </div>;
