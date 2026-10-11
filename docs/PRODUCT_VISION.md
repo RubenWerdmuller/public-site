@@ -28,6 +28,11 @@ De gebruiker speelt geen eindeloze enquête en hoeft niet zelf een spreadsheet m
 
 - De oorspronkelijke **Sets** en afzonderlijke **Reisvragen** worden **in de gewenste UX samengebracht** onder **Vragen**. De achterliggende soorten vragen en hun bewijsstatus blijven technisch gescheiden.
 - Meestal bevat een set **vier complementaire vragen**, thematisch verbonden en kort genoeg voor een ontspannen moment.
+- **Altijd kunnen doorvragen:** geen maximum aantal sets, geen kunstmatige dagelijkse limiet en niet verplicht wachten tot de ander klaar is. Ieder mag na de vier **eigen** antwoorden direct een volgende set openen. De ander loopt onafhankelijk door de gedeelde setgeschiedenis; antwoorden blijven privé totdat beiden een vraag afronden.
+- **Echt veel leuke vragen:** eerst eerder samengestelde, interessante, ongestelde vragen; daarna een open-eindige reeks unieke, stabiel opgeslagen vervolg- en reflectievragen met variatie in activiteiten, reisfases en invalshoeken. Deze latere vragen zijn nadrukkelijk **geen nieuwe gevalideerde DCE-metingen**.
+- **Onderzoek mag wel stoppen, de vragen niet:** de DCE-bank en vooraf vastgelegde holdouts blijven eindig, onveranderlijk en gescheiden. Als wetenschappelijk vragen stellen nog op een verborgen partnerantwoord wacht, mag de individuele flow met speelse vragen doorgaan zonder een DCE-ronde dubbel uit te delen.
+- **Focusnavigatie:** tijdens een **actief vraagantwoordscherm** tonen we géén globale menu’s/hoofdnavigatie. Er blijft een duidelijke knop terug naar het setoverzicht. Op de **setoverzichtspagina, Home, Reis-DNA, Reiskantoor, Geschiedenis, Voor later en Instellingen** blijft navigatie altijd beschikbaar.
+- **Home is een echte homepagina:** géén automatische doorverwijzing zodra je bent ingelogd; wel meteen een prominente knop om de enige vragenflow te starten of te hervatten. De homepage bevat geen aparte antwoordstroom naast Vragen.
 - Beide gebruikers krijgen dezelfde, onveranderlijke vraag en opties, maar ieder beheert de eigen voortgang. Antwoorden worden pas onthuld als allebei de betreffende vraag hebben beantwoord.
 - Een set mag worden bewaard, gepauzeerd en later hervat. **Voor later** is de plek voor opgeslagen vragen; **Geschiedenis** toont eerdere gezamenlijke ontdekkingen.
 - Nieuwe sets mogen adaptief inspelen op ontbrekende kennis en verrassende verschillen, maar mogen niet halverwege worden herschreven nadat iemand begonnen is.
@@ -167,7 +172,7 @@ Het systeem kan een voorstel geven van *ongeveer drie weken heen, twee thuisbasi
 | Fase | Wat leveren we? | Status per 11-10-2026 |
 | --- | --- | --- |
 | **0. Bestaande basis** | Dagelijkse Sets, geschiedenis, persoonlijk reiscontextmodel, losse Reisvragen, Reis-DNA en read-only Reiskantoor | **Historisch aanwezig; nu één primaire vrageningang** |
-| **1. Eén uniforme Vragen-ervaring** | Eén set-composer met vier complementaire rollen, thematische set, gedeelde vraagidentiteit, onafhankelijke antwoorden en helder navigatiemodel | **Eerste geïntegreerde vier-slot flow gebouwd; thema-/belastingadaptatie verder doorontwikkelen** |
+| **1. Eén uniforme Vragen-ervaring** | Vier complementaire vragen per set, onbeperkt individueel doorvragen, focusnavigatie en Home-ingang | **Gebouwd: doorlopende sets, persoonlijk tempo en navigatie op context; verdere kwalitatieve evaluatie nodig** |
 | **2. Wetenschap geïntegreerd zonder vervuiling** | DCE-taken in sets, vooraf gereserveerde holdouts, valide model-input, onzekerheid en meetbare informatiewinst; etappevragen apart gemarkeerd | **Speelse en wetenschappelijke antwoorden geïntegreerd in sets; wetenschappelijke validatie blijft lopend** |
 | **3. Resultaten die samenkomen** | Reis-DNA als mooi doorlopend verhaal/rapport; Reiskantoor dat door álle relevante vraagrollen beter wordt en uitlegt waarom | **Via één flow aangevuld; resultaat-uitleg en UX verder evalueren** |
 | **4. Echt complete AI-reis** | Onderzoek naar geverifieerde bestemmingen, reistijden, seizoenen, activiteiten en prijzen; scenario-vergelijking over de volledige reis | **Later; echte databronnen nog niet aangesloten** |
@@ -220,4 +225,6 @@ Nog te evalueren:
 | 10-10-2026 | **Wetenschappelijke integriteit boven cosmetische uniformiteit** | Alleen ontworpen meettaken tellen als DCE-training; holdouts blijven apart |
 | 10-10-2026 | **Echte bestemmingen met AI zijn een latere laag** | Eerst het vragenbrein en de onderlinge etappe-afhankelijkheden op orde, daarna gecontroleerde externe reisdata |
 | 11-10-2026 | **Vier-slot Vragen-flow in implementatie** | Eén gedeelde settoewijzing per duo, afzonderlijke antwoorden, privacy-gated onderzoekskeuzes; oude geschiedenis blijft intact. Gebruikerstests en verdere wetenschappelijke evaluatie blijven nodig. |
+| 11-10-2026 | **Focus tijdens vragen, daarbuiten overal navigatie** | Alleen bij het beantwoorden verdwijnt globale navigatie; de gebruiker kan steeds terug naar de set. Home blijft zelfstandig toegankelijk en biedt direct de enige Vragen-flow aan. |
+| 11-10-2026 | **Persoonlijk tempo en open einde** | Iedereen mag na vier eigen antwoorden naar een volgende set. Verhalende vervolgvragen blijven mogelijk zonder daglimiet en zonder op de ander te wachten; beperkte DCE/holdout-metingen worden nooit gefingeerd, hergebruikt of vermengd met speelse reflectie. |
 
