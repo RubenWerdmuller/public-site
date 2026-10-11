@@ -6,12 +6,12 @@ import {ArrowLeft,ArrowRight,BrainCircuit,TrendingUp,Info,BookOpen,BarChart3} fr
 import {Avatar} from '@/components/illustrations';
 import {useTripExperience} from '@/components/trip-experience';
 import '../reiskantoor/reiskantoor.css';
-export function ReisDna(){
+export function ReisDna({embedded=false}:{embedded?:boolean}){
  const {data,loading,error}=useTripExperience();
  const [selected,setSelected]=useState<string|null>(null);
  const people=data?.people??[],person=people.find(p=>p.id===selected)??people[0];
  const report=data?.archiveReport;
- return <div className="rk-shell"><SiteNavigation current="/reis-dna"/><header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
+ return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>{!embedded&&<SiteNavigation current="/reis-dna"/>}{!embedded&&<header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>}
  <main className="rk-main rk-readable">
   <div className="rk-intro"><span className="rk-kicker">SAMEN ONTDEKKEN · REIS-DNA</span><h1>Een reis die op jullie lijkt<span>.</span></h1>
    <p>Jullie eerdere reisverhaal én een nieuw, beter gecontroleerd keuzeonderzoek. Kies iemand om te ontdekken wat de afwegingen zeggen — en wat we nog niet weten.</p></div>
