@@ -15,7 +15,7 @@ export async function joinPair(user:User,code:string){
     if(!invite||invite.pair_id===user.pair_id)throw new PairActionError('Deze uitnodiging is verlopen of al gebruikt.');
     await read('SELECT id FROM travel_pairs WHERE id=ANY($1::text[]) ORDER BY id FOR UPDATE',[[user.pair_id,invite.pair_id]]);
     const members=await read('SELECT user_id FROM memberships WHERE pair_id=$1',[user.pair_id]);
-    const answered=await read('SELECT user_id FROM answers WHERE user_id=$1 UNION ALL SELECT user_id FROM weekly_question_answers WHERE user_id=$1 LIMIT 1',[user.id]);
+    const answered=await read('SELECT user_id FROM answers WHERE user_id=$1 UNION ALL SELECT user_id FROM weekly_question_answers WHERE user_id=$1 UNION ALL SELECT user_id FROM trip_choice_answers WHERE user_id=$1 LIMIT 1',[user.id]);
     if(members.length>1||answered.length)throw new PairActionError('Koppelen kan alleen voor je eerste antwoord en als je nog geen partner hebt.');
     const claimed=await read('UPDATE invites SET used_at=now() WHERE code=$1 AND used_at IS NULL AND expires_at>now() RETURNING code',[code]);
     if(!claimed.length)throw new PairActionError('Deze uitnodiging is verlopen of al gebruikt.');
@@ -23,6 +23,7 @@ export async function joinPair(user:User,code:string){
     if(target.length!==1||target[0].slot!==1)throw new PairActionError('Deze uitnodiging is niet meer beschikbaar.');
     await read('UPDATE memberships SET pair_id=$1,slot=2 WHERE user_id=$2',[invite.pair_id,user.id]);
     await read('DELETE FROM set_progress WHERE user_id=$1',[user.id]);
+    await read('DELETE FROM unified_set_progress WHERE user_id=$1',[user.id]);
     await read('UPDATE invites SET used_at=now() WHERE pair_id=$1 AND used_at IS NULL',[user.pair_id]);
   });
 }
