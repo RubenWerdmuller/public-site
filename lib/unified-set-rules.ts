@@ -31,3 +31,9 @@ export function selectStoryPair<T extends {id:string;theme:string;role?:string}>
   ??candidates[0];
  return matching?[first.id,matching.id]:[];
 }
+
+
+/** No one needs to wait for the other traveller before requesting another set. */
+export function mayAdvancePersonally(slots:{ready:boolean;own:number|null}[]):boolean{
+ return slots.length===4&&slots.every(s=>s.ready&&s.own!==null);
+}
