@@ -3,6 +3,13 @@ on:
   pull_request:
     paths:
       - 'app/reiskantoor/**'
+      - 'app/vragen/**'
+      - 'app/api/vragen/**'
+      - 'app/reisvragen/**'
+      - 'lib/unified-sets.ts'
+      - 'lib/unified-set-rules.ts'
+      - 'lib/sets.ts'
+      - 'tests/unified-sets.test.ts'
       - 'app/api/reiskantoor/**'
       - 'lib/reiskantoor.ts'
       - 'lib/schema.ts'
@@ -34,4 +41,4 @@ jobs:
       - name: Lint
         run: npm run lint
       - name: Reiskantoor unit tests
-        run: npx tsx --test tests/reiskantoor.test.ts
+        run: npx tsx --test tests/reiskantoor.test.ts tests/unified-sets.test.ts

@@ -113,3 +113,19 @@
 /* Differing dimensions are highlighted equally in both experimental alternatives. */
 .rk-choice-attributes>.rk-attr-difference{background:#edf4e9;border-radius:6px;padding:6px 7px;margin:-3px -7px;color:#34583f}
 .rk-choice-attributes>.rk-attr-difference span{color:#4f7158}
+
+
+/* Unified four-slot question journey */
+.rk-set-steps{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:18px 0 5px}
+.rk-set-step{border:1px solid #dde4d8;background:#fff;border-radius:11px;display:flex;flex-direction:column;align-items:flex-start;gap:8px;text-align:left;padding:13px;color:#405b42;cursor:pointer;min-width:0;min-height:118px}
+.rk-set-step:hover{border-color:#859e85}.rk-set-step-current{border-color:#5d8a65;background:#f1f7ee}
+.rk-set-step>span{width:26px;height:26px;border-radius:50%;display:grid;place-items:center;background:#e4ebdf;font-size:12px;font-weight:600}
+.rk-set-step strong{font-size:12px;line-height:1.4}.rk-set-step small{font-size:10px;color:#788777;line-height:1.4}
+.rk-discovery{display:flex;align-items:flex-start;gap:10px;padding:12px;background:#ecf3e7;border:1px solid #d4e2ce;border-radius:9px;font-size:13px;line-height:1.55;color:#4f7256;margin-top:10px}
+.rk-discovery svg{flex-shrink:0}
+.rk-set-navigation{display:flex;justify-content:space-between;gap:12px;margin-top:22px}
+.rk-set-complete{display:flex;flex-direction:column;align-items:flex-start;gap:12px}.rk-set-complete h2{margin:0}
+.rk-outcome-list{display:grid;gap:18px;margin:20px 0}.rk-outcome-list>div{display:flex;gap:13px;align-items:flex-start;color:#566c56;font-size:13px;line-height:1.7}
+.rk-outcome-list svg{flex-shrink:0;margin-top:3px}
+.rk-answer-tile:disabled{cursor:default}
+@media(max-width:650px){.rk-set-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.rk-set-step{min-height:92px}}

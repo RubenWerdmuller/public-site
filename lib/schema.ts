@@ -62,4 +62,23 @@ CREATE TABLE IF NOT EXISTS trip_choice_answers (
   PRIMARY KEY(pair_id,ordinal,user_id),
   FOREIGN KEY(pair_id,ordinal) REFERENCES trip_choice_rounds(pair_id,ordinal) ON DELETE CASCADE
 );
+CREATE TABLE IF NOT EXISTS unified_sets (
+  pair_id text NOT NULL REFERENCES travel_pairs(id) ON DELETE CASCADE,
+  ordinal integer NOT NULL CHECK(ordinal > 0),
+  theme text NOT NULL,
+  legacy_ids jsonb NOT NULL,
+  science_first integer,
+  science_second integer,
+  created_at timestamptz NOT NULL DEFAULT now(),
+  PRIMARY KEY(pair_id,ordinal),
+  UNIQUE(pair_id,science_first),
+  UNIQUE(pair_id,science_second),
+  FOREIGN KEY(pair_id,science_first) REFERENCES trip_choice_rounds(pair_id,ordinal),
+  FOREIGN KEY(pair_id,science_second) REFERENCES trip_choice_rounds(pair_id,ordinal)
+);
+CREATE TABLE IF NOT EXISTS unified_set_progress (
+  user_id text PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  pair_id text NOT NULL REFERENCES travel_pairs(id) ON DELETE CASCADE,
+  ordinal integer NOT NULL CHECK(ordinal > 0)
+);
 `;

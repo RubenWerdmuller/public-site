@@ -2,9 +2,17 @@
 
 > **Productvisie / single source of truth:** [Oelie en Roebie — PRODUCT_VISION](docs/PRODUCT_VISION.md). Hier staan de missie, de besloten samenvoeging van **Sets + Reisvragen** tot één vragenstroom, de wetenschappelijke principes, het gewenste Reis-DNA, het Reiskantoor en de roadmap. **Lees dit document eerst bij iedere productwijziging.**
 >
-> **Status:** de uniforme Vragen-ervaring is een **vastgesteld toekomstig ontwerp**, nog **niet** geïmplementeerd. De README hieronder beschrijft grotendeels de bestaande techniek en functies.
+> **Status vanaf 11 oktober 2026:** de eerste geïntegreerde versie draait via **`/vragen`**: vier vragen per gedeelde set, met speelse en wetenschappelijke/etappevragen naast elkaar. De wetenschappelijke bewijsrollen blijven achter de schermen gescheiden. Het oude boekje, geschiedenis en opgeslagen vragen blijven toegankelijk. De rest van deze README documenteert deels ook historische implementatiepaden.
 
 Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 124 dilemma’s (64 nieuwe voor de langere autoreis) en een rustige getekende notitieboekstijl.
+
+## Eén Vragen-ervaring
+
+De canonieke start na inloggen is **`/vragen`**. De oude route `/reisvragen` verwijst hiernaartoe. Elke set krijgt een gedeelde, onveranderlijke indeling: **speels dilemma → etappe- of wetenschappelijke vergelijking → persoonlijk dilemma → tweede etappe- of wetenschappelijke vergelijking**. Wanneer de noodzakelijke etappevragen afgerond zijn, gebruikt het wetenschappelijke deel de versievaste DCE-bank met de zes gereserveerde holdouts.
+
+Antwoorden blijven in hun oorspronkelijke opslagsoort: bestaande vragen in `answers`, etappe-/DCE-metingen in `trip_choice_answers`. De gedeelde setidentiteit en per-gebruiker voortgang staan in `unified_sets` en `unified_set_progress`. De tweede wetenschappelijke vraag wordt pas toegewezen na **beide** antwoorden op de eerste. Naar de volgende set gaan kan pas wanneer alle vier door **beide** personen zijn voltooid. De vraagopzet wijzigt niet achteraf.
+
+De eerdere geschiedenis blijft te openen via **Geschiedenis**, **Voor later** en **Instellingen**. Reis-DNA en Reiskantoor blijven resultaten, geen aparte verplicht te spelen vragenreeksen. Dit is een eerste integratie: de thematische set-composer kan later slimmer worden geëvalueerd; DCE-validatie en actuele AI-bestemmingen zijn nog geen afgeronde productfases.
 
 ## Lokaal starten
 

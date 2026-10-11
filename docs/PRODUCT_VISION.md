@@ -164,15 +164,15 @@ Het systeem kan een voorstel geven van *ongeveer drie weken heen, twee thuisbasi
 
 ## 9. Prioriteiten en productfasen
 
-| Fase | Wat leveren we? | Status op 10-10-2026 |
+| Fase | Wat leveren we? | Status per 11-10-2026 |
 | --- | --- | --- |
-| **0. Bestaande basis** | Dagelijkse Sets, geschiedenis, persoonlijk reiscontextmodel, losse Reisvragen, Reis-DNA en read-only Reiskantoor | **Aanwezig, maar nog twee vragenstromen** |
-| **1. Eén uniforme Vragen-ervaring** | Eén set-composer met vier complementaire rollen, thematische set, gedeelde vraagidentiteit, onafhankelijke antwoorden en helder navigatiemodel | **Besloten — nog bouwen** |
-| **2. Wetenschap geïntegreerd zonder vervuiling** | DCE-taken in sets, vooraf gereserveerde holdouts, valide model-input, onzekerheid en meetbare informatiewinst; etappevragen apart gemarkeerd | **Onderliggende pilot deels gebouwd; integratie nog bouwen en evalueren** |
-| **3. Resultaten die samenkomen** | Reis-DNA als mooi doorlopend verhaal/rapport; Reiskantoor dat door álle relevante vraagrollen beter wordt en uitlegt waarom | **Deels aanwezig; koppeling en UX verbeteren** |
+| **0. Bestaande basis** | Dagelijkse Sets, geschiedenis, persoonlijk reiscontextmodel, losse Reisvragen, Reis-DNA en read-only Reiskantoor | **Historisch aanwezig; nu één primaire vrageningang** |
+| **1. Eén uniforme Vragen-ervaring** | Eén set-composer met vier complementaire rollen, thematische set, gedeelde vraagidentiteit, onafhankelijke antwoorden en helder navigatiemodel | **Eerste geïntegreerde vier-slot flow gebouwd; thema-/belastingadaptatie verder doorontwikkelen** |
+| **2. Wetenschap geïntegreerd zonder vervuiling** | DCE-taken in sets, vooraf gereserveerde holdouts, valide model-input, onzekerheid en meetbare informatiewinst; etappevragen apart gemarkeerd | **Speelse en wetenschappelijke antwoorden geïntegreerd in sets; wetenschappelijke validatie blijft lopend** |
+| **3. Resultaten die samenkomen** | Reis-DNA als mooi doorlopend verhaal/rapport; Reiskantoor dat door álle relevante vraagrollen beter wordt en uitlegt waarom | **Via één flow aangevuld; resultaat-uitleg en UX verder evalueren** |
 | **4. Echt complete AI-reis** | Onderzoek naar geverifieerde bestemmingen, reistijden, seizoenen, activiteiten en prijzen; scenario-vergelijking over de volledige reis | **Later; echte databronnen nog niet aangesloten** |
 
-**Eerstvolgende implementatiefocus:** één uniforme set-ervaring en betrouwbare routering van de vier vraagrollen naar de juiste resultaten, zonder migratieverlies en zonder terugval in wetenschappelijke kwaliteit. **Niet** beginnen met mooie AI-bestemmingen zolang de vraag- en bewijsarchitectuur niet samenhangt.
+**Eerstvolgende implementatiefocus:** evaluatie met twee gebruikers, verbetering van thematische samenhang en cognitieve belasting, en toetsing van het DCE-instrument op echte antwoorden. De basis voor één Vragen-ervaring en behoud van verschillende bewijssoorten is gelegd. **Niet** beginnen met mooie AI-bestemmingen zolang de vraag- en bewijsarchitectuur niet samenhangt.
 
 ## 10. Bewuste niet-doelen en open beslissingen
 
@@ -219,3 +219,5 @@ Nog te evalueren:
 | 10-10-2026 | **Reis-DNA en Reiskantoor zijn resultaten** van die vragen, niet alternatieve vragenreeksen | Reis-DNA = persoonlijke en gezamenlijke interpretatie; Reiskantoor = hele, haalbare reisstructuur |
 | 10-10-2026 | **Wetenschappelijke integriteit boven cosmetische uniformiteit** | Alleen ontworpen meettaken tellen als DCE-training; holdouts blijven apart |
 | 10-10-2026 | **Echte bestemmingen met AI zijn een latere laag** | Eerst het vragenbrein en de onderlinge etappe-afhankelijkheden op orde, daarna gecontroleerde externe reisdata |
+| 11-10-2026 | **Vier-slot Vragen-flow in implementatie** | Eén gedeelde settoewijzing per duo, afzonderlijke antwoorden, privacy-gated onderzoekskeuzes; oude geschiedenis blijft intact. Gebruikerstests en verdere wetenschappelijke evaluatie blijven nodig. |
+

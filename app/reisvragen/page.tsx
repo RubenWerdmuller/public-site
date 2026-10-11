@@ -1,3 +1,2 @@
-import {Reisvragen} from './reisvragen-ui';
-export const metadata={title:'Reisvragen | Oelie en Roebie'};
-export default function Page(){return <Reisvragen/>;}
+import {redirect} from 'next/navigation';
+export default function OldReisvragenRoute(){redirect('/vragen');}
