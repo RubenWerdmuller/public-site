@@ -50,8 +50,7 @@ export function UnifiedQuestions(){
  const set=data?.set,slots=set?.slots??[],current=focus===null?null:slots[focus];
  const personalDone=slots.length===4&&slots.every(slot=>slot.ready&&slot.own!==null);
  const answering=!!current&&current.ready&&current.own===null;
- return <div className={'rk-shell '+(answering?'rk-focus-mode':'rk-overview-mode')}>
- {!answering&&<SiteNavigation current="/vragen"/>}
+ return <div className={'rk-shell rk-questions '+(answering?'rk-focus-mode':'rk-overview-mode')}>
  {answering&&<div className="rk-question-exit"><button className="rk-quiet" onClick={()=>setFocus(null)}><ArrowLeft size={16}/> Terug naar jullie set</button><span>Set {set?.ordinal} · {focus!+1} van 4</span></div>}
  <main className="rk-main rk-readable">
  {error&&<p className="rk-error" role="alert">{error}</p>}
@@ -101,5 +100,7 @@ export function UnifiedQuestions(){
    </section></>}
  <div className="rk-footerlinks"><Link href="/?screen=onderzoek"><BrainCircuit size={17}/> Wat leren we al? <ArrowRight size={16}/></Link></div>
  </>}
- </main></div>;
+ </main>
+ {!answering&&<SiteNavigation current="/vragen"/>}
+ </div>;
 }
