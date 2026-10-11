@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {SiteNavigation} from './site-navigation';
 import { useEffect, useState, useRef, type FormEvent } from 'react';
 import { SketchButton } from './sketch-button';
 import type { TaskKind, TaskView } from '@/lib/ai-contracts';
@@ -48,7 +49,7 @@ export function AiDesk({ initialTasks }: { initialTasks: TaskView[] }) {
     if (!scheduledAt) { setNotice('Dit tijdstip bestaat niet in de Nederlandse tijdzone. Kies een ander tijdstip.'); return; }
     if (await send({ kind, instruction, scheduledAt, repeatWeekly: kind === 'questions' && repeatWeekly, acknowledgePublic })) { setInstruction(''); setAcknowledgePublic(false); setNotice('Ingepland. De volgende pipeline-run na dit tijdstip neemt jullie opdracht mee.'); }
   }
-  return <main className="ai-page"><div className="content">
+  return <><main className="ai-page"><div className="content">
     <Link href="/" className="quiet">← Terug naar jullie reisboekje</Link>
     <div className="page-heading"><span className="eyebrow">JULLIE IDEEËN · EEN BEETJE HULP</span><h1>Wat mag er groeien?</h1><p>Geef de AI een opdracht voor jullie vragen of het reisboekje. Jullie zien hier wat er gebeurt.</p></div>
     <section className="paper"><h2>Een nieuwe opdracht</h2><form onSubmit={e => void submit(e)} className="ai-form">
@@ -66,5 +67,7 @@ export function AiDesk({ initialTasks }: { initialTasks: TaskView[] }) {
     <section aria-labelledby="ai-queue"><h2 id="ai-queue">Jullie opdrachten</h2>{!tasks.length && <p>Nog geen opdrachten. Op maandag kan een berichtje jullie hierheen brengen.</p>}
       <div className="ai-list">{tasks.map(task => <article key={task.id} className="paper"><div className="ai-task-heading"><h3>{task.kind === 'questions' ? 'Vragen verbeteren' : 'Het reisboekje verbeteren'}</h3><span>{states[task.status]}</span></div><p className="ai-instruction">{task.instruction}</p><p>Vanaf {date(task.scheduled_at)} · Nederlandse tijd</p>{task.result && <p>{task.result}</p>}{task.pr_url && <a href={task.pr_url} target="_blank" rel="noopener noreferrer" className="quiet">Bekijk de wijziging op GitHub ↗</a>}<div className="ai-actions">{['queued', 'failed'].includes(task.status) && <button disabled={busy} type="button" className="quiet" onClick={() => void send({ action: 'cancel', id: task.id })}>Annuleren</button>}{task.status === 'failed' && <button disabled={busy} type="button" className="quiet" onClick={() => void send({ action: 'retry', id: task.id })}>Probeer opnieuw</button>}</div></article>)}</div>
     </section>
-  </div></main>;
+  </div></main>
+  <SiteNavigation/>
+  </>;
 }

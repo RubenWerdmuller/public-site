@@ -2,7 +2,7 @@
 
 The **same interaction type must use the same component**, even when displayed on a different route. Do not create a new version by copying JSX.
 
-- **PrimaryNavigation** (`components/primary-navigation.tsx`) owns the three destinations, labels, order, icons, active styles, and accessibility. Home renders it as sidebar/mobile; other pages use the footer variant through `SiteNavigation`. Never reimplement primary navigation in page JSX. The primary navigation is hidden on full-screen question focus.
+- **PrimaryNavigation** (`components/primary-navigation.tsx`) owns the three destinations, labels, order, icons, active styles, and accessibility. Home renders it as sidebar/mobile; Vragen, Buzzer, both research screens, the legacy question flow, AI, photo credits and sketchbook all use the footer variant through `SiteNavigation`. Never reimplement primary navigation in page JSX. The primary navigation is hidden on full-screen question focus.
 - **SectionHeader** (`components/site-navigation.tsx`) is the shared secondary report-page back link and heading.
 - **AppAction** (`components/ui.tsx`) is for standard primary and quiet actions. Prefer `href` for navigation and `onClick` for actions; a link and a button must retain their native semantics. `SketchButton` is an intentional illustrated CTA variant, not a duplicate of the plain action.
 - **AnswerChoice** and **ChoiceAttributes** (`components/ui.tsx`) own the comparable A/B choice card and its DCE attribute rows in both question flows. Their content may differ; markup, accessibility, highlights, and sizes should not drift.
