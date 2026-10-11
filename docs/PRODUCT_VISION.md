@@ -219,5 +219,5 @@ Nog te evalueren:
 | 10-10-2026 | **Reis-DNA en Reiskantoor zijn resultaten** van die vragen, niet alternatieve vragenreeksen | Reis-DNA = persoonlijke en gezamenlijke interpretatie; Reiskantoor = hele, haalbare reisstructuur |
 | 10-10-2026 | **Wetenschappelijke integriteit boven cosmetische uniformiteit** | Alleen ontworpen meettaken tellen als DCE-training; holdouts blijven apart |
 | 10-10-2026 | **Echte bestemmingen met AI zijn een latere laag** | Eerst het vragenbrein en de onderlinge etappe-afhankelijkheden op orde, daarna gecontroleerde externe reisdata |
-
 | 11-10-2026 | **Vier-slot Vragen-flow in implementatie** | Eén gedeelde settoewijzing per duo, afzonderlijke antwoorden, privacy-gated onderzoekskeuzes; oude geschiedenis blijft intact. Gebruikerstests en verdere wetenschappelijke evaluatie blijven nodig. |
+
