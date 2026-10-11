@@ -6,6 +6,12 @@
 
 Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 124 dilemma’s (64 nieuwe voor de langere autoreis) en een rustige getekende notitieboekstijl.
 
+## Buzzer voor je reisgenoot
+
+Op **Home** en in de navigatie staat **Buzzer**. De ingelogde gebruiker stuurt met één druk op de knop een pushmelding naar het **andere account binnen hetzelfde duo**; het bericht toont uitsluitend **Buzzer**, zonder tekst, antwoorden of persoonsgegevens. Push werkt alleen als de ander meldingen op diens eigen (op iPhone: aan beginscherm toegevoegde) app heeft ingeschakeld. Open `/?screen=settings` om meldingen in te stellen of opnieuw aan te zetten.
+
+De servercontrole in `app/api/buzzer/route.ts` valideert de sessie en dezelfde origin, controleert het duo en de ontvanger-subscriptions, begrenst één verzending per afzender per **60 seconden** met een atomische databaseclaim en verwijdert verlopen push-endpoints. Het bericht verloopt na **90 seconden**; aanvankelijk geeft succes slechts aan dat de pushprovider het bericht heeft geaccepteerd, geen bewezen ontvangst op de iPhone. De route `/buzzer` toont één grote knop; de serviceworker opent deze pagina bij het aantikken van de melding. De Buzzer maakt geen onderdeel uit van het wetenschappelijke onderzoek of de vragenbank.
+
 ## Doorlopende vragen en navigatie
 
 Na inloggen blijf je op **Home**. De prominente knop naar `/vragen` is het enige startpunt voor nieuwe vragen. In het setoverzicht, Reis-DNA, Reiskantoor en het oude reisboekje blijft de hoofdnavigatie beschikbaar. **Alleen tijdens het beantwoorden van een afzonderlijke vraag** is het menu verborgen; 'Terug naar jullie set' blijft zichtbaar.
