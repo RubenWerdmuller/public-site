@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useState, useRef, type FormEvent } from 'react';
-import { ArrowRight, Bookmark, Check, Compass, Home, Sofa, Sparkles, Settings, History, X, Bell, Download, Link as LinkIcon, LogOut, Sun, Map, Heart, BellRing } from 'lucide-react';
+import { ArrowRight, Bookmark, Check, Compass, Home, Sofa, Sparkles, Settings, History, X, Bell, Download, Link as LinkIcon, LogOut, Sun, Heart, BellRing } from 'lucide-react';
 import { Avatar, Landscape } from './illustrations';
 import { SketchButton } from './sketch-button';
 import { Travelers } from './travelers';
