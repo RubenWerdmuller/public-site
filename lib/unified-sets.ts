@@ -58,9 +58,16 @@ async function ensureUserProgress(user:User,read:Query){
  return 1;
 }
 async function ensureAssigned(user:User):Promise<Assigned|null>{
+ // The legacy selection itself uses a database transaction. Resolve it BEFORE
+ // acquiring the unified set transaction (important for local PGlite too).
+ const [cursor]=await query<Progress>('SELECT ordinal FROM unified_set_progress WHERE user_id=$1',[user.id]);
+ const ordinalBefore=cursor?.ordinal??1;
+ const [known]=await query<Assigned>('SELECT * FROM unified_sets WHERE pair_id=$1 AND ordinal=$2',[user.pair_id,ordinalBefore]);
+ const legacy=known?null:await ensureSet(user.pair_id,localDay(),1000+ordinalBefore);
  return transaction(async read=>{
   await read('SELECT pg_advisory_xact_lock(hashtext($1))',['unified:'+user.pair_id]);
   const ordinal=await ensureUserProgress(user,read);
+  if(ordinal!==ordinalBefore)throw new UnifiedFlowError('Een andere sessie heeft de set al gewijzigd. Vernieuw de vragen.');
   const [previous]=await read<Assigned>('SELECT * FROM unified_sets WHERE pair_id=$1 AND ordinal=$2',[user.pair_id,ordinal]);
   if(previous){
    if(previous.science_first===null){const round=await allocateRound(user.pair_id,read);
@@ -78,7 +85,6 @@ async function ensureAssigned(user:User):Promise<Assigned|null>{
    }
    return previous;
   }
-  const legacy=await ensureSet(user.pair_id,localDay(),1000+ordinal);
   if(!legacy?.question_ids?.length)return null;
   const selected=legacy.question_ids.slice(0,2);
   if(selected.length<2)return null;
