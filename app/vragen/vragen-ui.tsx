@@ -29,7 +29,7 @@ export function UnifiedQuestions(){
  }
  const set=data?.set,slots=set?.slots??[],current=slots[focus];
  return <div className="rk-shell">
- <header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
+ <header className="rk-top"><Link href="/?screen=history" className="rk-back"><ArrowLeft size={17}/> Geschiedenis</Link><span>Oelie & Roebie</span></header>
  <main className="rk-main rk-readable">
   <div className="rk-intro"><span className="rk-kicker">ÉÉN SPEL · TWEE REIZIGERS</span><h1>Vragen<span>.</span></h1><p>Vier kleine keuzes per set. Soms gek, soms persoonlijk, soms over de hele reis. Achter de schermen bouwen ze samen aan jullie Reis-DNA en het Reiskantoor.</p></div>
   {error&&<p className="rk-error" role="alert">{error}</p>}
@@ -60,7 +60,7 @@ export function UnifiedQuestions(){
    <button className="rk-button" disabled={busy} onClick={()=>void submit({action:'next-set',ordinal:set.ordinal})}>Open de volgende set <ArrowRight size={16}/></button></section>:set?.completed===4?<section className="rk-paper"><h2>Jij bent klaar!</h2><p>Je reisgenoot kan op het eigen account afronden. Daarna onthullen jullie samen de resultaten en verschijnt een nieuwe set.</p><button className="rk-quiet" onClick={()=>void refresh()}><RefreshCw size={15}/> Kijk of de ander klaar is</button></section>:null}
   <section className="rk-paper rk-set-outcomes"><span className="rk-kicker">HET LEUKE ERACHTER</span><h2>Wat leert deze set?</h2><div className="rk-outcome-list"><div><BookOpen size={20}/><span><b>Een mooi reisverhaal</b> · de speelse vragen leveren herinneringen en verrassingen.</span></div><div><BrainCircuit size={20}/><span><b>Reis-DNA</b> · de gecontroleerde afwegingen verbeteren voorzichtig jullie persoonlijke model.</span></div><div><Route size={20}/><span><b>Reiskantoor</b> · etappekeuzes helpen om een haalbare lange reis te maken.</span></div></div>
    <p className="rk-muted">Wetenschappelijke controlevragen tellen nooit mee voor het trainen van het model. De oude speelse vragen blijven een andere bron van inzicht.</p></section>
-  <div className="rk-footerlinks"><Link href="/reis-dna"><BrainCircuit size={17}/> Bekijk Reis-DNA <ArrowRight size={17}/></Link><Link href="/reiskantoor"><Compass size={17}/> Bekijk het Reiskantoor <ArrowRight size={17}/></Link></div>
+  <div className="rk-footerlinks"><Link href="/?screen=saved">Voor later <ArrowRight size={17}/></Link><Link href="/?screen=settings">Instellingen <ArrowRight size={17}/></Link><Link href="/reis-dna"><BrainCircuit size={17}/> Bekijk Reis-DNA <ArrowRight size={17}/></Link><Link href="/reiskantoor"><Compass size={17}/> Bekijk het Reiskantoor <ArrowRight size={17}/></Link></div>
   </>}
  </main></div>;
 }
