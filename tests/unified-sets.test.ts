@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canonicalSetSequence,mayAdvance,revealedTo,selectStoryPair} from '../lib/unified-set-rules';
+import {canonicalSetSequence,mayAdvance,mayAdvancePersonally,revealedTo,selectStoryPair} from '../lib/unified-set-rules';
 import {stageTasks} from '../lib/reiskantoor';
 import {scientificChoiceTasks,studyTaskById} from '../lib/dce-design';
 import {nextScientificQuestion} from '../lib/itinerary-science';
@@ -53,7 +53,9 @@ test('a travelling partner can keep answering without shared completion',()=>{
  // Advancing is permitted by the server after four OWN responses,
  // while the other's answers remain hidden.
  const ownOnly=Array.from({length:4},()=>({ready:true,own:0 as const}));
- assert.ok(ownOnly.every(slot=>slot.ready&&slot.own!==null));
+ assert.equal(mayAdvancePersonally(ownOnly),true);
+ assert.equal(mayAdvancePersonally([...ownOnly.slice(0,3),{ready:true,own:null}]),false);
+ assert.equal(mayAdvancePersonally(ownOnly.slice(0,3)),false);
 });
 test('endless reflection questions have stable IDs, not reused across sets',()=>{
  const pair='00000000-0000-4000-a000-000000000099';
