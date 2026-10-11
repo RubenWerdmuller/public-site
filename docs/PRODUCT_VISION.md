@@ -60,6 +60,18 @@ Toont:
 - Later **echte bestemmingen** met bron, route, seizoen, concrete haalbaarheid, kosten en beschikbaarheid dankzij een afzonderlijke AI-ondersteunde onderzoekslaag.
 - Geen verplichte handmatige etappe-invoer om tot een resultaat te komen. Bewuste bevestiging/correctie van een belangrijke voorkeur of harde grens mag wél.
 
+### Buzzer — één enkel seintje aan je reisgenoot
+
+Naast de vragen bestaat er een piepkleine sociale actie: **Buzzer**. Vanaf Home en de navigatie kan een ingelogde reiziger met **één knop** de gekoppelde reisgenoot een pushnotificatie sturen. Het bericht toont **uitsluitend 'Buzzer'**: geen eigen tekst, chatgesprek, gedeeld antwoord, reisdata of naam van de afzender. De ontvanger opent desgewenst het eveneens minimale Buzzer-scherm.
+
+Productgrenzen:
+- Alleen naar de **andere deelnemer van hetzelfde duo**, nooit naar willekeurige accounts.
+- De ontvanger moet op diens eigen toestel pushmeldingen hebben aangezet; zonder geldige subscription meldt de knop dat het niet gelukt is.
+- Anti-spam: voorlopig maximaal één Buzzer per afzender per **60 seconden**, met een korte geldigheidsduur voor offline apparaten. De gebruiker kan meldingen via de browser/het toestel uitzetten.
+- Een door de pushaanbieder geaccepteerd bericht bewijst niet dat het toestel de melding daadwerkelijk liet zien.
+- Een Buzzer telt **niet** als wetenschappelijke keuze, Reis-DNA-inzicht of input voor Reiskantoor. Geen vrije berichten, leesbevestiging of chatgeschiedenis.
+- Buzzer is een lichte, blijvende functie; hij voegt geen nieuwe vragenstroom toe.
+
 ## 3. Samenstelling van een set: vier vragen met verschillende taken
 
 **Standaarddoel voor de meeste sets:**
@@ -227,4 +239,5 @@ Nog te evalueren:
 | 11-10-2026 | **Vier-slot Vragen-flow in implementatie** | Eén gedeelde settoewijzing per duo, afzonderlijke antwoorden, privacy-gated onderzoekskeuzes; oude geschiedenis blijft intact. Gebruikerstests en verdere wetenschappelijke evaluatie blijven nodig. |
 | 11-10-2026 | **Focus tijdens vragen, daarbuiten overal navigatie** | Alleen bij het beantwoorden verdwijnt globale navigatie; de gebruiker kan steeds terug naar de set. Home blijft zelfstandig toegankelijk en biedt direct de enige Vragen-flow aan. |
 | 11-10-2026 | **Persoonlijk tempo en open einde** | Iedereen mag na vier eigen antwoorden naar een volgende set. Verhalende vervolgvragen blijven mogelijk zonder daglimiet en zonder op de ander te wachten; beperkte DCE/holdout-metingen worden nooit gefingeerd, hergebruikt of vermengd met speelse reflectie. |
+| 11-10-2026 | **Buzzer: één woord, geen chat** | Via één knop kan de één de ander een korte pushmelding met alleen 'Buzzer' sturen; afgeschermd tot het duo, maximaal 1/minuut, geen invloed op reis- of wetenschapsgegevens. |
 
