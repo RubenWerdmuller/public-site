@@ -1,4 +1,4 @@
-import {revealedTo,mayAdvance,canonicalSetSequence} from './unified-set-rules';
+import {revealedTo,mayAdvance,canonicalSetSequence,selectStoryPair} from './unified-set-rules';
 import {query,transaction,type Query} from './db';
 import {localDay,type Question,type Answer} from './domain';
 import {ensureSet} from './sets';
@@ -86,9 +86,9 @@ async function ensureAssigned(user:User):Promise<Assigned|null>{
    return previous;
   }
   if(!legacy?.question_ids?.length)return null;
-  const selected=legacy.question_ids.slice(0,2);
+  const rows=await read<Legacy>('SELECT content FROM questions WHERE id=ANY($1::text[])',[legacy.question_ids]);
+  const selected=selectStoryPair(legacy.question_ids,rows.map(r=>r.content));
   if(selected.length<2)return null;
-  const rows=await read<Legacy>('SELECT content FROM questions WHERE id=ANY($1::text[])',[selected]);
   const title=rows.find(r=>r.content.id===selected[0])?.content.theme??'Samen ontdekken';
   const round=await allocateRound(user.pair_id,read);
   // Existing round is never reused for a second assignment.
