@@ -4,12 +4,12 @@ import {SiteNavigation} from '@/components/site-navigation';
 import {ArrowLeft,ArrowRight,Compass,Route,RefreshCw,MapPin,Clock3} from 'lucide-react';
 import {useTripExperience} from '@/components/trip-experience';
 import './reiskantoor.css';
-export function Reiskantoor(){
+export function Reiskantoor({embedded=false}:{embedded?:boolean}){
  const {data,loading,error,refresh}=useTripExperience();
  const travel=data?.travel;
  const plan=travel?.plan;
- return <div className="rk-shell"><SiteNavigation current="/reiskantoor"/>
-  <header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
+ return <div className={'rk-shell'+(embedded?' rk-embedded':'')}>{!embedded&&<SiteNavigation current="/reiskantoor"/>}
+  {!embedded&&<header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>}
   <main className="rk-main">
    <div className="rk-intro"><span className="rk-kicker">HET RESULTAAT VAN JULLIE KEUZES</span><h1>Het Reiskantoor<span>.</span></h1>
      <p>Jullie hoeven hier niets in te vullen. De reis groeit uit de antwoorden van jullie allebei. Wat nog onzeker is, blijft open.</p></div>
