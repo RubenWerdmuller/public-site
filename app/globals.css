@@ -178,3 +178,8 @@
   .mobile-nav{gap:2px;padding-left:4px;padding-right:4px}
   .rk-home-questions{margin:0 0 25px}
 }
+
+/* Only while answering: suppress surrounding app navigation, preserve an exit. */
+.app.daily-flow>.sidebar,.app.daily-flow .mobile-nav{display:none!important}
+.app.daily-flow>main{margin-left:0!important;width:100%;max-width:none}
+.app.daily-flow .question-exit{display:inline-flex;gap:8px;align-items:center;margin:14px 0;color:#63795f}
