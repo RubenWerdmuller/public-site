@@ -20,6 +20,10 @@ CREATE TABLE IF NOT EXISTS preference_estimates (pair_id text REFERENCES travel_
 CREATE TABLE IF NOT EXISTS compatibility_insights (pair_id text PRIMARY KEY REFERENCES travel_pairs(id), content jsonb NOT NULL, updated_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE IF NOT EXISTS push_subscriptions (endpoint text PRIMARY KEY, user_id text NOT NULL REFERENCES users(id), subscription jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now());
 CREATE TABLE IF NOT EXISTS notification_deliveries (user_id text REFERENCES users(id), day text, kind text, sent_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(user_id,day,kind));
+CREATE TABLE IF NOT EXISTS partner_buzzer_cooldowns (
+  sender_id text PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
+  last_sent_at timestamptz NOT NULL DEFAULT now()
+);
 ALTER TABLE notification_deliveries ADD COLUMN IF NOT EXISTS sent boolean NOT NULL DEFAULT true;
 ALTER TABLE notification_deliveries ADD COLUMN IF NOT EXISTS claimed_at timestamptz NOT NULL DEFAULT now();
 CREATE TABLE IF NOT EXISTS auth_attempts (key text PRIMARY KEY, attempts integer NOT NULL, window_start timestamptz NOT NULL DEFAULT now());
