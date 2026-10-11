@@ -1,3 +1,4 @@
+import {revealedTo,mayAdvance,canonicalSetSequence} from './unified-set-rules';
 import {query,transaction,type Query} from './db';
 import {localDay,type Question,type Answer} from './domain';
 import {ensureSet} from './sets';
@@ -87,6 +88,7 @@ async function ensureAssigned(user:User):Promise<Assigned|null>{
   // Existing round is never reused for a second assignment.
   const previousRound=await read('SELECT 1 FROM unified_sets WHERE pair_id=$1 AND (science_first=$2 OR science_second=$2)',[user.pair_id,round?.ordinal??-1]);
   const first=round&&!previousRound.length?round.ordinal:null;
+  if(first===null&&!round)return null; // All scientific tasks are finished; never create a stuck set.
   await read('INSERT INTO unified_sets(pair_id,ordinal,theme,legacy_ids,science_first) VALUES($1,$2,$3,$4::jsonb,$5) ON CONFLICT DO NOTHING',[user.pair_id,ordinal,title,JSON.stringify(selected),first]);
   const [assigned]=await read<Assigned>('SELECT * FROM unified_sets WHERE pair_id=$1 AND ordinal=$2',[user.pair_id,ordinal]);
   return assigned??null;
@@ -104,18 +106,16 @@ async function buildState(user:User,assigned:Assigned|null):Promise<UnifiedState
  const picks=rounds.length?await query<Choice>('SELECT ordinal,user_id,choice FROM trip_choice_answers WHERE pair_id=$1 AND ordinal=ANY($2::int[])',[user.pair_id,rounds]):[];
  const legacySlots=assigned.legacy_ids.map((id,i):UnifiedSlot=>{
   const q=rows.find(r=>r.content.id===id)?.content;
-  const own=answers.find(a=>a.question_id===id&&a.user_id===user.id)?.choice??null;
-  const other=answers.find(a=>a.question_id===id&&a.user_id!==user.id)?.choice??null;
+  const {own,partner:other}=revealedTo(user.id,members.map(m=>m.user_id),answers.filter(a=>a.question_id===id).map(a=>({userId:a.user_id,choice:a.choice as 0|1})));
   return {key:'legacy-'+id,kind:i===0?'story':'legacy',role:i===0?'Een mooi dilemma':'Samen ontdekken',
    title:q?.title??'Een vraag voor jullie',intro:q?.intro??'',legacyId:id,round:null,
    options:q?.options.map(o=>({title:o.title,detail:o.subtitle}))??[],
-   own,partner:own!==null&&other!==null?other:null,ready:!!q};
+   own,partner:other,ready:!!q};
  });
  const scientificSlot=(n:number|null,index:0|1):UnifiedSlot=>{
   const task=tasks.find(t=>t.ordinal===n);
   const item=task?(stageTasks.find(s=>s.id===task.task_id)??studyTaskById(task.task_id)):null;
-  const own=n===null?null:picks.find(a=>a.ordinal===n&&a.user_id===user.id)?.choice??null;
-  const other=n===null?null:picks.find(a=>a.ordinal===n&&a.user_id!==user.id)?.choice??null;
+  const {own,partner:other}=revealedTo(user.id,members.map(m=>m.user_id),picks.filter(a=>a.ordinal===n).map(a=>({userId:a.user_id,choice:a.choice as 0|1})));
   const isStage=item&&'kind' in item;
   const options=item?([item.a,item.b] as const).map((o,i)=>{
    if('label' in o)return {title:o.label,detail:o.detail};
@@ -124,11 +124,12 @@ async function buildState(user:User,assigned:Assigned|null):Promise<UnifiedState
   return {key:'science-'+index,kind:isStage?'stage':'dce',role:isStage?'De reis vormgeven':'De wetenschappelijke afweging',
    title:item?.question??'De volgende afweging verschijnt zodra jullie beiden klaar zijn met de vorige.',
    intro:isStage?item.description:'Kies de combinatie die jij het aantrekkelijkst vindt. Er bestaat geen goed antwoord.',
-   legacyId:null,round:n,options,own,partner:own!==null&&other!==null?other:null,ready:!!item};
+   legacyId:null,round:n,options,own,partner:other,ready:!!item};
  };
  const slots=[legacySlots[0],scientificSlot(assigned.science_first,0),legacySlots[1],scientificSlot(assigned.science_second,1)];
+ canonicalSetSequence(assigned.legacy_ids,[assigned.science_first,assigned.science_second]);
  const completed=slots.filter(slot=>slot.own!==null).length;
- const bothCompleted=members.length===2&&slots.every(slot=>slot.ready&&slot.own!==null&&slot.partner!==null);
+ const bothCompleted=mayAdvance(members.map(m=>m.user_id),slots.map(slot=>({ready:slot.ready,choices:[...(slot.own===null?[]:[{userId:user.id,choice:slot.own as 0|1}]),...(slot.partner===null?[]:[{userId:members.find(m=>m.user_id!==user.id)?.user_id??'',choice:slot.partner as 0|1}])]})));
  return {set:{ordinal:assigned.ordinal,theme:assigned.theme,slots,completed,bothCompleted,waiting:slots.some(slot=>!slot.ready||slot.own!==null&&slot.partner===null)},members:members.length,
   totalCompleted:finished[0]?.count??0,scienceCount:science.count,lastDiscovery:bothCompleted?'Jullie hebben allebei gekozen. Reis-DNA en Reiskantoor zijn bijgewerkt.':null};
 }
