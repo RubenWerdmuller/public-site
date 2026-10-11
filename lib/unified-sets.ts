@@ -1,5 +1,5 @@
 import {createEvergreenBatch} from './evergreen-questions';
-import {revealedTo,mayAdvance,selectStoryPair} from './unified-set-rules';
+import {revealedTo,mayAdvance,mayAdvancePersonally,selectStoryPair} from './unified-set-rules';
 import {query,transaction,type Query} from './db';
 import {localDay,type Question,type Answer} from './domain';
 import {ensureSet} from './sets';
@@ -175,7 +175,7 @@ export async function recordUnifiedChoice(user:User,round:number,choice:0|1){
 export async function advanceUnifiedSet(user:User,expectedOrdinal:number){
  const state=await getUnifiedState(user);
  if(!state.set||state.set.ordinal!==expectedOrdinal)throw new UnifiedFlowError('Open eerst de nieuwste set.');
- if(state.set.slots.length!==4||state.set.slots.some(s=>!s.ready||s.own===null))
+ if(!mayAdvancePersonally(state.set.slots))
   throw new UnifiedFlowError('Beantwoord zelf alle vier de vragen van deze set. Je reisgenoot mag op eigen tempo verder.');
  await transaction(async read=>{
   await read('SELECT pg_advisory_xact_lock(hashtext($1))',['unified:'+user.pair_id]);
