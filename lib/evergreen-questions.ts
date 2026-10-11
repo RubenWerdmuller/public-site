@@ -46,6 +46,11 @@ const combinations=[
  ['Op het water','Een dagje zeilen of varen met iemand uit de buurt','Een lange wandeling langs het water maken'],
  ['Ver weg voelen','Een afgelegen natuurplek zoeken','Een bruisende wijk verkennen'],
 ];
+const landscapes=['aan een ruige kust','in een bergdorp','in een groene vallei','aan de rand van een oud centrum',
+ 'naast een klein natuurpark','op het platteland','langs een stille rivier','vlak bij een bruisende stad',
+ 'in een streek met wijngaarden','in een bosrijk gebied','bij een onbekend meer','op een zonnig eiland'];
+const conditions=['tijdens de eerste week','op een vrije dag','net na een lange reisdag','na een paar weken ergens wonen',
+ 'wanneer jullie weinig geld willen uitgeven','na een uitnodiging van een local','terwijl het regent','in het weekend'];
 export function evergreenId(pairId:string,ordinal:number,slot:number){
  if(!/^[a-zA-Z0-9-]{1,100}$/.test(pairId)||!Number.isSafeInteger(ordinal)||ordinal<1||slot<0||slot>3)
   throw Error('Ongeldige vraagidentiteit.');
@@ -58,6 +63,8 @@ export function createEvergreenQuestion(pairId:string,ordinal:number,slot:number
  const theme=combinations[(index*7+Math.floor(index/combinations.length))%combinations.length];
  const angle=perspectives[(index*3+Math.floor(index/perspectives.length))%perspectives.length];
  const flip=Math.floor(index/4)%2===1;
+ const landscape=landscapes[(index*7+Math.floor(index/11))%landscapes.length];
+ const situation=conditions[(index*3+Math.floor(index/23))%conditions.length];
  const a=slot%2===0?period[1]:theme[1];
  const b=slot%2===0?period[2]:theme[2];
  const opts=flip?[b,a]:[a,b];
@@ -68,7 +75,7 @@ export function createEvergreenQuestion(pairId:string,ordinal:number,slot:number
  return {
   id,title:angle.title,theme:slot%2===0?period[0]:theme[0],
   type:'reflection',role:slot%2===0?'wildcard':'personal',
-  intro:angle.prefix+' '+(slot%2===0?period[0].toLowerCase():theme[0].toLowerCase())+'.',
+  intro:angle.prefix+' Jullie zijn '+landscape+', '+situation+'. '+(slot%2===0?period[0]:theme[0])+'.',
   options:[option(opts[0],0),option(opts[1],1)],informationValue:0,
   focus:[],
  };
