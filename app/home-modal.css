@@ -76,3 +76,7 @@
  .rk-focus-mode .rk-answer-pair{margin:6px 0;gap:5px}
 }
 @media(prefers-reduced-motion:reduce){.home-dialog *{scroll-behavior:auto}}
+
+/* Legacy question deep-links also keep the answering surface free of global navigation. */
+.app.daily-flow:not(.is-demo) .sidebar,.app.daily-flow:not(.is-demo) .mobile-nav{display:none}
+.app.daily-flow:not(.is-demo) main{margin-left:0}
