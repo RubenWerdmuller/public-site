@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canonicalSetSequence,mayAdvance,revealedTo} from '../lib/unified-set-rules';
+import {canonicalSetSequence,mayAdvance,revealedTo,selectStoryPair} from '../lib/unified-set-rules';
 import {stageTasks} from '../lib/reiskantoor';
 import {scientificChoiceTasks,studyTaskById} from '../lib/dce-design';
 import {nextScientificQuestion} from '../lib/itinerary-science';
@@ -31,4 +31,16 @@ test('scientific slots only contain known versioned stage or study tasks',()=>{
  assert.equal(scientificChoiceTasks.length,48);
  assert.equal(scientificChoiceTasks.filter(x=>x.studyRole==='holdout').length,6);
  assert.ok(studyTaskById('dce3-001'));
+});
+
+test('the set keeps a personal question close to its playful travel theme',()=>{
+ const bank=[
+  {id:'core-a',theme:'Weggaan',role:'core'},
+  {id:'boundary-b',theme:'Seizoen',role:'boundary'},
+  {id:'personal-c',theme:'Weggaan',role:'personal'},
+  {id:'wildcard-d',theme:'Zomaar',role:'wildcard'},
+ ];
+ assert.deepEqual(selectStoryPair(bank.map(x=>x.id),bank),['core-a','personal-c']);
+ assert.deepEqual(selectStoryPair(['core-a','boundary-b'],bank),['core-a','boundary-b']);
+ assert.deepEqual(selectStoryPair(['missing','personal-c'],bank),[]);
 });
