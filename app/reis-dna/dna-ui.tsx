@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {SiteNavigation} from '@/components/site-navigation';
 import {useState} from 'react';
 import {ArrowLeft,ArrowRight,BrainCircuit,TrendingUp,Info,BookOpen,BarChart3} from 'lucide-react';
 import {Avatar} from '@/components/illustrations';
@@ -10,7 +11,7 @@ export function ReisDna(){
  const [selected,setSelected]=useState<string|null>(null);
  const people=data?.people??[],person=people.find(p=>p.id===selected)??people[0];
  const report=data?.archiveReport;
- return <div className="rk-shell"><header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
+ return <div className="rk-shell"><SiteNavigation current="/reis-dna"/><header className="rk-top"><Link href="/" className="rk-back"><ArrowLeft size={17}/> Ons reisboekje</Link><span>Oelie & Roebie</span></header>
  <main className="rk-main rk-readable">
   <div className="rk-intro"><span className="rk-kicker">SAMEN ONTDEKKEN · REIS-DNA</span><h1>Een reis die op jullie lijkt<span>.</span></h1>
    <p>Jullie eerdere reisverhaal én een nieuw, beter gecontroleerd keuzeonderzoek. Kies iemand om te ontdekken wat de afwegingen zeggen — en wat we nog niet weten.</p></div>
@@ -56,7 +57,7 @@ export function ReisDna(){
     <p>Het systeem weegt mee over welke kenmerken jullie nog weinig verteld hebben en welke vragen informatie toevoegen aan beide persoonlijke modellen. Het oude reisrapport kan thema’s aanwijzen die jullie nog verder willen onderzoeken.</p>
     <div className="rk-explainer"><Info size={19}/><div><strong>Wat we niet kunnen claimen</strong><p>De vragen zijn kwantitatief ontworpen en apart getest, maar gebruikersonderzoek, controle op begrijpelijkheid en een externe validatieset ontbreken nog. De gekozen kenmerken en niveaus zijn een onderzoeksaanname, geen universele waarheid over reizen.</p></div></div>
    </section>
-   <div className="rk-footerlinks"><Link href="/reisvragen"><TrendingUp size={17}/> Beantwoord de volgende vraag <ArrowRight size={17}/></Link><Link href="/reiskantoor">Wat betekent dit voor jullie reis? <ArrowRight size={17}/></Link></div>
+   <div className="rk-footerlinks"><Link href="/vragen"><TrendingUp size={17}/> Beantwoord de volgende vraag <ArrowRight size={17}/></Link><Link href="/reiskantoor">Wat betekent dit voor jullie reis? <ArrowRight size={17}/></Link></div>
   </>}
  </main></div>;
 }

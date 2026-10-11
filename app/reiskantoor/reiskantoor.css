@@ -129,3 +129,26 @@
 .rk-outcome-list svg{flex-shrink:0;margin-top:3px}
 .rk-answer-tile:disabled{cursor:default}
 @media(max-width:650px){.rk-set-steps{grid-template-columns:repeat(2,minmax(0,1fr))}.rk-set-step{min-height:92px}}
+
+
+/* Persistent navigation on overview, reports and office; hidden only in answer focus. */
+.site-nav{max-width:1320px;margin:auto;padding:14px 32px;display:flex;align-items:center;flex-wrap:wrap;gap:16px;border-bottom:1px solid #e2e6dd;font-size:13px;color:#405544}
+.site-nav-brand{display:flex;align-items:center;gap:8px;font-weight:700;white-space:nowrap}
+.site-nav-links{display:flex;align-items:center;flex-wrap:wrap;gap:5px}
+.site-nav-links>a{display:inline-flex;align-items:center;gap:6px;color:#647263;padding:9px 10px;border-radius:8px;text-decoration:none;white-space:nowrap}
+.site-nav-links>a:hover,.site-nav-links>a.site-nav-selected{color:#405f46;background:#e7eee2}
+.rk-focus-mode .rk-main{max-width:800px;margin:0 auto;padding-top:12px}
+.rk-question-exit{max-width:800px;margin:auto;padding:20px 28px 8px;display:flex;align-items:center;justify-content:space-between;gap:12px;color:#748174;font-size:12px}
+.rk-question-exit button{display:inline-flex;align-items:center;gap:5px}
+.rk-overview-mode .rk-set-complete{margin-top:22px}
+.rk-overview-mode .rk-set-complete .rk-button{align-self:flex-start}
+.rk-overview-mode .rk-set-steps{margin-bottom:24px}
+.rk-overview-mode .rk-set-steps button{transition:background .15s,border-color .15s}
+.rk-overview-mode .rk-set-steps button:hover{background:#edf3e9;border-color:#708f72}
+@media(max-width:800px){
+ .site-nav{padding:12px 16px;display:block}
+ .site-nav-brand{margin-bottom:8px}
+ .site-nav-links{flex-wrap:nowrap;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+ .site-nav-links>a{font-size:11px;padding:9px 8px;flex-shrink:0}
+ .rk-question-exit{padding:14px 17px 5px}
+}

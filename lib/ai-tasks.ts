@@ -36,6 +36,7 @@ export async function changeTask(user: User, id: string, action: 'cancel' | 'ret
 export async function availableBank(pairId: string, read: Query = query) {
   return (await read<{ content: Question } & Record<string, unknown>>(`SELECT q.content FROM questions q WHERE
     (NOT EXISTS(SELECT 1 FROM ai_question_ownership o WHERE o.question_id=q.id) OR EXISTS(SELECT 1 FROM ai_question_ownership o WHERE o.question_id=q.id AND o.pair_id=$1))
+    AND q.id NOT LIKE 'ev1-%' /* pair-specific evergreen reflections are not global bank questions */
     AND NOT EXISTS(SELECT 1 FROM ai_question_retirements r WHERE r.question_id=q.id AND r.pair_id=$1) ORDER BY q.id`, [pairId])).map(r => r.content);
 }
 export async function claimTask(kind: TaskKind) {

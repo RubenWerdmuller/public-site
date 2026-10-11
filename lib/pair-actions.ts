@@ -31,7 +31,7 @@ export async function recordQuestion(user:User,qid:string,input:{action:'save'}|
   return transaction(async read=>{
     await lockMembership(read,user.pair_id,user.id);
     await read('SELECT id FROM travel_pairs WHERE id=$1 FOR UPDATE',[user.pair_id]);
-    const [question]=await read<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM question_sets s WHERE s.pair_id=$2 AND s.question_ids @> jsonb_build_array(q.id)) OR EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2))',[qid,user.pair_id]);
+    const [question]=await read<{content:Question}&Record<string,unknown>>('SELECT q.content FROM questions q WHERE q.id=$1 AND (EXISTS(SELECT 1 FROM question_sets s WHERE s.pair_id=$2 AND s.question_ids @> jsonb_build_array(q.id)) OR EXISTS(SELECT 1 FROM daily_assignments d WHERE d.question_id=q.id AND d.pair_id=$2) OR EXISTS(SELECT 1 FROM saved_questions s WHERE s.question_id=q.id AND s.pair_id=$2) OR EXISTS(SELECT 1 FROM unified_sets s WHERE s.pair_id=$2 AND (s.legacy_ids @> jsonb_build_array(q.id) OR s.fallback_ids @> jsonb_build_array(q.id))))',[qid,user.pair_id]);
     if(!question)throw new PairActionError('Deze vraag hoort niet bij jullie stapel.',403);
     if(input.action==='save'){
       await read('INSERT INTO saved_questions(user_id,pair_id,question_id) SELECT $1,$2,$3 WHERE (SELECT count(*) FROM answers WHERE pair_id=$2 AND question_id=$3)<2 ON CONFLICT DO NOTHING',[user.id,user.pair_id,qid]);

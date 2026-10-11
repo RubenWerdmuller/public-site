@@ -20,7 +20,7 @@ export async function POST(req:NextRequest){
   const raw=await req.text();if(raw.length>4000)return json({error:'Aanvraag te groot.'},413);
   const body=z.discriminatedUnion('action',[
    z.object({action:z.literal('answer'),key:z.string().min(1).max(160),choice:z.number().int().min(0).max(1)}).strict(),
-   z.object({action:z.literal('next-set'),ordinal:z.number().int().min(1).max(10000)}).strict(),
+   z.object({action:z.literal('next-set'),ordinal:z.number().int().positive().safe()}).strict(),
   ]).parse(JSON.parse(raw));
   if(body.action==='next-set')return json(await advanceUnifiedSet(user,body.ordinal));
   const slot=await ensureUnifiedSlot(user,body.key);

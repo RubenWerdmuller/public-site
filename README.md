@@ -6,6 +6,14 @@
 
 Een klein dagelijks reisspelletje voor twee. Mobile-first, met een ruime laptopweergave, een Nederlandse vraagbank met 124 dilemma’s (64 nieuwe voor de langere autoreis) en een rustige getekende notitieboekstijl.
 
+## Doorlopende vragen en navigatie
+
+Na inloggen blijf je op **Home**. De prominente knop naar `/vragen` is het enige startpunt voor nieuwe vragen. In het setoverzicht, Reis-DNA, Reiskantoor en het oude reisboekje blijft de hoofdnavigatie beschikbaar. **Alleen tijdens het beantwoorden van een afzonderlijke vraag** is het menu verborgen; 'Terug naar jullie set' blijft zichtbaar.
+
+Na vier door jou beantwoorde vragen mag je **zonder dagelijkse limiet of wachttijd op je partner** meteen een volgende set beginnen. De andere persoon bewaart de eigen voortgang, en iemands antwoord is pas zichtbaar zodra jullie de betreffende vraag allebei hebben ingevuld. De eindige DCE-taakbank wordt niet gefingeerd of gerecycled: als er nog geen nieuwe, geldige wetenschappelijke taak beschikbaar is, toont de set een apart gemarkeerde **reflectievraag** met stabiele ID en `informationValue:0`. De generator `lib/evergreen-questions.ts` vormt een onbegrensd aanbod van creatieve A/B-vragen; `lib/ai-tasks.ts` voorkomt dat zulke pair-specifieke vragen in andere accounts of de gedeelde vraagbank terechtkomen.
+
+De bestaande `answers`- en `trip_choice_answers`-data worden niet herschreven. Nieuwe `unified_sets.fallback_ids` houden reflectieposities vast, ook wanneer iemand eerder is dan diens reisgenoot. Daardoor blijven sets en reveal correct in verschillende sessies en op verschillende toestellen.
+
 ## Eén Vragen-ervaring
 
 De canonieke start na inloggen is **`/vragen`**. De oude route `/reisvragen` verwijst hiernaartoe. Elke set krijgt een gedeelde, onveranderlijke indeling: **speels dilemma → etappe- of wetenschappelijke vergelijking → persoonlijk dilemma → tweede etappe- of wetenschappelijke vergelijking**. Wanneer de noodzakelijke etappevragen afgerond zijn, gebruikt het wetenschappelijke deel de versievaste DCE-bank met de zes gereserveerde holdouts.

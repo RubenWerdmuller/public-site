@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {canonicalSetSequence,mayAdvance,revealedTo,selectStoryPair} from '../lib/unified-set-rules';
+import {canonicalSetSequence,mayAdvance,mayAdvancePersonally,revealedTo,selectStoryPair} from '../lib/unified-set-rules';
 import {stageTasks} from '../lib/reiskantoor';
 import {scientificChoiceTasks,studyTaskById} from '../lib/dce-design';
 import {nextScientificQuestion} from '../lib/itinerary-science';
@@ -43,4 +43,37 @@ test('the set keeps a personal question close to its playful travel theme',()=>{
  assert.deepEqual(selectStoryPair(bank.map(x=>x.id),bank),['core-a','personal-c']);
  assert.deepEqual(selectStoryPair(['core-a','boundary-b'],bank),['core-a','boundary-b']);
  assert.deepEqual(selectStoryPair(['missing','personal-c'],bank),[]);
+});
+
+
+import {createEvergreenBatch,createEvergreenQuestion,evergreenId} from '../lib/evergreen-questions';
+test('a travelling partner can keep answering without shared completion',()=>{
+ const original=[{ready:true,choices:[{userId:'oelie',choice:0 as const}]}];
+ assert.equal(mayAdvance(['oelie','roebie'],[...original,...original,...original,...original]),false);
+ // Advancing is permitted by the server after four OWN responses,
+ // while the other's answers remain hidden.
+ const ownOnly=Array.from({length:4},()=>({ready:true,own:0 as const}));
+ assert.equal(mayAdvancePersonally(ownOnly),true);
+ assert.equal(mayAdvancePersonally([...ownOnly.slice(0,3),{ready:true,own:null}]),false);
+ assert.equal(mayAdvancePersonally(ownOnly.slice(0,3)),false);
+});
+test('endless reflection questions have stable IDs, not reused across sets',()=>{
+ const pair='00000000-0000-4000-a000-000000000099';
+ const first=createEvergreenBatch(pair,1);
+ const later=createEvergreenBatch(pair,50000);
+ assert.equal(first.length,4);
+ assert.equal(later.length,4);
+ assert.deepEqual(first,createEvergreenBatch(pair,1));
+ assert.equal(new Set([...first,...later].map(q=>q.id)).size,8);
+ assert.ok(first.every(q=>q.options.length===2&&q.informationValue===0));
+ assert.ok(first.every(q=>q.options.every(o=>Object.keys(o.attributes).length===0)));
+ assert.ok(first.every(q=>q.id.startsWith('ev1-'+pair)));
+ assert.equal(createEvergreenQuestion(pair,42,2).id,evergreenId(pair,42,2));
+ assert.throws(()=>evergreenId('../invalid',1,0));
+});
+test('evergreen questions never pretend to be DCE or stage tasks',()=>{
+ const sample=createEvergreenQuestion('pair-123',600000,3);
+ assert.equal(studyTaskById(sample.id),undefined);
+ assert.ok(!stageTasks.some(x=>x.id===sample.id));
+ assert.ok(!scientificChoiceTasks.some(x=>x.id===sample.id));
 });

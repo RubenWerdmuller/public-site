@@ -76,6 +76,7 @@ CREATE TABLE IF NOT EXISTS unified_sets (
   FOREIGN KEY(pair_id,science_first) REFERENCES trip_choice_rounds(pair_id,ordinal),
   FOREIGN KEY(pair_id,science_second) REFERENCES trip_choice_rounds(pair_id,ordinal)
 );
+ALTER TABLE unified_sets ADD COLUMN IF NOT EXISTS fallback_ids jsonb NOT NULL DEFAULT '[]'::jsonb;
 CREATE TABLE IF NOT EXISTS unified_set_progress (
   user_id text PRIMARY KEY REFERENCES users(id) ON DELETE CASCADE,
   pair_id text NOT NULL REFERENCES travel_pairs(id) ON DELETE CASCADE,
