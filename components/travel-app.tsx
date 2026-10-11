@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { useCallback, useEffect, useState, useRef, type FormEvent } from 'react';
 import { ArrowRight, Bookmark, Check, Compass, Home, Sofa, Sparkles, Settings, History, X, Bell, Download, Link as LinkIcon, LogOut, Sun, Map, Heart, BellRing } from 'lucide-react';
 import { Avatar, Landscape } from './illustrations';
@@ -15,23 +16,54 @@ import type { dashboard } from '@/lib/service';
 import type { Question } from '@/lib/domain';
 import { questionLabel } from '@/lib/question-labels';
 import { usePwaInstall } from './use-pwa-install';
+import {HomeModal} from './home-modal';
 import { IosInstallSteps } from './ios-install-steps';
 import {appScreen,isAppScreen} from '@/lib/navigation';
 const exampleQuestion=bank.find(q=>q.role)!;
 const guestMembers=[{id:'guest-me',name:'Jij',avatar:CHARACTERS.oelie.avatar},{id:'guest-companion',name:'Maatje',avatar:CHARACTERS.roebie.avatar}];
 type Data=Awaited<ReturnType<typeof dashboard>>;
 type CardQuestion=Question & {own:number|null;partner:number|null;same:boolean|null};
-const nav=[{id:'today',label:'Home',icon:Home},{id:'saved',label:'Voor later',icon:Bookmark},{id:'history',label:'Geschiedenis',icon:History}];
+const nav=[{id:'today',label:'Home',icon:Home}];
 const types:Record<string,string>={'trade-off':'De afweging',extreme:'Het grote dilemma',scenario:'Twee mini-reizen','one-change':'Eén verschil',wildcard:'De wildcard',boundary:'Waar ligt jouw grens?',refinement:'Even scherper',conditional:'Als dit, dan…',conflict:'Ruimte voor elkaar','personal-dream':'Jouw eigen droom',bundle:'Een pakketje mogelijkheden'};
+const LazyBuzzer=dynamic(()=>import('../app/buzzer/buzzer-ui').then(m=>m.Buzzer),{ssr:false});
+const LazyReisDna=dynamic(()=>import('../app/reis-dna/dna-ui').then(m=>m.ReisDna),{ssr:false});
+const LazyReiskantoor=dynamic(()=>import('../app/reiskantoor/reiskantoor-ui').then(m=>m.Reiskantoor),{ssr:false});
+type HomeDialog='buzzer'|'history'|'saved'|'onderzoek';
 export function TravelApp({demo=false}:{demo?:boolean}) {
   const [preview,setPreview]=useState(initialPreview);
   const pwa=usePwaInstall(demo);
   const refreshVersion=useRef(0);
   const [liveData,setData]=useState<Data|null>(null); const data=demo?previewDashboard(preview):liveData; const [loaded,setLoaded]=useState(demo); const [screen,setScreen]=useState(demo?'question':'today'); const [qid,setQid]=useState(demo?previewQuestions[0].id:'q061'); const [busy,setBusy]=useState(false); const [notice,setNotice]=useState(''); const [auth,setAuth]=useState<'register'|'login'|null>(null); const [avatar,setAvatar]=useState<number|null>(null); const [inviteInput,setInviteInput]=useState(''); const [selected,setSelected]=useState<number|null>(null);
-  const refresh=useCallback(async()=>{if(demo)return;const version=++refreshVersion.current;try {const res=await fetch('/api/app',{cache:'no-store'});if(!res.ok)throw Error('Verbinding met de app is even weg.');const value=await res.json();if(version!==refreshVersion.current)return;setData(value.user?value:null);setLoaded(true);if(value.user&&!new URLSearchParams(location.search).has('screen'))setScreen('today');return value as Data;}catch{if(version!==refreshVersion.current)return;setNotice('Geen verbinding. Je antwoorden blijven bewaard op de server.');setLoaded(true);}},[demo]);
+  const [homeModal,setHomeModal]=useState<HomeDialog|null>(null);
+   const [researchTab,setResearchTab]=useState<'dna'|'plan'>('dna');
+   const refresh=useCallback(async()=>{if(demo)return;const version=++refreshVersion.current;try {const res=await fetch('/api/app',{cache:'no-store'});if(!res.ok)throw Error('Verbinding met de app is even weg.');const value=await res.json();if(version!==refreshVersion.current)return;setData(value.user?value:null);setLoaded(true);if(value.user&&!new URLSearchParams(location.search).has('screen'))setScreen('today');return value as Data;}catch{if(version!==refreshVersion.current)return;setNotice('Geen verbinding. Je antwoorden blijven bewaard op de server.');setLoaded(true);}},[demo]);
   useEffect(()=>{if(!auth)return;const previous=document.activeElement as HTMLElement|null;const dialog=document.querySelector<HTMLElement>('[role="dialog"]');queueMicrotask(()=>dialog?.querySelector<HTMLElement>('input')?.focus());const trap=(event:KeyboardEvent)=>{if(event.key==='Escape'){setAuth(null);return;}if(event.key!=='Tab'||!dialog)return;const items=Array.from(dialog.querySelectorAll<HTMLElement>('button:not(:disabled),input,a[href]'));const first=items[0],last=items.at(-1);if(event.shiftKey&&document.activeElement===first){event.preventDefault();last?.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first?.focus();}};window.addEventListener('keydown',trap);return()=>{window.removeEventListener('keydown',trap);previous?.focus();};},[auth]);
-  useEffect(()=>{queueMicrotask(()=>void refresh());const timer=demo?undefined:setInterval(()=>void refresh(),20000);const sync=()=>{const p=new URLSearchParams(location.search);setScreen(appScreen(p.get('screen'),demo));setQid(p.get('q')??(demo?previewQuestions[0].id:'q061'));setInviteInput(p.get('invite')??'');};queueMicrotask(sync);window.addEventListener('popstate',sync);if(!demo&&'serviceWorker'in navigator)void navigator.serviceWorker.register('/sw.js');return()=>{clearInterval(timer);window.removeEventListener('popstate',sync);};},[refresh,demo]);
-  function go(next:string,q?:string) {if(next==='settings'&&data)setAvatar(data.user.avatar);setScreen(next);if(q)setQid(q);setSelected(null);history.pushState({},'',`${demo?'/test':'/'}?screen=${next}${q?`&q=${q}`:''}`);window.scrollTo({top:0,behavior:'smooth'});}
+   useEffect(()=>{
+    queueMicrotask(()=>void refresh());
+    const timer=demo?undefined:setInterval(()=>void refresh(),20000);
+    const sync=()=>{
+      const p=new URLSearchParams(location.search),requested=p.get('screen');
+      if(!demo&&['buzzer','history','saved','onderzoek'].includes(requested??'')){
+       setHomeModal(requested as HomeDialog);setScreen('today');
+       if(p.get('tab')==='plan')setResearchTab('plan');
+      }else{setHomeModal(null);setScreen(appScreen(requested,demo));}
+      setQid(p.get('q')??(demo?previewQuestions[0].id:'q061'));
+      setInviteInput(p.get('invite')??'');
+    };
+    queueMicrotask(sync);window.addEventListener('popstate',sync);
+    if(!demo&&'serviceWorker'in navigator)void navigator.serviceWorker.register('/sw.js');
+    return()=>{clearInterval(timer);window.removeEventListener('popstate',sync);};
+   },[refresh,demo]);
+   function openHomeModal(kind:HomeDialog){setHomeModal(kind);setScreen('today');history.pushState({},'', '/?screen='+kind);}
+   function closeHomeModal(){setHomeModal(null);if(!demo&&['buzzer','history','saved','onderzoek'].includes(new URLSearchParams(location.search).get('screen')??''))history.replaceState({},'','/');}
+   function go(next:string,q?:string){
+     if(!demo&&(next==='history'||next==='saved')){openHomeModal(next);return;}
+     setHomeModal(null);
+     if(next==='settings'&&data)setAvatar(data.user.avatar);
+     setScreen(next);if(q)setQid(q);setSelected(null);
+     history.pushState({},'',(demo?'/test':'/')+'?screen='+next+(q?'&q='+q:''));
+     window.scrollTo({top:0,behavior:'smooth'});
+   }
   async function action(payload:Record<string,unknown>) {
     if(demo){
       switch(payload.action){
