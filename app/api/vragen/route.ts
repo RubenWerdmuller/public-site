@@ -27,7 +27,7 @@ export async function POST(req:NextRequest){
   if(slot.legacyId){
    await recordQuestion(user,slot.legacyId,{action:'answer',choice:body.choice,mode:'daily'});
    await refreshInsights(user.pair_id);
-  }else if(slot.round!==null)await recordUnifiedChoice(user,slot.round,body.choice);
+  }else if(slot.round!==null)await recordUnifiedChoice(user,slot.round,body.choice as 0|1);
   return json(await getUnifiedState(user));
  }catch(error){
   if(error instanceof UnifiedFlowError)return json({error:error.message},error.status);
