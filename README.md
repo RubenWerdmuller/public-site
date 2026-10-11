@@ -102,6 +102,14 @@ Kopieer `.env.example` naar `.env.local`. Commit nooit lokale keys.
 
 VAPID genereren: `npx web-push generate-vapid-keys`. Neem de publieke/private uitvoer alleen over in je lokale en hosted environment, niet in Git.
 
+## Nieuwe Home en iPhone-weergave
+
+De productrichting staat in [de leidende productvisie](docs/PRODUCT_VISION.md). Vanaf 11 oktober 2026 zijn **Home, Vragen en Instellingen** de drie hoofdkeuzes. Home heeft één duidelijke ingang naar Vragen en opent **Buzzer**, **Geschiedenis** en **Onderzoek & conclusies** in toegankelijke modals. In de onderzoek-modal vind je het bestaande Reis-DNA en Reiskantoor als twee tabbladen, met behoud van wetenschappelijke kanttekeningen en oude directe routes. **Voor later** blijft bereikbaar vanuit Home.
+
+De iPhone-PWA heet **Oelie en Roebie**. Voor een al geïnstalleerd beginschermicoon kan het nodig zijn de oude app van het beginscherm te verwijderen en de HTTPS-site opnieuw via Safari → Deel → Zet op beginscherm toe te voegen. Account en antwoorden staan server-side en verdwijnen niet door het Home Screen-icoon opnieuw aan te maken.
+
+De vragenweergave gebruikt compacte verticale ruimte en een subtiele schets op de achtergrond. Het doel is geen scroll op gangbare iPhones; voor kleinere schermen, grote letterinstellingen of uitgebreide DCE-attributen blijft scrollen mogelijk. Test Home, modals, toetsenbord en iPhone-naam tegen een draaiende server met `npm run ui:check` (Playwright/Edge); check daarnaast een **ingelogde** vierdelige set op echte iPhone-afmetingen.
+
 ## Push en scheduling
 
 Na installatie: Instellingen → Zet berichtjes aan. Geen permissievraag bij eerste bezoek. iOS: Safari → Delen → Zet op beginscherm, daarna vanuit het app-icoon notificaties activeren. Werkt vanaf iOS 16.4+ en ondersteunde browsers.
