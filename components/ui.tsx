@@ -4,7 +4,7 @@ import type {ButtonHTMLAttributes,ReactNode} from 'react';
 
 /** One action component; an href uses a semantic link, otherwise a native button. */
 export function AppAction({variant='quiet',href,className='',children,type='button',...props}:ButtonHTMLAttributes<HTMLButtonElement>&{
- variant?:'quiet'|'primary';href?:string;children:ReactNode;
+ variant?:'quiet'|'primary';href?:string;children?:ReactNode;
 }){
  const classes=`${variant==='primary'?'rk-button':'rk-quiet'} ${className}`.trim();
  return href?<Link className={classes} href={href}>{children}</Link>:
